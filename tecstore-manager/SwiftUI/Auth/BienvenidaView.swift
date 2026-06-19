@@ -45,7 +45,7 @@ struct BienvenidaView: View {
 
                 // ── App Name ──
                 Text("TecStore Manager")
-                    .font(.system(.largeTitle, design: .serif).bold())
+                    .font(.system(.largeTitle).bold())
                     .foregroundColor(.primary)
 
                 Text("Gestiona productos, clientes\ny ventas de tu tienda")

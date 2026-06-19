@@ -29,44 +29,42 @@ final class InicioViewModel: ObservableObject {
 struct InicioView: View {
 
     @StateObject private var viewModel = InicioViewModel()
-    @State private var showNewSale     = false
+
+    var onBusquedas:  (() -> Void)? = nil
+    var onReportes:   (() -> Void)? = nil
+    var onStockBajo:  (() -> Void)? = nil
+    var onNuevaVenta: (() -> Void)? = nil
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: CGFloat(AppLayout.paddingLarge)) {
+        ScrollView {
+            VStack(spacing: CGFloat(AppLayout.paddingLarge)) {
 
-                    welcomeHeader
+                welcomeHeader
 
-                    LazyVGrid(
-                        columns: [GridItem(.flexible()), GridItem(.flexible())],
-                        spacing: CGFloat(AppLayout.padding)
-                    ) {
-                        MetricCard(icon: "cart.fill",   color: .brandPrimary,
-                                   value: "\(viewModel.todaySalesCount)", label: "Ventas hoy")
-                        MetricCard(icon: "banknote.fill", color: Color.appSuccess,
-                                   value: viewModel.todaySalesTotal.asCurrency, label: "Ingresos hoy")
-                        MetricCard(icon: "exclamationmark.triangle.fill", color: Color.appWarning,
-                                   value: "\(viewModel.outOfStockCount)", label: "Sin stock")
-                        MetricCard(icon: "person.2.fill", color: Color(UIColor.systemIndigo),
-                                   value: "\(viewModel.totalClientes)", label: "Clientes")
-                    }
-                    .padding(.horizontal, CGFloat(AppLayout.padding))
-
-                    shortcutsSection
+                LazyVGrid(
+                    columns: [GridItem(.flexible()), GridItem(.flexible())],
+                    spacing: CGFloat(AppLayout.padding)
+                ) {
+                    MetricCard(icon: "cart.fill",   color: .brandPrimary,
+                               value: "\(viewModel.todaySalesCount)", label: "Ventas hoy")
+                    MetricCard(icon: "banknote.fill", color: Color.appSuccess,
+                               value: viewModel.todaySalesTotal.asCurrency, label: "Ingresos hoy")
+                    MetricCard(icon: "exclamationmark.triangle.fill", color: Color.appWarning,
+                               value: "\(viewModel.outOfStockCount)", label: "Sin stock")
+                    MetricCard(icon: "person.2.fill", color: Color(UIColor.systemIndigo),
+                               value: "\(viewModel.totalClientes)", label: "Clientes")
                 }
-                .padding(.vertical, CGFloat(AppLayout.padding))
+                .padding(.horizontal, CGFloat(AppLayout.padding))
+
+                shortcutsSection
             }
-            .background(Color(UIColor.appGrouped))
-            .navigationTitle("Inicio")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(.visible, for: .navigationBar)
-            .onAppear { viewModel.loadMetrics() }
-            .sheet(isPresented: $showNewSale) {
-                NavigationStack {
-                    RegistroVentaView(onSave: { showNewSale = false }, isModal: true)
-                }
-            }
+            .padding(.vertical, CGFloat(AppLayout.padding))
+        }
+        .background(Color(UIColor.appGrouped))
+        .navigationTitle("Inicio")
+        .onAppear { viewModel.loadMetrics() }
+        .onReceive(NotificationCenter.default.publisher(for: .salesDataChanged)) { _ in
+            viewModel.loadMetrics()
         }
     }
 
@@ -75,7 +73,7 @@ struct InicioView: View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Bienvenido")
-                    .font(.system(.title2, design: .serif).bold())
+                    .font(.system(.title2).bold())
                 if let name = AuthService.shared.currentUser?.fullName {
                     Text(name)
                         .font(.subheadline)
@@ -84,7 +82,7 @@ struct InicioView: View {
             }
             Spacer()
             Image(systemName: "storefront.fill")
-                .font(.system(.title, design: .serif))
+                .font(.system(.title))
                 .foregroundColor(.brandPrimary)
         }
         .padding(CGFloat(AppLayout.paddingLarge))
@@ -102,7 +100,7 @@ struct InicioView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, CGFloat(AppLayout.padding))
 
-            NavigationLink(destination: BusquedasView()) {
+            Button { onBusquedas?() } label: {
                 ShortcutCard(icon: "magnifyingglass", title: "Búsquedas",
                              subtitle: "Buscar en productos, clientes y ventas",
                              color: .brandPrimary)
@@ -110,7 +108,7 @@ struct InicioView: View {
             .buttonStyle(.plain)
             .padding(.horizontal, CGFloat(AppLayout.padding))
 
-            NavigationLink(destination: ReportesView()) {
+            Button { onReportes?() } label: {
                 ShortcutCard(icon: "chart.bar.fill", title: "Reportes",
                              subtitle: "Métricas y tendencias de la tienda",
                              color: Color.appSuccess)
@@ -118,7 +116,7 @@ struct InicioView: View {
             .buttonStyle(.plain)
             .padding(.horizontal, CGFloat(AppLayout.padding))
 
-            Button { showNewSale = true } label: {
+            Button { onNuevaVenta?() } label: {
                 ShortcutCard(icon: "cart.badge.plus", title: "Nueva venta",
                              subtitle: "Registrar una venta rápidamente",
                              color: Color(UIColor.systemOrange))
@@ -126,7 +124,7 @@ struct InicioView: View {
             .buttonStyle(.plain)
             .padding(.horizontal, CGFloat(AppLayout.padding))
 
-            NavigationLink(destination: StockBajoView()) {
+            Button { onStockBajo?() } label: {
                 ShortcutCard(icon: "exclamationmark.triangle.fill", title: "Stock bajo",
                              subtitle: "Productos con 5 unidades o menos",
                              color: Color.appWarning)
@@ -162,12 +160,22 @@ struct StockBajoView: View {
             } else {
                 List(productos) { p in
                     HStack(spacing: 12) {
-                        Image(systemName: p.categoryEnum.icon)
-                            .font(.system(.title3, design: .serif))
-                            .foregroundColor(Color(UIColor.colorForCategory(p.categoryValue)))
-                            .frame(width: 36, height: 36)
-                            .background(Color(UIColor.colorForCategory(p.categoryValue)).opacity(0.12))
-                            .cornerRadius(8)
+                        Group {
+                            if let path = p.productImagePath,
+                               let uiImg = UIImage(named: path) ?? UIImage.fromDocuments(named: path) {
+                                Image(uiImage: uiImg)
+                                    .resizable()
+                                    .scaledToFill()
+                            } else {
+                                Image(systemName: p.categoryEnum.icon)
+                                    .font(.system(.title3))
+                                    .foregroundColor(Color(UIColor.colorForCategory(p.categoryValue)))
+                            }
+                        }
+                        .frame(width: 36, height: 36)
+                        .background(Color(UIColor.colorForCategory(p.categoryValue)).opacity(0.12))
+                        .cornerRadius(8)
+                        .clipped()
 
                         VStack(alignment: .leading, spacing: 3) {
                             Text(p.productName).font(.subheadline.weight(.medium))
@@ -215,12 +223,12 @@ struct MetricCard: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Image(systemName: icon)
-                    .font(.system(.title3, design: .serif))
+                    .font(.system(.title3))
                     .foregroundColor(color)
                 Spacer()
             }
             Text(value)
-                .font(.system(.title2, design: .serif).bold())
+                .font(.system(.title2).bold())
                 .foregroundColor(.primary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
@@ -248,7 +256,7 @@ struct ShortcutCard: View {
                     .fill(color.opacity(0.12))
                     .frame(width: 48, height: 48)
                 Image(systemName: icon)
-                    .font(.system(.title3, design: .serif))
+                    .font(.system(.title3))
                     .foregroundColor(color)
             }
             VStack(alignment: .leading, spacing: 3) {

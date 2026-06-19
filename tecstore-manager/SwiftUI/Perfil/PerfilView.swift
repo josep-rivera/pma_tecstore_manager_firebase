@@ -88,96 +88,91 @@ struct PerfilView: View {
     @State private var selectedPhoto:     PhotosPickerItem? = nil
 
     var body: some View {
-        NavigationStack {
-            Form {
+        Form {
 
-                // ── Avatar + Info ──
-                Section {
-                    HStack(spacing: 16) {
-                        PhotosPicker(selection: $selectedPhoto, matching: .images) {
-                            avatarView
-                        }
-                        .onChange(of: selectedPhoto) { _, newItem in
-                            Task {
-                                if let data   = try? await newItem?.loadTransferable(type: Data.self),
-                                   let image  = UIImage(data: data) {
-                                    viewModel.saveProfilePhoto(image)
-                                }
+            // ── Avatar + Info ──
+            Section {
+                HStack(spacing: 16) {
+                    PhotosPicker(selection: $selectedPhoto, matching: .images) {
+                        avatarView
+                    }
+                    .onChange(of: selectedPhoto) { _, newItem in
+                        Task {
+                            if let data   = try? await newItem?.loadTransferable(type: Data.self),
+                               let image  = UIImage(data: data) {
+                                viewModel.saveProfilePhoto(image)
                             }
                         }
-
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(viewModel.user?.fullName ?? "Usuario")
-                                .font(.headline)
-                            Text(viewModel.user?.email ?? "")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                            Text("Registrado: \(viewModel.user?.registrationDate.displayDate ?? "")")
-                                .font(.caption)
-                                .foregroundColor(Color(UIColor.appTextTertiary))
-                        }
                     }
-                    .padding(.vertical, 4)
-                }
 
-                // ── Preferencias ──
-                Section("Preferencias") {
-                    Toggle(isOn: $viewModel.isDarkMode) {
-                        Label("Modo oscuro", systemImage: "moon.fill")
-                    }
-                    .tint(.brandPrimary)
-                    .onChange(of: viewModel.isDarkMode) { _, _ in
-                        viewModel.toggleDarkMode()
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(viewModel.user?.fullName ?? "Usuario")
+                            .font(.headline)
+                        Text(viewModel.user?.email ?? "")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Text("Registrado: \(viewModel.user?.registrationDate.displayDate ?? "")")
+                            .font(.caption)
+                            .foregroundColor(Color(UIColor.appTextTertiary))
                     }
                 }
+                .padding(.vertical, 4)
+            }
 
-                // ── Seguridad ──
-                Section("Seguridad") {
-                    Button {
-                        showChangePassword = true
-                    } label: {
-                        Label("Cambiar contraseña", systemImage: "lock.rotation")
-                            .foregroundColor(.primary)
-                    }
+            // ── Preferencias ──
+            Section("Preferencias") {
+                Toggle(isOn: $viewModel.isDarkMode) {
+                    Label("Modo oscuro", systemImage: "moon.fill")
                 }
-
-                // ── App Info ──
-                Section("Acerca de la app") {
-                    NavigationLink(destination: AcercaDeView()) {
-                        Label("Acerca de TecStore Manager", systemImage: "info.circle")
-                    }
+                .tint(.brandPrimary)
+                .onChange(of: viewModel.isDarkMode) { _, _ in
+                    viewModel.toggleDarkMode()
                 }
+            }
 
-                // ── Sesión ──
-                Section {
-                    Button(role: .destructive) {
-                        viewModel.showLogoutAlert = true
-                    } label: {
-                        HStack {
-                            Spacer()
-                            Label("Cerrar sesión", systemImage: "rectangle.portrait.and.arrow.right")
-                                .foregroundColor(.red)
-                            Spacer()
-                        }
+            // ── Seguridad ──
+            Section("Seguridad") {
+                Button {
+                    showChangePassword = true
+                } label: {
+                    Label("Cambiar contraseña", systemImage: "lock.rotation")
+                        .foregroundColor(.primary)
+                }
+            }
+
+            // ── App Info ──
+            Section("Acerca de la app") {
+                NavigationLink(destination: AcercaDeView()) {
+                    Label("Acerca de TecStore Manager", systemImage: "info.circle")
+                }
+            }
+
+            // ── Sesión ──
+            Section {
+                Button(role: .destructive) {
+                    viewModel.showLogoutAlert = true
+                } label: {
+                    HStack {
+                        Spacer()
+                        Label("Cerrar sesión", systemImage: "rectangle.portrait.and.arrow.right")
+                            .foregroundColor(.red)
+                        Spacer()
                     }
                 }
             }
-            .navigationTitle("Perfil")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(.visible, for: .navigationBar)
-            // Change password sheet
-            .sheet(isPresented: $showChangePassword) {
-                CambiarPasswordSheet(viewModel: viewModel)
-            }
-            // Logout confirmation
-            .alert("Cerrar sesión", isPresented: $viewModel.showLogoutAlert) {
-                Button("Cancelar", role: .cancel) {}
-                Button("Cerrar sesión", role: .destructive) { viewModel.logout() }
-            } message: {
-                Text("¿Estás seguro de que quieres cerrar sesión?")
-            }
-            .onAppear { viewModel.loadUser() }
         }
+        // Change password sheet
+        .sheet(isPresented: $showChangePassword) {
+            CambiarPasswordSheet(viewModel: viewModel)
+        }
+        // Logout confirmation
+        .alert("Cerrar sesión", isPresented: $viewModel.showLogoutAlert) {
+            Button("Cancelar", role: .cancel) {}
+            Button("Cerrar sesión", role: .destructive) { viewModel.logout() }
+        } message: {
+            Text("¿Estás seguro de que quieres cerrar sesión?")
+        }
+        .onAppear { viewModel.loadUser() }
     }
 
     // ── Avatar View ──
@@ -193,7 +188,7 @@ struct PerfilView: View {
                         .fill(Color.brandLight)
                         .overlay {
                             Text(viewModel.userInitial)
-                                .font(.system(.title, design: .serif).bold())
+                                .font(.system(.title).bold())
                                 .foregroundColor(.brandPrimary)
                         }
                 }
@@ -294,7 +289,7 @@ struct AcercaDeView: View {
                             .foregroundColor(.brandPrimary)
                     }
                     Text("TecStore Manager")
-                        .font(.system(.title2, design: .serif).bold())
+                        .font(.system(.title2).bold())
                     Text("Versión \(appVersion) (\(buildNumber))")
                         .font(.caption)
                         .foregroundColor(.secondary)

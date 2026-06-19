@@ -11,6 +11,7 @@ final class ListaVentasViewModel: ObservableObject {
     @Published var ventas:          [Venta] = []
     @Published var allVentas:       [Venta] = []
     @Published var isDateFiltering: Bool    = false
+    @Published var showDateFilter:  Bool    = false
     @Published var startDate: Date = Calendar.current.date(byAdding: .month, value: -1, to: Date()) ?? Date()
     @Published var endDate:   Date = Date()
 
@@ -43,36 +44,21 @@ final class ListaVentasViewModel: ObservableObject {
 
 struct ListaVentasView: View {
 
-    @StateObject private var viewModel  = ListaVentasViewModel()
-    @State private var selectedVenta:   Venta? = nil
-    @State private var showRegistro:    Bool   = false
-    @State private var showDateFilter:  Bool   = false
-    @State private var searchText:      String = ""
+    @ObservedObject var viewModel: ListaVentasViewModel
+    @State private var searchText: String = ""
+    var onSelectVenta: ((Venta) -> Void)? = nil
+    var onAddSale:     (() -> Void)?      = nil
 
     var body: some View {
-        NavigationStack {
-            Group {
-                if viewModel.ventas.isEmpty {
-                    emptyState
-                } else {
-                    ventasList
-                }
+        Group {
+            if viewModel.ventas.isEmpty {
+                emptyState
+            } else {
+                ventasList
             }
-            .navigationTitle("Ventas")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(.visible, for: .navigationBar)
-            .searchable(text: $searchText, prompt: "Buscar por cliente")
-            .onChange(of: searchText) { _, text in viewModel.applySearch(text) }
-            .toolbar { toolbarItems }
-            .navigationDestination(item: $selectedVenta) { venta in
-                DetalleVentaView(venta: venta)
-            }
-            .navigationDestination(isPresented: $showRegistro) {
-                RegistroVentaView(onSave: { viewModel.loadAll() })
-            }
-            .sheet(isPresented: $showDateFilter) {
-                dateFilterSheet
-            }
+        }
+        .sheet(isPresented: $viewModel.showDateFilter) {
+            dateFilterSheet
         }
         .onAppear { viewModel.loadAll() }
     }
@@ -99,7 +85,7 @@ struct ListaVentasView: View {
             ForEach(viewModel.ventas) { venta in
                 VentaRow(venta: venta)
                     .contentShape(Rectangle())
-                    .onTapGesture { selectedVenta = venta }
+                    .onTapGesture { onSelectVenta?(venta) }
                     .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
                     .listRowSeparator(.hidden)
                     .padding(.vertical, 4)
@@ -117,31 +103,11 @@ struct ListaVentasView: View {
             Text("No hay ventas registradas")
                 .font(.headline)
                 .foregroundColor(.secondary)
-            Button("Registrar primera venta") { showRegistro = true }
+            Button("Registrar primera venta") { onAddSale?() }
                 .buttonStyle(.borderedProminent)
                 .tint(.brandPrimary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
-    // ── Toolbar ──
-    @ToolbarContentBuilder
-    private var toolbarItems: some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
-            Button {
-                showDateFilter = true
-            } label: {
-                Image(systemName: viewModel.isDateFiltering
-                      ? "line.3.horizontal.decrease.circle.fill"
-                      : "line.3.horizontal.decrease.circle")
-                    .foregroundColor(viewModel.isDateFiltering ? .brandPrimary : .primary)
-            }
-        }
-        ToolbarItem(placement: .topBarTrailing) {
-            Button { showRegistro = true } label: {
-                Image(systemName: "plus")
-            }
-        }
     }
 
     // ── Date Filter Sheet ──
@@ -161,13 +127,13 @@ struct ListaVentasView: View {
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancelar") { showDateFilter = false }
+                    Button("Cancelar") { viewModel.showDateFilter = false }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Aplicar") {
                         viewModel.isDateFiltering = true
                         viewModel.applyDateFilter()
-                        showDateFilter = false
+                        viewModel.showDateFilter = false
                     }
                     .fontWeight(.semibold)
                 }
@@ -189,7 +155,7 @@ struct VentaRow: View {
             // Date circle
             VStack(spacing: 2) {
                 Text(venta.saleDate.formatted(pattern: "dd"))
-                    .font(.system(.title2, design: .serif).bold())
+                    .font(.system(.title2).bold())
                     .foregroundColor(.brandPrimary)
                 Text(venta.saleDate.formatted(pattern: "MMM").uppercased())
                     .font(.caption2)

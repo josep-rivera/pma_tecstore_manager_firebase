@@ -106,6 +106,7 @@ struct RegistroVentaView: View {
 
     @StateObject private var viewModel = RegistroVentaViewModel()
     @Environment(\.dismiss) private var dismiss
+    @State private var hasAttemptedConfirm = false
 
     var body: some View {
         Form {
@@ -122,7 +123,7 @@ struct RegistroVentaView: View {
             } header: {
                 Text("Cliente")
             } footer: {
-                if viewModel.selectedCliente == nil {
+                if hasAttemptedConfirm && viewModel.selectedCliente == nil {
                     Text("Selecciona un cliente activo para continuar.")
                         .foregroundColor(.appError)
                 }
@@ -181,7 +182,7 @@ struct RegistroVentaView: View {
                         Text("Total").font(.headline)
                         Spacer()
                         Text(viewModel.totals.total.asCurrency)
-                            .font(.system(.title3, design: .serif).bold())
+                            .font(.system(.title3).bold())
                             .foregroundColor(.brandPrimary)
                     }
                 }
@@ -189,31 +190,29 @@ struct RegistroVentaView: View {
             }
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            if viewModel.canConfirm {
-                Button { viewModel.showConfirmSheet = true } label: {
-                    Label("Confirmar venta", systemImage: "checkmark.circle.fill")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 50)
-                        .background(Color.brandPrimary)
-                        .cornerRadius(12)
-                        .padding(.horizontal, CGFloat(AppLayout.paddingLarge))
-                        .padding(.vertical, CGFloat(AppLayout.padding))
-                }
-                .background(Color(UIColor.appGrouped).ignoresSafeArea())
+            Button {
+                hasAttemptedConfirm = true
+                if viewModel.canConfirm { viewModel.showConfirmSheet = true }
+            } label: {
+                Label("Guardar venta", systemImage: "checkmark.circle.fill")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+                    .background(viewModel.canConfirm ? Color.brandPrimary : Color.secondary.opacity(0.4))
+                    .cornerRadius(12)
+                    .padding(.horizontal, CGFloat(AppLayout.paddingLarge))
+                    .padding(.vertical, CGFloat(AppLayout.padding))
             }
+            .background(Color(UIColor.appGrouped).ignoresSafeArea())
         }
-        .navigationTitle("Nueva venta")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(.visible, for: .navigationBar)
         .toolbar {
             if isModal {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { dismiss() } label: {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundStyle(.secondary)
-                            .font(.system(.title3, design: .serif))
+                            .font(.system(.title3))
                     }
                 }
             }
@@ -388,7 +387,7 @@ struct ProductPickerRow: View {
                 .foregroundColor(.brandPrimary)
             Button(action: onAdd) {
                 Image(systemName: "plus.circle.fill")
-                    .font(.system(.title3, design: .serif))
+                    .font(.system(.title3))
                     .foregroundColor(.brandPrimary)
             }
             .buttonStyle(.plain)
@@ -421,7 +420,7 @@ struct CartItemRow: View {
                 HStack(spacing: 12) {
                     Button(action: onDecrease) {
                         Image(systemName: "minus.circle.fill")
-                            .font(.system(.title3, design: .serif))
+                            .font(.system(.title3))
                             .foregroundColor(item.cantidad == 1 ? .appError : .brandPrimary)
                     }
                     .buttonStyle(.plain)
@@ -432,7 +431,7 @@ struct CartItemRow: View {
 
                     Button(action: onIncrease) {
                         Image(systemName: "plus.circle.fill")
-                            .font(.system(.title3, design: .serif))
+                            .font(.system(.title3))
                             .foregroundColor(item.cantidad >= item.producto.stockInt ? .secondary : .brandPrimary)
                     }
                     .buttonStyle(.plain)

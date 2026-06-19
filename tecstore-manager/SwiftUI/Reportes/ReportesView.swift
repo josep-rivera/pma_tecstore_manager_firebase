@@ -47,15 +47,6 @@ struct ReportesView: View {
             }
         }
         .navigationTitle("Reportes")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(.visible, for: .navigationBar)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button { viewModel.loadReport() } label: {
-                    Image(systemName: "arrow.clockwise")
-                }
-            }
-        }
         .onAppear { viewModel.loadReport() }
     }
 
@@ -296,7 +287,7 @@ struct ReporteCard: View {
                 Spacer()
             }
             Text(value)
-                .font(.system(.title2, design: .serif).bold())
+                .font(.system(.title2).bold())
                 .foregroundColor(.primary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)

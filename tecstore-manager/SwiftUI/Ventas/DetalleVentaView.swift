@@ -20,9 +20,6 @@ struct DetalleVentaView: View {
             .padding(CGFloat(AppLayout.paddingLarge))
         }
         .background(Color(UIColor.appGrouped))
-        .navigationTitle("Detalle de venta")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(.visible, for: .navigationBar)
     }
 
     // ── Header: status + date ──
@@ -32,7 +29,7 @@ struct DetalleVentaView: View {
                 .font(.system(size: 52))
                 .foregroundColor(.appSuccess)
             Text(venta.statusValue)
-                .font(.system(.title2, design: .serif).bold())
+                .font(.system(.title2).bold())
                 .foregroundColor(.appSuccess)
             Text(venta.saleDate.displayDateTime)
                 .font(.subheadline)
@@ -103,10 +100,10 @@ struct DetalleVentaView: View {
             // Total — visually prominent
             HStack {
                 Text("TOTAL")
-                    .font(.system(.title3, design: .serif).bold())
+                    .font(.system(.title3).bold())
                 Spacer()
                 Text(venta.totalDouble.asCurrency)
-                    .font(.system(.title3, design: .serif).bold())
+                    .font(.system(.title3).bold())
                     .foregroundColor(.brandPrimary)
             }
             .padding(.horizontal, CGFloat(AppLayout.paddingLarge))

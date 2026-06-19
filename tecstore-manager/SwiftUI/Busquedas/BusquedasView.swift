@@ -169,7 +169,7 @@ struct BusquedasView: View {
                     showFilterSheet = true
                 } label: {
                     Image(systemName: viewModel.hasActiveFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
-                        .font(.system(.title3, design: .serif))
+                        .font(.system(.title3))
                         .foregroundColor(viewModel.hasActiveFilters ? .brandPrimary : .secondary)
                         .frame(width: 40, height: 40)
                         .background(Color(UIColor.appSurface))
@@ -185,9 +185,6 @@ struct BusquedasView: View {
             resultsList
         }
         .background(Color(UIColor.appGrouped))
-        .navigationTitle("Búsquedas")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(.visible, for: .navigationBar)
         .sheet(isPresented: $showFilterSheet) {
             BusquedasFilterSheet(viewModel: viewModel) {
                 viewModel.search()
@@ -200,9 +197,10 @@ struct BusquedasView: View {
         .sheet(item: $viewModel.selectedCliente) { c in
             BusquedaClienteSheet(cliente: c)
         }
-        .navigationDestination(item: $viewModel.selectedVenta) { v in
-            DetalleVentaView(venta: v)
+        .sheet(item: $viewModel.selectedVenta) { v in
+            NavigationStack { DetalleVentaView(venta: v) }
         }
+        .navigationTitle("Búsquedas")
         .onAppear { viewModel.search() }
     }
 
@@ -281,13 +279,19 @@ struct ProductoBusquedaRow: View {
     let producto: Producto
     var body: some View {
         HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color(UIColor.colorForCategory(producto.categoryValue)).opacity(0.15))
-                .frame(width: 40, height: 40)
-                .overlay {
+            Group {
+                if let path = producto.productImagePath,
+                   let uiImg = UIImage(named: path) ?? UIImage.fromDocuments(named: path) {
+                    Image(uiImage: uiImg).resizable().scaledToFill()
+                } else {
                     Image(systemName: producto.categoryEnum.icon)
                         .foregroundColor(Color(UIColor.colorForCategory(producto.categoryValue)))
                 }
+            }
+            .frame(width: 40, height: 40)
+            .background(Color(UIColor.colorForCategory(producto.categoryValue)).opacity(0.15))
+            .cornerRadius(8)
+            .clipped()
             VStack(alignment: .leading, spacing: 3) {
                 Text(producto.productName).font(.subheadline.weight(.medium)).lineLimit(1)
                 Text("\(producto.productCode) · \(producto.categoryValue)")
