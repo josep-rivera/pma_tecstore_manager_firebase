@@ -61,7 +61,7 @@ final class DetalleProductoViewController: UIViewController {
         precioLabel.font      = AppFont.title3()
         precioLabel.textColor = .brandPrimary
 
-        for badge in [stockBadge, estadoBadge] {
+        for badge in ([stockBadge, estadoBadge] as [UILabel]) {
             badge.font               = AppFont.caption1()
             badge.textColor          = .white
             badge.textAlignment      = .center

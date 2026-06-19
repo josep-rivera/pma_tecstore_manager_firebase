@@ -69,7 +69,7 @@ final class DetalleClienteViewController: UIViewController {
         statusBadge.layer.cornerRadius = 10
         statusBadge.clipsToBounds      = true
 
-        for lbl in [dniLabel, telefonoLabel, correoLabel, direccionLabel] {
+        for lbl in ([dniLabel, telefonoLabel, correoLabel, direccionLabel] as [UILabel]) {
             lbl.font          = AppFont.body()
             lbl.textColor     = .appTextSecondary
             lbl.numberOfLines = 0
@@ -121,9 +121,9 @@ final class DetalleClienteViewController: UIViewController {
         }
 
         // Reparent IBOutlet labels into contactCard
-        for lbl in [dniLabel, telefonoLabel, correoLabel, direccionLabel] {
+        for lbl in ([dniLabel, telefonoLabel, correoLabel, direccionLabel] as [UILabel]) {
             lbl.translatesAutoresizingMaskIntoConstraints = false
-            contactCard.addSubview(lbl!)
+            contactCard.addSubview(lbl)
         }
 
         contactCard.addSubviews(

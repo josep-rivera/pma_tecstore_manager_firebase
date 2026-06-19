@@ -8,9 +8,42 @@ final class LoginViewController: UIViewController {
     @IBOutlet weak var loginButton: UIButton!
     @IBOutlet weak var registerButton: UIButton!
 
-    // MARK: - UI (programmatic — not IBOutlets)
+    // MARK: - UI (programmatic — decorative, not IBOutlets)
     private let correoError   = AppStyle.makeErrorLabel()
     private let passwordError = AppStyle.makeErrorLabel()
+
+    private let logoBackground: UIView = {
+        let v = UIView()
+        v.translatesAutoresizingMaskIntoConstraints = false
+        v.backgroundColor    = UIColor.brandPrimary.withAlphaComponent(0.10)
+        v.layer.cornerRadius = 50
+        return v
+    }()
+    private let logoImageView: UIImageView = {
+        let iv = UIImageView(image: UIImage(systemName: "storefront.fill"))
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.tintColor   = .brandPrimary
+        iv.contentMode = .scaleAspectFit
+        return iv
+    }()
+    private let titleLabel: UILabel = {
+        let l = UILabel()
+        l.translatesAutoresizingMaskIntoConstraints = false
+        l.text          = "TecStore Manager"
+        l.font          = AppFont.title1()
+        l.textColor     = .appTextPrimary
+        l.textAlignment = .center
+        return l
+    }()
+    private let subtitleLabel: UILabel = {
+        let l = UILabel()
+        l.translatesAutoresizingMaskIntoConstraints = false
+        l.text          = "Inicia sesión para continuar"
+        l.font          = AppFont.body()
+        l.textColor     = .appTextSecondary
+        l.textAlignment = .center
+        return l
+    }()
 
     private let seedCredentialsLabel: UILabel = {
         let l = UILabel()
@@ -79,20 +112,47 @@ final class LoginViewController: UIViewController {
     /// Error labels are placed relative to their IBOutlet fields in the storyboard's contentView.
     private func setupProgrammaticViews() {
         guard let contentView = correoField.superview else { return }
+        let ph = AppLayout.paddingLarge
 
+        // Decorative header: logo + title + subtitle above the IBOutlet fields
+        logoBackground.addSubview(logoImageView)
+        for v in [logoBackground, titleLabel, subtitleLabel] { contentView.addSubview(v) }
+
+        // Error labels below their fields
         for label in [correoError, passwordError] {
             label.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview(label)
         }
 
-        // seedCredentialsLabel goes on the root view (outside the scroll)
-        let ph = AppLayout.paddingLarge
+        // Seed credentials hint at the bottom of the root view
         view.addSubview(seedCredentialsLabel)
-        NSLayoutConstraint.activate([
-            seedCredentialsLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: ph),
-            seedCredentialsLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -ph),
-            seedCredentialsLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
 
+        NSLayoutConstraint.activate([
+            // Logo circle
+            logoBackground.topAnchor.constraint(equalTo: contentView.topAnchor, constant: ph),
+            logoBackground.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            logoBackground.widthAnchor.constraint(equalToConstant: 100),
+            logoBackground.heightAnchor.constraint(equalToConstant: 100),
+
+            logoImageView.centerXAnchor.constraint(equalTo: logoBackground.centerXAnchor),
+            logoImageView.centerYAnchor.constraint(equalTo: logoBackground.centerYAnchor),
+            logoImageView.widthAnchor.constraint(equalToConstant: 48),
+            logoImageView.heightAnchor.constraint(equalToConstant: 48),
+
+            // Title
+            titleLabel.topAnchor.constraint(equalTo: logoBackground.bottomAnchor, constant: 16),
+            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: ph),
+            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -ph),
+
+            // Subtitle
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
+            subtitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: ph),
+            subtitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -ph),
+
+            // First field below subtitle
+            correoField.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 32),
+
+            // Error labels
             correoError.topAnchor.constraint(equalTo: correoField.bottomAnchor, constant: 4),
             correoError.leadingAnchor.constraint(equalTo: correoField.leadingAnchor),
             correoError.trailingAnchor.constraint(equalTo: correoField.trailingAnchor),
@@ -100,6 +160,11 @@ final class LoginViewController: UIViewController {
             passwordError.topAnchor.constraint(equalTo: passwordField.bottomAnchor, constant: 4),
             passwordError.leadingAnchor.constraint(equalTo: passwordField.leadingAnchor),
             passwordError.trailingAnchor.constraint(equalTo: passwordField.trailingAnchor),
+
+            // Seed hint
+            seedCredentialsLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: ph),
+            seedCredentialsLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -ph),
+            seedCredentialsLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
         ])
     }
 

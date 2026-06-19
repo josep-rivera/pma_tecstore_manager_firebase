@@ -45,7 +45,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if AuthService.shared.hasActiveSession {
             return sb.instantiateViewController(withIdentifier: "MenuViewController")
         } else {
-            return sb.instantiateInitialViewController()!
+            let bienvenidaVC = sb.instantiateViewController(withIdentifier: "BienvenidaHostingController")
+            let nav = UINavigationController(rootViewController: bienvenidaVC)
+            nav.setNavigationBarHidden(true, animated: false)
+            return nav
         }
     }
 

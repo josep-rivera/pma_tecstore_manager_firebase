@@ -7,9 +7,23 @@ final class MenuViewController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Tab viewControllers are set up via storyboard relationship segues.
-        // Apply nav bar appearance to UIKit tab nav controllers.
         applyNavBarAppearance()
+        setupTabBarItems()
+    }
+
+    private func setupTabBarItems() {
+        let configs: [(String, String)] = [
+            ("Inicio",     "house.fill"),
+            ("Productos",  "shippingbox.fill"),
+            ("Clientes",   "person.2.fill"),
+            ("Ventas",     "cart.fill"),
+            ("Perfil",     "person.circle.fill")
+        ]
+        for (index, (title, icon)) in configs.enumerated() {
+            guard let vcs = viewControllers, index < vcs.count else { continue }
+            vcs[index].tabBarItem.title = title
+            vcs[index].tabBarItem.image = UIImage(systemName: icon)
+        }
     }
 
     // MARK: - Appearance

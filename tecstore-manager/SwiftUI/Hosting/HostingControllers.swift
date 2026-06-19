@@ -2,26 +2,41 @@ import UIKit
 import SwiftUI
 
 // MARK: - InicioHostingController
+// InicioView owns its NavigationStack — hide UIKit nav bar to avoid double title.
 
 final class InicioHostingController: UIHostingController<InicioView> {
     required init?(coder: NSCoder) {
         super.init(coder: coder, rootView: InicioView())
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
 }
 
 // MARK: - VentasHostingController
+// ListaVentasView owns its NavigationStack — hide UIKit nav bar.
 
 final class VentasHostingController: UIHostingController<ListaVentasView> {
     required init?(coder: NSCoder) {
         super.init(coder: coder, rootView: ListaVentasView())
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
 }
 
 // MARK: - PerfilHostingController
+// PerfilView owns its NavigationStack — hide UIKit nav bar.
 
 final class PerfilHostingController: UIHostingController<PerfilView> {
     required init?(coder: NSCoder) {
         super.init(coder: coder, rootView: PerfilView())
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
     }
 }
 
@@ -47,21 +62,21 @@ final class ReportesHostingController: UIHostingController<ReportesView> {
 
 final class BienvenidaHostingController: UIHostingController<BienvenidaView> {
     required init?(coder: NSCoder) {
-        super.init(coder: coder, rootView: BienvenidaView(
-            onLogin: {},
-            onRegister: {}
-        ))
+        super.init(coder: coder, rootView: BienvenidaView(onLogin: {}, onRegister: {}))
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Rewire callbacks to use SceneDelegate navigation after the controller is loaded.
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        let sb = UIStoryboard(name: "Main", bundle: nil)
         rootView = BienvenidaView(
             onLogin: { [weak self] in
-                self?.navigationController?.performSegue(withIdentifier: "showLogin", sender: nil)
+                let loginVC = sb.instantiateViewController(withIdentifier: "LoginViewController")
+                self?.navigationController?.pushViewController(loginVC, animated: true)
             },
             onRegister: { [weak self] in
-                self?.navigationController?.performSegue(withIdentifier: "showRegistro", sender: nil)
+                let registroVC = sb.instantiateViewController(withIdentifier: "RegistroViewController")
+                self?.navigationController?.pushViewController(registroVC, animated: true)
             }
         )
     }

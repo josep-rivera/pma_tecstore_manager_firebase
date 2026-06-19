@@ -16,6 +16,25 @@ final class RegistroViewController: UIViewController {
     private let passwordError = AppStyle.makeErrorLabel()
     private let confirmError  = AppStyle.makeErrorLabel()
 
+    private let titleLabel: UILabel = {
+        let l = UILabel()
+        l.translatesAutoresizingMaskIntoConstraints = false
+        l.text          = "Crear cuenta"
+        l.font          = AppFont.title1()
+        l.textColor     = .appTextPrimary
+        l.textAlignment = .center
+        return l
+    }()
+    private let subtitleLabel: UILabel = {
+        let l = UILabel()
+        l.translatesAutoresizingMaskIntoConstraints = false
+        l.text          = "Completa los datos para registrarte"
+        l.font          = AppFont.body()
+        l.textColor     = .appTextSecondary
+        l.textAlignment = .center
+        return l
+    }()
+
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
@@ -70,13 +89,25 @@ final class RegistroViewController: UIViewController {
     /// `nombreField.superview` is the storyboard-provided contentView inside the scrollView.
     private func setupProgrammaticViews() {
         guard let contentView = nombreField.superview else { return }
+        let ph = AppLayout.paddingLarge
 
+        for v in [titleLabel, subtitleLabel] { contentView.addSubview(v) }
         for label in [nombreError, correoError, passwordError, confirmError] {
             label.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview(label)
         }
 
         NSLayoutConstraint.activate([
+            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: ph),
+            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: ph),
+            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -ph),
+
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
+            subtitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: ph),
+            subtitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -ph),
+
+            nombreField.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 32),
+
             nombreError.topAnchor.constraint(equalTo: nombreField.bottomAnchor, constant: 4),
             nombreError.leadingAnchor.constraint(equalTo: nombreField.leadingAnchor),
             nombreError.trailingAnchor.constraint(equalTo: nombreField.trailingAnchor),
