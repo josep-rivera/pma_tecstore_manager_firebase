@@ -45,7 +45,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if AuthService.shared.hasActiveSession {
             return sb.instantiateViewController(withIdentifier: "MenuViewController")
         } else {
-            let bienvenidaVC = sb.instantiateViewController(withIdentifier: "BienvenidaHostingController")
+            let bienvenidaVC = sb.instantiateViewController(withIdentifier: "BienvenidaViewController")
             let nav = UINavigationController(rootViewController: bienvenidaVC)
             nav.setNavigationBarHidden(true, animated: false)
             return nav
@@ -68,9 +68,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func switchToAuth() {
         guard let window else { return }
         let sb = UIStoryboard(name: "Main", bundle: nil)
-        let authNav = sb.instantiateInitialViewController()!
+        let bienvenidaVC = sb.instantiateViewController(withIdentifier: "BienvenidaViewController")
+        let nav = UINavigationController(rootViewController: bienvenidaVC)
+        nav.setNavigationBarHidden(true, animated: false)
         UIView.transition(with: window, duration: 0.35, options: .transitionCrossDissolve) {
-            window.rootViewController = authNav
+            window.rootViewController = nav
         }
     }
 
@@ -108,6 +110,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 extension Notification.Name {
     static let userDidLogout    = Notification.Name("userDidLogout")
     static let darkModeChanged  = Notification.Name("darkModeChanged")
+    static let salesDataChanged = Notification.Name("salesDataChanged")
 }
 
 // MARK: - UserDefaults Keys

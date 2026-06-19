@@ -141,6 +141,7 @@ final class VentaService {
 
         // 6. Single save for the entire transaction
         persistence.save()
+        NotificationCenter.default.post(name: .salesDataChanged, object: nil)
         return venta
     }
 

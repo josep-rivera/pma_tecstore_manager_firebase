@@ -119,10 +119,10 @@ enum ProductCategory: String, CaseIterable {
 // ─────────────────────────────────────────────
 
 enum AppFont {
-    static func largeTitle()  -> UIFont { ny(size: 34, weight: .bold) }
-    static func title1()      -> UIFont { ny(size: 28, weight: .bold) }
-    static func title2()      -> UIFont { ny(size: 22, weight: .bold) }
-    static func title3()      -> UIFont { ny(size: 20, weight: .semibold) }
+    static func largeTitle()  -> UIFont { .systemFont(ofSize: 34, weight: .bold) }
+    static func title1()      -> UIFont { .systemFont(ofSize: 28, weight: .bold) }
+    static func title2()      -> UIFont { .systemFont(ofSize: 22, weight: .bold) }
+    static func title3()      -> UIFont { .systemFont(ofSize: 20, weight: .semibold) }
     static func headline()    -> UIFont { .systemFont(ofSize: 17, weight: .semibold) }
     static func body()        -> UIFont { .systemFont(ofSize: 17, weight: .regular) }
     static func callout()     -> UIFont { .systemFont(ofSize: 16, weight: .regular) }
@@ -131,14 +131,6 @@ enum AppFont {
     static func caption1()    -> UIFont { .systemFont(ofSize: 12, weight: .regular) }
     static func caption2()    -> UIFont { .systemFont(ofSize: 11, weight: .regular) }
     static func mono()        -> UIFont { .monospacedSystemFont(ofSize: 15, weight: .regular) }
-
-    private static func ny(size: CGFloat, weight: UIFont.Weight) -> UIFont {
-        UIFont(descriptor: UIFontDescriptor.preferredFontDescriptor(withTextStyle: .body)
-            .withDesign(.serif)!
-            .withSize(size)
-            .addingAttributes([.traits: [UIFontDescriptor.TraitKey.weight: weight]]),
-               size: 0)
-    }
 }
 
 // ─────────────────────────────────────────────

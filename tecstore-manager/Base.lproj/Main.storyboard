@@ -22,7 +22,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="AAA-14-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="0.0" y="160"/>
+            <point key="canvasLocation" x="200" y="200"/>
         </scene>
         <!--Login View Controller-->
         <scene sceneID="BBB-10-sce">
@@ -107,7 +107,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BBB-16-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="550" y="160"/>
+            <point key="canvasLocation" x="900" y="200"/>
         </scene>
         <!--Registro View Controller-->
         <scene sceneID="CCC-10-sce">
@@ -211,7 +211,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CCC-16-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1100" y="160"/>
+            <point key="canvasLocation" x="1600" y="200"/>
         </scene>
         <!--Lista Productos View Controller-->
         <scene sceneID="DDD-10-sce">
@@ -254,7 +254,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DDD-16-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="0.0" y="1100"/>
+            <point key="canvasLocation" x="200" y="1500"/>
         </scene>
         <!--Formulario Producto View Controller-->
         <scene sceneID="EEE-10-sce">
@@ -363,7 +363,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="EEE-16-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="550" y="1100"/>
+            <point key="canvasLocation" x="900" y="1500"/>
         </scene>
         <!--Detalle Producto View Controller-->
         <scene sceneID="FFF-10-sce">
@@ -387,15 +387,15 @@
                                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FFF-22-prl">
-                                                <rect key="frame" x="24" y="292" width="0.0" height="0.0"/>
+                                                <rect key="frame" x="24" y="292" width="345" height="0.0"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FFF-23-skb">
-                                                <rect key="frame" x="24" y="304" width="0.0" height="0.0"/>
+                                                <rect key="frame" x="24" y="304" width="345" height="0.0"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FFF-24-edb">
-                                                <rect key="frame" x="24" y="316" width="0.0" height="0.0"/>
+                                                <rect key="frame" x="24" y="316" width="345" height="0.0"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             </label>
                                         </subviews>
@@ -414,6 +414,9 @@
                                             <constraint firstItem="FFF-24-edb" firstAttribute="top" secondItem="FFF-23-skb" secondAttribute="bottom" constant="12" id="FFF-41-c12"/>
                                             <constraint firstItem="FFF-24-edb" firstAttribute="leading" secondItem="FFF-14-cnt" secondAttribute="leading" constant="24" id="FFF-42-c13"/>
                                             <constraint firstItem="FFF-24-edb" firstAttribute="bottom" secondItem="FFF-14-cnt" secondAttribute="bottom" constant="-300" id="FFF-43-c14"/>
+                                            <constraint firstItem="FFF-22-prl" firstAttribute="trailing" secondItem="FFF-14-cnt" secondAttribute="trailing" constant="-24" id="FFF-80-t01"/>
+                                            <constraint firstItem="FFF-23-skb" firstAttribute="trailing" secondItem="FFF-14-cnt" secondAttribute="trailing" constant="-24" id="FFF-81-t02"/>
+                                            <constraint firstItem="FFF-24-edb" firstAttribute="trailing" secondItem="FFF-14-cnt" secondAttribute="trailing" constant="-24" id="FFF-82-t03"/>
                                         </constraints>
                                     </view>
                                 </subviews>
@@ -447,7 +450,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FFF-16-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1100" y="1100"/>
+            <point key="canvasLocation" x="1600" y="1500"/>
         </scene>
         <!--Lista Clientes View Controller-->
         <scene sceneID="GGG-10-sce">
@@ -478,7 +481,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GGG-16-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="0.0" y="2050"/>
+            <point key="canvasLocation" x="200" y="2800"/>
         </scene>
         <!--Formulario Cliente View Controller-->
         <scene sceneID="HHH-10-sce">
@@ -598,7 +601,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HHH-16-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="550" y="2050"/>
+            <point key="canvasLocation" x="900" y="2800"/>
         </scene>
         <!--Detalle Cliente View Controller-->
         <scene sceneID="III-10-sce">
@@ -701,7 +704,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="III-16-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1100" y="2050"/>
+            <point key="canvasLocation" x="1600" y="2800"/>
         </scene>
         <!--Menu View Controller-->
         <scene sceneID="JJJ-10-sce">
@@ -721,7 +724,7 @@
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JJJ-16-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="0.0" y="3000"/>
+            <point key="canvasLocation" x="200" y="4100"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="N01-10-sce">
@@ -737,7 +740,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="N01-14-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="550" y="3000"/>
+            <point key="canvasLocation" x="900" y="4100"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="N02-10-sce">
@@ -753,7 +756,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="N02-14-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1100" y="3000"/>
+            <point key="canvasLocation" x="1600" y="4100"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="N03-10-sce">
@@ -769,7 +772,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="N03-14-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1650" y="3000"/>
+            <point key="canvasLocation" x="2300" y="4100"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="N04-10-sce">
@@ -785,7 +788,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="N04-14-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2200" y="3000"/>
+            <point key="canvasLocation" x="3000" y="4100"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="N05-10-sce">
@@ -801,42 +804,52 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="N05-14-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2750" y="3000"/>
+            <point key="canvasLocation" x="3700" y="4100"/>
         </scene>
-        <!--Inicio Hosting Controller-->
+        <!--Inicio View Controller-->
         <scene sceneID="H01-10-sce">
             <objects>
-                <viewController storyboardIdentifier="InicioHostingController" id="HST-01-ini" customClass="InicioHostingController" customModule="tecstore_manager" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="InicioViewController" id="HST-01-ini" customClass="InicioViewController" customModule="tecstore_manager" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="H01-12-vew">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="weR-mw-DNu"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
+                    <connections>
+                        <segue destination="HST-09-bsq" kind="show" identifier="showBusquedas" id="I01-sg-bsq"/>
+                        <segue destination="HST-10-rpt" kind="show" identifier="showReportes" id="I01-sg-rpt"/>
+                        <segue destination="HST-11-stk" kind="show" identifier="showStockBajo" id="I01-sg-stk"/>
+                        <segue destination="HST-07-rgv" kind="push" identifier="showNuevaVentaModal" id="I01-sg-nvt"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="H01-14-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="550" y="3600"/>
+            <point key="canvasLocation" x="900" y="5400"/>
         </scene>
-        <!--Ventas Hosting Controller-->
+        <!--Lista Ventas View Controller-->
         <scene sceneID="H04-10-sce">
             <objects>
-                <viewController storyboardIdentifier="VentasHostingController" id="HST-04-ven" customClass="VentasHostingController" customModule="tecstore_manager" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ListaVentasViewController" id="HST-04-ven" customClass="ListaVentasViewController" customModule="tecstore_manager" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="H04-12-vew">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="e3M-Yb-g8G"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
+                    <connections>
+                        <segue destination="HST-07-rgv" kind="show" identifier="showRegistroVenta" id="V04-sg-rgv"/>
+                        <segue destination="HST-08-dtv" kind="show" identifier="showDetalleVenta" id="V04-sg-dtv"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="H04-14-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2200" y="3600"/>
+            <point key="canvasLocation" x="3000" y="5400"/>
         </scene>
-        <!--Perfil Hosting Controller-->
+        <!--Perfil View Controller-->
         <scene sceneID="H05-10-sce">
             <objects>
-                <viewController storyboardIdentifier="PerfilHostingController" id="HST-05-prf" customClass="PerfilHostingController" customModule="tecstore_manager" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="PerfilViewController" id="HST-05-prf" customClass="PerfilViewController" customModule="tecstore_manager" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="H05-12-vew">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -846,12 +859,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="H05-14-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2750" y="3600"/>
+            <point key="canvasLocation" x="3700" y="5400"/>
         </scene>
-        <!--Bienvenida Hosting Controller-->
+        <!--Bienvenida View Controller-->
         <scene sceneID="H06-10-sce">
             <objects>
-                <viewController storyboardIdentifier="BienvenidaHostingController" id="HST-06-bvn" customClass="BienvenidaHostingController" customModule="tecstore_manager" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="BienvenidaViewController" id="HST-06-bvn" customClass="BienvenidaViewController" customModule="tecstore_manager" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="H06-12-vew">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -861,12 +874,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="H06-14-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="0.0" y="3600"/>
+            <point key="canvasLocation" x="200" y="5400"/>
         </scene>
-        <!--Registro Venta Hosting Controller-->
+        <!--Registro Venta View Controller-->
         <scene sceneID="H07-10-sce">
             <objects>
-                <viewController storyboardIdentifier="RegistroVentaHostingController" id="HST-07-rgv" customClass="RegistroVentaHostingController" customModule="tecstore_manager" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="RegistroVentaViewController" id="HST-07-rgv" customClass="RegistroVentaViewController" customModule="tecstore_manager" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="H07-12-vew">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -876,12 +889,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="H07-14-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1100" y="3600"/>
+            <point key="canvasLocation" x="1600" y="5400"/>
         </scene>
-        <!--Detalle Venta Hosting Controller-->
+        <!--Detalle Venta View Controller-->
         <scene sceneID="H08-10-sce">
             <objects>
-                <viewController storyboardIdentifier="DetalleVentaHostingController" id="HST-08-dtv" customClass="DetalleVentaHostingController" customModule="tecstore_manager" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="DetalleVentaViewController" id="HST-08-dtv" customClass="DetalleVentaViewController" customModule="tecstore_manager" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="H08-12-vew">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -891,12 +904,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="H08-14-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1650" y="3600"/>
+            <point key="canvasLocation" x="2300" y="5400"/>
         </scene>
-        <!--Busquedas Hosting Controller-->
+        <!--Busquedas View Controller-->
         <scene sceneID="H09-10-sce">
             <objects>
-                <viewController storyboardIdentifier="BusquedasHostingController" id="HST-09-bsq" customClass="BusquedasHostingController" customModule="tecstore_manager" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="BusquedasViewController" id="HST-09-bsq" customClass="BusquedasViewController" customModule="tecstore_manager" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="H09-12-vew">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -906,12 +919,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="H09-14-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3300" y="3600"/>
+            <point key="canvasLocation" x="4400" y="5400"/>
         </scene>
-        <!--Reportes Hosting Controller-->
+        <!--Reportes View Controller-->
         <scene sceneID="H10-10-sce">
             <objects>
-                <viewController storyboardIdentifier="ReportesHostingController" id="HST-10-rpt" customClass="ReportesHostingController" customModule="tecstore_manager" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ReportesViewController" id="HST-10-rpt" customClass="ReportesViewController" customModule="tecstore_manager" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="H10-12-vew">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -921,12 +934,28 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="H10-14-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3850" y="3600"/>
+            <point key="canvasLocation" x="5100" y="5400"/>
+        </scene>
+        <!--Stock Bajo View Controller-->
+        <scene sceneID="H11-10-sce">
+            <objects>
+                <viewController storyboardIdentifier="StockBajoViewController" id="HST-11-stk" customClass="StockBajoViewController" customModule="tecstore_manager" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="H11-12-vew">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="H11-sa-xxx"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="H11-14-frs" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5800" y="5400"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="III-90-seg"/>
-        <segue reference="DDD-50-sg1"/>
+        <segue reference="I01-sg-nvt"/>
+        <segue reference="GGG-50-sg1"/>
+        <segue reference="FFF-80-seg"/>
     </inferredMetricsTieBreakers>
     <resources>
         <systemColor name="systemBackgroundColor">

@@ -13,12 +13,23 @@ final class SeederService {
     private let persistence = PersistenceController.shared
     private var context: NSManagedObjectContext { persistence.viewContext }
 
-    private let seededKey = "seederCompleted_v3"
+    private let seededKey = "seederCompleted_v6"
 
     func seedIfNeeded() {
         guard !UserDefaults.standard.bool(forKey: seededKey) else { return }
+        clearAllEntities()
         seed()
         UserDefaults.standard.set(true, forKey: seededKey)
+    }
+
+    private func clearAllEntities() {
+        let entities = ["DetalleVenta", "Venta", "Ubicacion", "Cliente", "Producto", "Usuario"]
+        for name in entities {
+            let req = NSFetchRequest<NSFetchRequestResult>(entityName: name)
+            let del = NSBatchDeleteRequest(fetchRequest: req)
+            _ = try? context.execute(del)
+        }
+        context.reset()
     }
 
     private func seed() {
@@ -27,7 +38,7 @@ final class SeederService {
         let clientes  = seedClientes()
         seedVentas(usuarios: usuarios, productos: productos, clientes: clientes)
         persistence.save()
-        print("SeederService: base de datos inicializada (v3).")
+        print("SeederService: base de datos inicializada (v4).")
     }
 
     // ─────────────────────────────────────────
@@ -104,24 +115,75 @@ final class SeederService {
 
     // ─────────────────────────────────────────
     // MARK: - Clientes (13)
+    //
+    // lat/lon nil  → no Ubicacion at all (test: add location from scratch)
+    // ref nil      → coordinates set but no address text (test: reverse geocode on drag)
+    // ref non-nil  → full address + coords (test: forward geocode on type)
     // ─────────────────────────────────────────
 
     @discardableResult
     private func seedClientes() -> [Cliente] {
-        let data: [(dni: String, nom: String, ape: String, tel: String?, mail: String?, lat: Double, lon: Double, ref: String)] = [
-            ("72345678", "Luis",      "Ramírez Torres",      "987654321", "luis.ramirez@gmail.com",     -12.1197, -77.0298, "Av. Larco 1234, Miraflores"),
-            ("81234567", "María",     "Quispe Huanca",       "976543210", nil,                           -12.1100, -77.0200, "Jr. Huancavelica 456, Cercado"),
-            ("69876543", "José",      "Flores Vega",         nil,         "jose.flores@outlook.com",    -12.0800, -77.0500, "Av. La Marina 789, San Miguel"),
-            ("75432198", "Carmen",    "Soto Alvarado",       "965432109", "carmen.s@hotmail.com",        -12.1383, -77.0059, "Calle Los Álamos 321, Surco"),
-            ("83210987", "Roberto",   "Chinchay Mamani",     "954321098", nil,                           -12.0972, -77.0346, "Av. Javier Prado 567, San Isidro"),
-            ("74123456", "Valeria",   "Huaman Ccopa",        "943210987", "valeria.h@gmail.com",         -12.0783, -76.9272, "Av. Melgarejo 890, La Molina"),
-            ("61987654", "Andrés",    "Paredes Salinas",     "932109876", "andres.p@yahoo.com",          -12.1424, -77.0209, "Jr. Junín 234, Barranco"),
-            ("78654321", "Lucía",     "Mendez Rojas",        "921098765", nil,                           -12.0785, -77.0519, "Av. Brasil 678, Jesús María"),
-            ("85321098", "Miguel",    "Quispe Condori",      "910987654", "miguel.q@gmail.com",          -12.0850, -77.0368, "Calle Lince 123, Lince"),
-            ("67890123", "Patricia",  "Vera Campos",         nil,         "patricia.v@hotmail.com",      -12.0778, -77.0595, "Av. Bolívar 456, Pueblo Libre"),
-            ("72901234", "Fernando",  "Castillo Aguirre",    "899876543", "fernando.c@gmail.com",        -12.0464, -77.0428, "Av. Arequipa 789, Miraflores"),
-            ("80765432", "Ana Lucía", "Pinto Herrera",       "888765432", nil,                           -12.0600, -77.0350, "Calle Las Flores 234, San Borja"),
-            ("65432109", "Diego",     "Romero Navarro",      "877654321", "diego.r@outlook.com",         -12.0900, -77.0100, "Av. Universitaria 901, SMP"),
+        struct ClienteSeed {
+            let dni: String; let nom: String; let ape: String
+            let tel: String?; let mail: String?
+            let lat: Double?; let lon: Double?; let ref: String?
+        }
+        let data: [ClienteSeed] = [
+            // Full address + coordinates (forward geocoding test)
+            .init(dni: "72345678", nom: "Luis",      ape: "Ramírez Torres",
+                  tel: "987654321", mail: "luis.ramirez@gmail.com",
+                  lat: -12.11929,   lon: -77.03098,
+                  ref: "Av. Larco 1150, Miraflores, Lima"),
+            .init(dni: "69876543", nom: "José",      ape: "Flores Vega",
+                  tel: nil,         mail: "jose.flores@outlook.com",
+                  lat: -12.07748,   lon: -77.08290,
+                  ref: "Av. La Marina 2595, San Miguel, Lima"),
+            .init(dni: "75432198", nom: "Carmen",    ape: "Soto Alvarado",
+                  tel: "965432109", mail: "carmen.s@hotmail.com",
+                  lat: -12.13826,   lon: -77.00587,
+                  ref: "Av. Caminos del Inca 460, Santiago de Surco, Lima"),
+            .init(dni: "74123456", nom: "Valeria",   ape: "Huaman Ccopa",
+                  tel: "943210987", mail: "valeria.h@gmail.com",
+                  lat: -12.07831,   lon: -76.92717,
+                  ref: "Av. La Molina 1634, La Molina, Lima"),
+            .init(dni: "61987654", nom: "Andrés",    ape: "Paredes Salinas",
+                  tel: "932109876", mail: "andres.p@yahoo.com",
+                  lat: -12.14248,   lon: -77.02088,
+                  ref: "Jr. Junín 282, Barranco, Lima"),
+            .init(dni: "85321098", nom: "Miguel",    ape: "Quispe Condori",
+                  tel: "910987654", mail: "miguel.q@gmail.com",
+                  lat: -12.08531,   lon: -77.03524,
+                  ref: "Av. Arequipa 2450, Lince, Lima"),
+            .init(dni: "72901234", nom: "Fernando",  ape: "Castillo Aguirre",
+                  tel: "899876543", mail: "fernando.c@gmail.com",
+                  lat: -12.12283,   lon: -77.03217,
+                  ref: "Av. José Larco 400, Miraflores, Lima"),
+            .init(dni: "65432109", nom: "Diego",     ape: "Romero Navarro",
+                  tel: "877654321", mail: "diego.r@outlook.com",
+                  lat: -11.99306,   lon: -77.06197,
+                  ref: "Av. Universitaria 1801, Los Olivos, Lima"),
+            // Coordinates only — no address text (drag pin → reverse geocode)
+            .init(dni: "81234567", nom: "María",     ape: "Quispe Huanca",
+                  tel: "976543210", mail: nil,
+                  lat: -12.10978,   lon: -77.04302,
+                  ref: nil),
+            .init(dni: "83210987", nom: "Roberto",   ape: "Chinchay Mamani",
+                  tel: "954321098", mail: nil,
+                  lat: -12.09718,   lon: -77.03458,
+                  ref: nil),
+            .init(dni: "78654321", nom: "Lucía",     ape: "Mendez Rojas",
+                  tel: "921098765", mail: nil,
+                  lat: -12.07852,   lon: -77.05192,
+                  ref: nil),
+            // No location at all (add location from scratch)
+            .init(dni: "67890123", nom: "Patricia",  ape: "Vera Campos",
+                  tel: nil,         mail: "patricia.v@hotmail.com",
+                  lat: nil,         lon: nil,
+                  ref: nil),
+            .init(dni: "80765432", nom: "Ana Lucía", ape: "Pinto Herrera",
+                  tel: "888765432", mail: nil,
+                  lat: nil,         lon: nil,
+                  ref: nil),
         ]
 
         return data.map { item in
@@ -135,13 +197,17 @@ final class SeederService {
             c.estado         = "Activo"
             c.fechaRegistro  = daysAgo(Int.random(in: 5...45))
 
-            let ub                 = Ubicacion(context: context)
-            ub.idUbicacion         = UUID()
-            ub.latitud             = NSDecimalNumber(value: item.lat)
-            ub.longitud            = NSDecimalNumber(value: item.lon)
-            ub.direccionReferencia = item.ref
-            ub.fechaRegistro       = c.fechaRegistro
-            ub.cliente             = c
+            c.direccion = item.ref   // shown in the detail view
+
+            if let lat = item.lat, let lon = item.lon {
+                let ub                 = Ubicacion(context: context)
+                ub.idUbicacion         = UUID()
+                ub.latitud             = NSDecimalNumber(value: lat)
+                ub.longitud            = NSDecimalNumber(value: lon)
+                ub.direccionReferencia = item.ref
+                ub.fechaRegistro       = c.fechaRegistro
+                ub.cliente             = c
+            }
 
             return c
         }
@@ -185,8 +251,9 @@ final class SeederService {
             var items: [(product: Producto, qty: Int32, price: NSDecimalNumber)] = []
 
             for product in pool {
-                let qty: Int32 = Int32.random(in: 1...min(2, product.stock))
-                guard product.stock >= qty else { continue }
+                let maxQty = min(2, product.stock)
+                guard maxQty >= 1 else { continue }
+                let qty: Int32 = Int32.random(in: 1...maxQty)
                 items.append((product, qty, product.precio ?? NSDecimalNumber.zero))
             }
             guard !items.isEmpty else { continue }
