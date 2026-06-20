@@ -1,8 +1,9 @@
 import Foundation
-import CoreData
+import FirebaseAuth
+import FirebaseFirestore
 
 // ─────────────────────────────────────────────
-// MARK: - ServiceError  (usado por todos los Services)
+// MARK: - ServiceError  (used by all Services)
 // ─────────────────────────────────────────────
 
 enum ServiceError: LocalizedError {
@@ -47,81 +48,73 @@ final class AuthService {
     static let shared = AuthService()
     private init() {}
 
-    private let persistence = PersistenceController.shared
-    private var context: NSManagedObjectContext { persistence.viewContext }
-
     // ─────────────────────────────────────────
     // MARK: - Session State
     // ─────────────────────────────────────────
 
-    /// True when a user UUID is persisted in UserDefaults.
+    /// Synchronous — Firebase Auth caches the user locally.
     var hasActiveSession: Bool {
-        UserDefaults.standard.string(forKey: UserDefaultsKeys.activeUserID) != nil
+        Auth.auth().currentUser != nil
     }
 
-    /// Resolves the logged-in Usuario from Core Data using the stored UUID.
-    var currentUser: Usuario? {
-        guard
-            let raw = UserDefaults.standard.string(forKey: UserDefaultsKeys.activeUserID),
-            let id  = UUID(uuidString: raw)
-        else { return nil }
-        return persistence.fetch(Usuario.byID(id)).first
+    /// Async — profile fields live in Firestore, not in Firebase Auth.
+    func currentUsuario() async throws -> FBUsuario? {
+        guard let uid = Auth.auth().currentUser?.uid else { return nil }
+        return try await FirestoreService.fetch(Collections.usuarios, id: uid, as: FBUsuario.self)
     }
 
     // ─────────────────────────────────────────
     // MARK: - Login
     // ─────────────────────────────────────────
 
-    /// Validates credentials and saves the session to UserDefaults.
+    /// Signs in with email/password via Firebase Auth.
     ///
-    /// - Throws: `ServiceError.invalidCredentials` on email/password mismatch.
-    func login(email: String, password: String) throws {
-        let normalizedEmail = email.lowercased().trimmed
-        let matches         = persistence.fetch(Usuario.byEmail(normalizedEmail))
-
-        guard let user = matches.first,
-              PasswordHasher.verify(password, against: user.passwordHashValue) else {
+    /// - Throws: `ServiceError.invalidCredentials` on failure.
+    func login(email: String, password: String) async throws {
+        do {
+            _ = try await Auth.auth().signIn(withEmail: email.lowercased().trimmed, password: password)
+        } catch {
             throw ServiceError.invalidCredentials
         }
-
-        saveSession(userID: user.id)
     }
 
     // ─────────────────────────────────────────
     // MARK: - Register
     // ─────────────────────────────────────────
 
-    /// Creates a new user, starts a session, and returns the new entity.
+    /// Creates a Firebase Auth user and writes their profile doc to /usuarios/{uid}.
     ///
-    /// - Throws: `ServiceError.duplicateEmail` if the address is already taken.
+    /// - Throws: `ServiceError.duplicateEmail` if the email is already taken.
+    /// - Returns: The newly created `FBUsuario`.
     @discardableResult
-    func register(fullName: String, email: String, password: String) throws -> Usuario {
-        let normalizedEmail = email.lowercased().trimmed
-
-        guard persistence.fetch(Usuario.byEmail(normalizedEmail)).isEmpty else {
+    func register(fullName: String, email: String, password: String) async throws -> FBUsuario {
+        let normalized = email.lowercased().trimmed
+        let result: AuthDataResult
+        do {
+            result = try await Auth.auth().createUser(withEmail: normalized, password: password)
+        } catch {
             throw ServiceError.duplicateEmail
         }
 
-        let user            = Usuario(context: context)
-        user.idUsuario      = UUID()
-        user.nombreCompleto = fullName.trimmed
-        user.correo         = normalizedEmail
-        user.passwordHash   = PasswordHasher.hash(password)
-        user.fechaRegistro  = Date()
-        persistence.save()
-
-        saveSession(userID: user.id)
-        return user
+        let uid = result.user.uid
+        let usuario = FBUsuario(
+            id: uid,
+            nombreCompleto: fullName.trimmed,
+            correo: normalized,
+            fotoPerfil: nil,
+            fechaRegistro: Date()
+        )
+        try await FirestoreService.set(Collections.usuarios, id: uid, usuario)
+        return usuario
     }
 
     // ─────────────────────────────────────────
     // MARK: - Logout
     // ─────────────────────────────────────────
 
-    /// Clears the session and posts `.userDidLogout` so SceneDelegate
-    /// can transition to the auth flow.
+    /// Signs out of Firebase Auth and posts `.userDidLogout`.
     func logout() {
-        UserDefaults.standard.removeObject(forKey: UserDefaultsKeys.activeUserID)
+        try? Auth.auth().signOut()
         NotificationCenter.default.post(name: .userDidLogout, object: nil)
     }
 
@@ -129,37 +122,33 @@ final class AuthService {
     // MARK: - Change Password
     // ─────────────────────────────────────────
 
-    /// Verifies the current password before replacing it with a new SHA-256 hash.
+    /// Reauthenticates with the current password, then updates to the new one.
     ///
-    /// - Throws: `ServiceError.notFound` or `ServiceError.invalidCredentials`.
-    func changePassword(current: String, new: String) throws {
-        guard let user = currentUser else { throw ServiceError.notFound }
+    /// - Throws: `ServiceError.invalidCredentials` when reauth fails.
+    func changePassword(current: String, new: String) async throws {
+        guard let user = Auth.auth().currentUser,
+              let email = user.email else { throw ServiceError.notFound }
 
-        guard PasswordHasher.verify(current, against: user.passwordHashValue) else {
+        let credential = EmailAuthProvider.credential(withEmail: email, password: current)
+        do {
+            try await user.reauthenticate(with: credential)
+        } catch {
             throw ServiceError.invalidCredentials
         }
-
-        user.passwordHash = PasswordHasher.hash(new)
-        persistence.save()
+        try await user.updatePassword(to: new)
     }
 
     // ─────────────────────────────────────────
     // MARK: - Update Profile
     // ─────────────────────────────────────────
 
-    /// Updates the display name and optionally the profile photo path.
-    func updateProfile(fullName: String, photoPath: String?) {
-        guard let user = currentUser else { return }
-        if fullName.isNotBlank { user.nombreCompleto = fullName.trimmed }
-        if let path = photoPath, path.isNotBlank { user.fotoPerfil = path }
-        persistence.save()
-    }
-
-    // ─────────────────────────────────────────
-    // MARK: - Private Helpers
-    // ─────────────────────────────────────────
-
-    private func saveSession(userID: UUID) {
-        UserDefaults.standard.set(userID.uuidString, forKey: UserDefaultsKeys.activeUserID)
+    /// Updates `nombreCompleto` and/or `fotoPerfil` in the /usuarios/{uid} Firestore doc.
+    func updateProfile(fullName: String, photoPath: String?) async throws {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        var fields: [String: Any] = [:]
+        if fullName.isNotBlank { fields["nombreCompleto"] = fullName.trimmed }
+        if let p = photoPath, p.isNotBlank { fields["fotoPerfil"] = p }
+        guard !fields.isEmpty else { return }
+        try await FirestoreService.update(Collections.usuarios, id: uid, fields)
     }
 }

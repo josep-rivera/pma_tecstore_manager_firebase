@@ -14,13 +14,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ) {
         guard let windowScene = scene as? UIWindowScene else { return }
 
-        // Seed initial data on first launch
-        SeederService.shared.seedIfNeeded()
-
         // Configure global UIKit appearance
         AppStyle.configureGlobalAppearance()
 
-        // Build window
+        // Build window — hasActiveSession is sync (Firebase Auth local cache)
         let window = UIWindow(windowScene: windowScene)
         self.window = window
         window.rootViewController = makeRootViewController()
@@ -28,6 +25,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         // Apply saved dark mode preference
         applyStoredAppearance()
+
+        // Seed initial data on first launch (async — runs after window is visible)
+        Task {
+            try? await SeederService.shared.seedIfNeeded()
+        }
 
         // Listen for logout events posted from SwiftUI screens
         NotificationCenter.default.addObserver(
@@ -117,5 +119,5 @@ extension Notification.Name {
 
 enum UserDefaultsKeys {
     static let darkModeEnabled  = "darkModeEnabled"
-    static let activeUserID     = "activeUserID"
+    static let activeUserID     = "activeUserID"   // kept for migration safety; no longer written
 }

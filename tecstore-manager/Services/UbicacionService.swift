@@ -1,5 +1,5 @@
 import Foundation
-import CoreData
+import FirebaseFirestore
 import CoreLocation
 
 // ─────────────────────────────────────────────
@@ -12,39 +12,46 @@ final class UbicacionService {
     static let shared = UbicacionService()
     private init() {}
 
-    private let persistence = PersistenceController.shared
-    private var context: NSManagedObjectContext { persistence.viewContext }
+    private let db = Firestore.firestore()
+
+    // ─────────────────────────────────────────
+    // MARK: - Fetch
+    // ─────────────────────────────────────────
+
+    /// Returns the embedded `ubicacion` map from the client's Firestore document.
+    /// This is derived from the parent `FBCliente`; no separate collection exists.
+    func fetchUbicacion(clienteID: String) async throws -> FBUbicacion? {
+        let cliente = try await FirestoreService.fetch(
+            Collections.clientes, id: clienteID, as: FBCliente.self
+        )
+        return cliente?.ubicacion
+    }
 
     // ─────────────────────────────────────────
     // MARK: - Save / Update  (upsert)
     // ─────────────────────────────────────────
 
-    /// Persist the map pin for a client via a dedicated Ubicacion entity.
+    /// Persist (or replace) the `ubicacion` nested map on the parent `/clientes/{id}` document.
     ///
-    /// - Returns: The created or updated `Ubicacion`.
-    @discardableResult
+    /// - Throws: `ServiceError.notFound` if the client has no document ID.
     func saveOrUpdate(
-        latitude:  Double,
-        longitude: Double,
-        reference: String?,
-        cliente:   Cliente
-    ) -> Ubicacion {
-        let ubicacion: Ubicacion
-        if let existing = cliente.ubicacion {
-            ubicacion = existing
-        } else {
-            let nuevo           = Ubicacion(context: context)
-            nuevo.idUbicacion   = UUID()
-            nuevo.fechaRegistro = Date()
-            nuevo.cliente       = cliente
-            ubicacion = nuevo
-        }
-        ubicacion.latitud             = NSDecimalNumber(value: latitude)
-        ubicacion.longitud            = NSDecimalNumber(value: longitude)
-        ubicacion.direccionReferencia = reference?.trimmed.isNotBlank == true ? reference?.trimmed : nil
-        ubicacion.fechaRegistro       = Date()
-        persistence.save()
-        return ubicacion
+        latitude:   Double,
+        longitude:  Double,
+        reference:  String?,
+        clienteID:  String
+    ) async throws {
+        let ref = reference?.trimmed.isNotBlank == true ? reference?.trimmed : nil
+        let ubicacionMap: [String: Any] = [
+            "latitud":             latitude,
+            "longitud":            longitude,
+            "direccionReferencia": ref as Any? ?? NSNull(),
+            "fechaRegistro":       Timestamp(date: Date())
+        ]
+        try await FirestoreService.update(
+            Collections.clientes,
+            id: clienteID,
+            ["ubicacion": ubicacionMap]
+        )
     }
 
     // ─────────────────────────────────────────
@@ -52,10 +59,7 @@ final class UbicacionService {
     // ─────────────────────────────────────────
 
     /// Returns the device's current CLLocationCoordinate2D via a one-shot
-    /// CLLocationManager callback.  Used as the "starting point" for the map
-    /// pin — the user then drags to the exact position.
-    ///
-    /// The completion is called on the main thread.
+    /// CLLocationManager callback. The completion is called on the main thread.
     /// If location permission is denied, the completion is called with nil.
     func requestCurrentDeviceLocation(completion: @escaping (CLLocationCoordinate2D?) -> Void) {
         DeviceLocationHelper.shared.requestOnce(completion: completion)

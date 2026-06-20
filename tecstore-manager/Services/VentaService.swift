@@ -1,5 +1,5 @@
 import Foundation
-import CoreData
+import FirebaseFirestore
 
 // ─────────────────────────────────────────────
 // MARK: - VentaItem
@@ -9,12 +9,12 @@ import CoreData
 /// Used by `RegistroVentaViewModel` to build the cart before confirming.
 struct VentaItem: Identifiable {
     let id              = UUID()            // SwiftUI list identity
-    let producto:         Producto
+    let producto:         FBProducto
     var cantidad:         Int
-    var precioUnitario:   Decimal           // snapshot at time of sale
+    var precioUnitario:   Double           // snapshot at time of sale
 
     /// cantidad × precioUnitario
-    var subtotalLinea: Decimal { precioUnitario * Decimal(cantidad) }
+    var subtotalLinea: Double { precioUnitario * Double(cantidad) }
 
     /// Display string for the subtotal.
     var subtotalDisplay: String { subtotalLinea.asCurrency }
@@ -33,135 +33,168 @@ final class VentaService {
     static let shared = VentaService()
     private init() {}
 
-    private let persistence = PersistenceController.shared
-    private var context: NSManagedObjectContext { persistence.viewContext }
+    private let db = Firestore.firestore()
 
     // ─────────────────────────────────────────
     // MARK: - Fetch
     // ─────────────────────────────────────────
 
     /// All sales, newest first.
-    func fetchAll() -> [Venta] {
-        persistence.fetch(Venta.all())
+    func fetchAll() async throws -> [FBVenta] {
+        let snap = try await db.collection(Collections.ventas)
+            .order(by: "fechaVenta", descending: true)
+            .getDocuments()
+        return try snap.documents.map { try $0.data(as: FBVenta.self) }
     }
 
-    /// Single sale by primary key, or nil.
-    func fetch(byID id: UUID) -> Venta? {
-        persistence.fetch(Venta.byID(id)).first
+    /// Single sale by document ID, or nil.
+    func fetch(byID id: String) async throws -> FBVenta? {
+        return try await FirestoreService.fetch(Collections.ventas, id: id, as: FBVenta.self)
     }
 
     /// Sales whose fechaVenta falls inside the given range (inclusive).
-    func fetch(from start: Date, to end: Date) -> [Venta] {
-        // Extend `end` to include the full last day
-        let endOfDay = Calendar.current.date(bySettingHour: 23, minute: 59, second: 59, of: end) ?? end
-        return persistence.fetch(Venta.byDateRange(from: start, to: endOfDay))
+    func fetch(from start: Date, to end: Date) async throws -> [FBVenta] {
+        let endOfDay = Calendar.current.date(
+            bySettingHour: 23, minute: 59, second: 59, of: end
+        ) ?? end
+        let snap = try await db.collection(Collections.ventas)
+            .whereField("fechaVenta", isGreaterThanOrEqualTo: Timestamp(date: start))
+            .whereField("fechaVenta", isLessThanOrEqualTo: Timestamp(date: endOfDay))
+            .order(by: "fechaVenta", descending: true)
+            .getDocuments()
+        return try snap.documents.map { try $0.data(as: FBVenta.self) }
     }
 
     /// The single most recent sale, or nil if no sales exist yet.
-    func fetchMostRecent() -> Venta? {
-        persistence.fetch(Venta.mostRecent()).first
-    }
-
-    // ─────────────────────────────────────────
-    // MARK: - Search
-    // ─────────────────────────────────────────
-
-    /// Search by client's nombre, apellidos, or DNI.
-    /// Returns all sales when `text` is empty.
-    func search(text: String) -> [Venta] {
-        let trimmed = text.trimmed
-        guard trimmed.isNotBlank else { return fetchAll() }
-        return persistence.fetch(Venta.search(text: trimmed))
+    func fetchMostRecent() async throws -> FBVenta? {
+        let snap = try await db.collection(Collections.ventas)
+            .order(by: "fechaVenta", descending: true)
+            .limit(to: 1)
+            .getDocuments()
+        return try snap.documents.first.map { try $0.data(as: FBVenta.self) }
     }
 
     // ─────────────────────────────────────────
     // MARK: - Register
     // ─────────────────────────────────────────
 
-    /// Create a new sale, record its line items, and deduct stock.
+    /// Create a new sale, record its line items, and atomically decrement stock.
     ///
     /// Business rules enforced:
     /// - Cart must contain at least one item.
-    /// - Each item's `cantidad` must not exceed the product's current stock.
+    /// - Each item's stock is re-fetched from Firestore before writing.
     /// - `subtotalLinea` = cantidad × precioUnitario (snapshot).
     /// - `subtotal` = sum of all subtotalLinea.
     /// - `igv`     = subtotal × 0.18.
     /// - `total`   = subtotal + igv.
+    /// - Venta doc + stock decrements are committed in a single WriteBatch.
     ///
-    /// - Throws: `ServiceError.emptyCart` or `ServiceError.insufficientStock`.
-    /// - Returns: The newly persisted `Venta`.
+    /// - Throws: `ServiceError.emptyCart`, `ServiceError.insufficientStock`, or Firestore errors.
+    /// - Returns: The document ID of the newly created sale.
     @discardableResult
     func register(
-        cliente:  Cliente,
-        usuario:  Usuario,
-        items:    [VentaItem]
-    ) throws -> Venta {
+        cliente:         FBCliente,
+        usuario:         FBUsuario,
+        items:           [VentaItem]
+    ) async throws -> String {
 
-        // 1. Validate cart is not empty
+        // 1. Validate cart
         guard !items.isEmpty else { throw ServiceError.emptyCart }
 
-        // 2. Validate stock for every item (check all before writing anything)
+        // 2. Re-fetch each product to verify current stock (avoid stale cart data)
+        var freshProducts: [String: FBProducto] = [:]
         for item in items {
-            let available = item.producto.stockInt
-            guard available >= item.cantidad else {
+            guard let productID = item.producto.id else {
+                throw ServiceError.unknown("Producto sin ID: \(item.producto.nombre)")
+            }
+            guard let fresh = try await FirestoreService.fetch(
+                Collections.productos, id: productID, as: FBProducto.self
+            ) else {
+                throw ServiceError.notFound
+            }
+            guard fresh.stock >= item.cantidad else {
                 throw ServiceError.insufficientStock(
-                    productName: item.producto.productName,
-                    available: available
+                    productName: fresh.nombre,
+                    available: fresh.stock
                 )
             }
+            freshProducts[productID] = fresh
         }
 
-        // 3. Calculate totals (single source of truth, rounded to cents)
+        // 3. Build embedded detalles with denormalized product snapshots
+        let detalles: [FBDetalleVenta] = items.compactMap { item in
+            guard let productID = item.producto.id,
+                  let fresh = freshProducts[productID] else { return nil }
+            return FBDetalleVenta(
+                id:                UUID().uuidString,
+                productoId:        productID,
+                productoNombre:    fresh.nombre,
+                productoCodigo:    fresh.codigo,
+                productoCategoria: fresh.categoria,
+                cantidad:          item.cantidad,
+                precioUnitario:    item.precioUnitario,
+                subtotalLinea:     item.subtotalLinea
+            )
+        }
+
+        // 4. Calculate totals
         let (subtotal, igv, total) = calculateTotals(for: items)
 
-        // 4. Create the Venta header
-        let venta            = Venta(context: context)
-        venta.idVenta        = UUID()
-        venta.fechaVenta     = Date()
-        venta.subtotal       = NSDecimalNumber(decimal: subtotal)
-        venta.igv            = NSDecimalNumber(decimal: igv)
-        venta.total          = NSDecimalNumber(decimal: total)
-        venta.estado         = "Completada"
-        venta.cliente        = cliente
-        venta.usuario        = usuario
+        // 5. Build the FBVenta
+        let ventaRef = db.collection(Collections.ventas).document()
+        let venta = FBVenta(
+            id:             ventaRef.documentID,
+            fechaVenta:     Date(),
+            subtotal:       subtotal,
+            igv:            igv,
+            total:          total,
+            estado:         "Completada",
+            clienteId:      cliente.id,
+            clienteNombre:  cliente.fullName,
+            clienteDNI:     cliente.dni,
+            usuarioId:      usuario.id,
+            vendedorNombre: usuario.nombreCompleto,
+            detalles:       detalles
+        )
 
-        // 5. Create DetalleVenta records and deduct stock
+        // 6. Build WriteBatch: venta doc + stock decrements
+        let batch = FirestoreService.batch()
+
+        // Encode and set the venta document
+        try batch.setData(from: venta, forDocument: ventaRef)
+
+        // Decrement stock for each product
         for item in items {
-            let detalle                = DetalleVenta(context: context)
-            detalle.idDetalleVenta     = UUID()
-            detalle.cantidad           = Int32(item.cantidad)
-            detalle.precioUnitario     = NSDecimalNumber(decimal: item.precioUnitario)
-            detalle.subtotalLinea      = NSDecimalNumber(decimal: item.subtotalLinea)
-            detalle.venta              = venta
-            detalle.producto           = item.producto
-
-            // Deduct stock — product is already in the viewContext
-            item.producto.stock       -= Int32(item.cantidad)
+            guard let productID = item.producto.id,
+                  let fresh = freshProducts[productID] else { continue }
+            let newStock = fresh.stock - item.cantidad
+            let ref = db.collection(Collections.productos).document(productID)
+            batch.updateData(["stock": newStock], forDocument: ref)
         }
 
-        // 6. Single save for the entire transaction
-        persistence.save()
+        // 7. Commit atomically
+        try await batch.commit()
+
         NotificationCenter.default.post(name: .salesDataChanged, object: nil)
-        return venta
+        return ventaRef.documentID
     }
 
     // ─────────────────────────────────────────
-    // MARK: - Cart Helpers  (convenience for ViewModel)
+    // MARK: - Cart Helpers
     // ─────────────────────────────────────────
 
     /// Build a `VentaItem` from a product using its current price as the snapshot.
-    func buildItem(product: Producto, cantidad: Int) -> VentaItem {
-        VentaItem(producto: product, cantidad: cantidad, precioUnitario: product.priceDecimal)
+    func buildItem(product: FBProducto, cantidad: Int) -> VentaItem {
+        VentaItem(producto: product, cantidad: cantidad, precioUnitario: product.precio)
     }
 
     /// IGV (sales tax) rate applied to every sale.
-    static let igvRate = Decimal(18) / Decimal(100)   // 18 %
+    static let igvRate: Double = 0.18   // 18 %
 
     /// Recalculate cart totals from a list of `VentaItem`.
-    /// All amounts are rounded to cents so stored and displayed values match.
-    func calculateTotals(for items: [VentaItem]) -> (subtotal: Decimal, igv: Decimal, total: Decimal) {
-        let subtotal = items.reduce(Decimal(0)) { $0 + $1.subtotalLinea }.roundedToCents
-        let igv      = (subtotal * Self.igvRate).roundedToCents
+    func calculateTotals(for items: [VentaItem]) -> (subtotal: Double, igv: Double, total: Double) {
+        let subtotal = (items.reduce(0.0) { $0 + $1.subtotalLinea } * 100).rounded() / 100
+        let igv      = (subtotal * Self.igvRate * 100).rounded() / 100
         let total    = subtotal + igv
         return (subtotal, igv, total)
     }

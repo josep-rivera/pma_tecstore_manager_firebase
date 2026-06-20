@@ -1,5 +1,5 @@
 import Foundation
-import CoreData
+import FirebaseFirestore
 
 // ─────────────────────────────────────────────
 // MARK: - ProductoService
@@ -11,8 +11,7 @@ final class ProductoService {
     static let shared = ProductoService()
     private init() {}
 
-    private let persistence = PersistenceController.shared
-    private var context: NSManagedObjectContext { persistence.viewContext }
+    private let db = Firestore.firestore()
 
     // ─────────────────────────────────────────
     // MARK: - Fetch
@@ -20,62 +19,59 @@ final class ProductoService {
 
     /// All products, sorted by name.
     /// - Parameter onlyActive: when true, excludes products with estado == "Inactivo".
-    func fetchAll(onlyActive: Bool = false) -> [Producto] {
-        persistence.fetch(Producto.all(onlyActive: onlyActive))
-    }
-
-    /// Single product by primary key, or nil if not found.
-    func fetch(byID id: UUID) -> Producto? {
-        persistence.fetch(Producto.byID(id)).first
-    }
-
-    // ─────────────────────────────────────────
-    // MARK: - Search & Filter
-    // ─────────────────────────────────────────
-
-    /// Full-text search across nombre, codigo, and categoria.
-    /// Returns all products when `text` is empty.
-    func search(text: String, onlyActive: Bool = false) -> [Producto] {
-        let trimmed = text.trimmed
-        guard trimmed.isNotBlank else { return fetchAll(onlyActive: onlyActive) }
-        return persistence.fetch(Producto.search(text: trimmed, onlyActive: onlyActive))
-    }
-
-    /// Filter by a specific category from `ProductCategory`.
-    func filter(byCategory category: String, onlyActive: Bool = false) -> [Producto] {
-        let req = Producto.fetchRequest()
-        var predicates: [NSPredicate] = [
-            NSPredicate(format: "categoria == %@", category)
-        ]
+    func fetchAll(onlyActive: Bool = false) async throws -> [FBProducto] {
+        var query: Query = db.collection(Collections.productos)
+            .order(by: "nombre")
         if onlyActive {
-            predicates.append(NSPredicate(format: "estado == %@", "Activo"))
+            query = db.collection(Collections.productos)
+                .whereField("estado", isEqualTo: "Activo")
+                .order(by: "nombre")
         }
-        req.predicate       = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-        req.sortDescriptors = [NSSortDescriptor(key: "nombre", ascending: true)]
-        return persistence.fetch(req)
+        let snap = try await query.getDocuments()
+        return try snap.documents.map { try $0.data(as: FBProducto.self) }
     }
 
-    /// Products with stock at or below the threshold, ascending by stock.
-    func fetchLowStock(threshold: Int32 = 5) -> [Producto] {
-        persistence.fetch(Producto.lowStock(threshold: threshold))
+    /// Single product by document ID, or nil if not found.
+    func fetch(byID id: String) async throws -> FBProducto? {
+        return try await FirestoreService.fetch(Collections.productos, id: id, as: FBProducto.self)
     }
 
-    /// The single active product with the fewest units.
-    func fetchLowestStockProduct() -> Producto? {
-        persistence.fetch(Producto.lowestStockProduct()).first
+    // ─────────────────────────────────────────
+    // MARK: - Low Stock
+    // ─────────────────────────────────────────
+
+    /// Active products whose stock is at or below the given threshold.
+    func fetchLowStock(threshold: Int = 5) async throws -> [FBProducto] {
+        let snap = try await db.collection(Collections.productos)
+            .whereField("estado", isEqualTo: "Activo")
+            .whereField("stock", isLessThanOrEqualTo: threshold)
+            .order(by: "stock")
+            .getDocuments()
+        return try snap.documents.map { try $0.data(as: FBProducto.self) }
+    }
+
+    /// The single active product with the fewest units (client-side min after fetchLowStock).
+    func fetchLowestStockProduct() async throws -> FBProducto? {
+        let snap = try await db.collection(Collections.productos)
+            .whereField("estado", isEqualTo: "Activo")
+            .order(by: "stock")
+            .limit(to: 1)
+            .getDocuments()
+        return try snap.documents.first.map { try $0.data(as: FBProducto.self) }
     }
 
     // ─────────────────────────────────────────
     // MARK: - Code Generation
     // ─────────────────────────────────────────
 
-    func generateCode(for category: String) -> String {
+    func generateCode(for category: String) async throws -> String {
         let prefix = categoryPrefix(for: category)
-        let req = Producto.fetchRequest()
-        req.predicate = NSPredicate(format: "codigo BEGINSWITH[c] %@", prefix + "-")
-        let existing = (try? context.fetch(req)) ?? []
-        let maxNum = existing.compactMap { p -> Int? in
-            guard let code = p.codigo else { return nil }
+        let snap = try await db.collection(Collections.productos)
+            .whereField("codigo", isGreaterThanOrEqualTo: prefix + "-")
+            .whereField("codigo", isLessThan: prefix + "-\u{FFFF}")
+            .getDocuments()
+        let maxNum = snap.documents.compactMap { doc -> Int? in
+            guard let code = doc.data()["codigo"] as? String else { return nil }
             let parts = code.split(separator: "-")
             return parts.count == 2 ? Int(parts[1]) : nil
         }.max() ?? 0
@@ -100,62 +96,53 @@ final class ProductoService {
     // MARK: - Validation
     // ─────────────────────────────────────────
 
-    /// True when no other product uses this code (case-insensitive).
-    ///
-    /// Pass `excludingID` during edits to allow keeping the same code.
-    func isCodeUnique(_ code: String, excludingID: UUID? = nil) -> Bool {
+    /// True when no other product uses this code (case-insensitive check done on normalized input).
+    func isCodeUnique(_ code: String, excludingID: String? = nil) async throws -> Bool {
         let normalizedCode = code.trimmed.uppercased()
-        let req = Producto.fetchRequest()
-
-        if let excludeID = excludingID {
-            req.predicate = NSPredicate(
-                format: "codigo ==[cd] %@ AND idProducto != %@",
-                normalizedCode, excludeID as CVarArg
-            )
-        } else {
-            req.predicate = NSPredicate(format: "codigo ==[cd] %@", normalizedCode)
-        }
-
-        req.fetchLimit = 1
-        return persistence.count(req) == 0
+        let snap = try await db.collection(Collections.productos)
+            .whereField("codigo", isEqualTo: normalizedCode)
+            .limit(to: 1)
+            .getDocuments()
+        guard let doc = snap.documents.first else { return true }
+        // If this document is the one being edited, it's still unique.
+        return doc.documentID == excludingID
     }
 
     // ─────────────────────────────────────────
     // MARK: - Create
     // ─────────────────────────────────────────
 
-    /// Insert a new product in the database.
+    /// Insert a new product in Firestore.
     ///
     /// - Throws: `ServiceError.duplicateCode` if the code is already taken.
-    /// - Returns: The newly created `Producto`.
+    /// - Returns: The document ID of the newly created product.
     @discardableResult
     func create(
         code:      String,
         name:      String,
         category:  String,
-        price:     Decimal,
+        price:     Double,
         stock:     Int,
         photoPath: String? = nil
-    ) throws -> Producto {
+    ) async throws -> String {
         let normalizedCode = code.trimmed.uppercased()
 
-        guard isCodeUnique(normalizedCode) else {
+        guard try await isCodeUnique(normalizedCode) else {
             throw ServiceError.duplicateCode(normalizedCode)
         }
 
-        let product           = Producto(context: context)
-        product.idProducto    = UUID()
-        product.codigo        = normalizedCode
-        product.nombre        = name.trimmed
-        product.categoria     = category
-        product.precio        = NSDecimalNumber(decimal: price)
-        product.stock         = Int32(max(0, stock))
-        product.fotoProducto  = photoPath?.trimmed.isNotBlank == true ? photoPath : nil
-        product.estado        = "Activo"
-        product.fechaRegistro = Date()
-
-        persistence.save()
-        return product
+        let producto = FBProducto(
+            id:            nil,
+            codigo:        normalizedCode,
+            nombre:        name.trimmed,
+            categoria:     category,
+            precio:        price,
+            stock:         max(0, stock),
+            fotoProducto:  photoPath?.trimmed.isNotBlank == true ? photoPath : nil,
+            estado:        "Activo",
+            fechaRegistro: Date()
+        )
+        return try await FirestoreService.add(Collections.productos, producto)
     }
 
     // ─────────────────────────────────────────
@@ -165,42 +152,45 @@ final class ProductoService {
     /// Replace all mutable fields on an existing product.
     ///
     /// - Throws: `ServiceError.duplicateCode` if the new code belongs to a different product.
+    ///           `ServiceError.notFound` if the product has no document ID.
     func update(
-        _ product:  Producto,
+        _ producto: FBProducto,
         code:       String,
         name:       String,
         category:   String,
-        price:      Decimal,
+        price:      Double,
         stock:      Int,
         photoPath:  String?,
         estado:     String
-    ) throws {
+    ) async throws {
+        guard let id = producto.id else { throw ServiceError.notFound }
         let normalizedCode = code.trimmed.uppercased()
 
-        if normalizedCode != product.productCode {
-            guard isCodeUnique(normalizedCode) else {
+        if normalizedCode != producto.codigo {
+            guard try await isCodeUnique(normalizedCode, excludingID: id) else {
                 throw ServiceError.duplicateCode(normalizedCode)
             }
         }
 
-        product.codigo       = normalizedCode
-        product.nombre       = name.trimmed
-        product.categoria    = category
-        product.precio       = NSDecimalNumber(decimal: price)
-        product.stock        = Int32(max(0, stock))
-        product.fotoProducto = photoPath?.trimmed.isNotBlank == true ? photoPath : nil
-        product.estado       = estado
-
-        persistence.save()
+        let fields: [String: Any] = [
+            "codigo":        normalizedCode,
+            "nombre":        name.trimmed,
+            "categoria":     category,
+            "precio":        price,
+            "stock":         max(0, stock),
+            "fotoProducto":  photoPath?.trimmed.isNotBlank == true ? photoPath as Any : NSNull(),
+            "estado":        estado
+        ]
+        try await FirestoreService.update(Collections.productos, id: id, fields)
     }
 
     // ─────────────────────────────────────────
     // MARK: - Delete
     // ─────────────────────────────────────────
 
-    /// Physically remove a product from the database (swipe-to-delete).
-    func delete(_ product: Producto) {
-        context.delete(product)
-        persistence.save()
+    /// Remove a product document from Firestore.
+    func delete(_ producto: FBProducto) async throws {
+        guard let id = producto.id else { throw ServiceError.notFound }
+        try await FirestoreService.delete(Collections.productos, id: id)
     }
 }

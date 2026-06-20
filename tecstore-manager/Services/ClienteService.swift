@@ -1,5 +1,5 @@
 import Foundation
-import CoreData
+import FirebaseFirestore
 
 // ─────────────────────────────────────────────
 // MARK: - ClienteService
@@ -11,8 +11,7 @@ final class ClienteService {
     static let shared = ClienteService()
     private init() {}
 
-    private let persistence = PersistenceController.shared
-    private var context: NSManagedObjectContext { persistence.viewContext }
+    private let db = Firestore.firestore()
 
     // ─────────────────────────────────────────
     // MARK: - Fetch
@@ -20,38 +19,30 @@ final class ClienteService {
 
     /// All clients sorted by apellidos.
     /// - Parameter onlyActive: when true, excludes clients with estado == "Inactivo".
-    func fetchAll(onlyActive: Bool = false) -> [Cliente] {
-        persistence.fetch(Cliente.all(onlyActive: onlyActive))
+    func fetchAll(onlyActive: Bool = false) async throws -> [FBCliente] {
+        var query: Query = db.collection(Collections.clientes)
+            .order(by: "apellidos")
+        if onlyActive {
+            query = db.collection(Collections.clientes)
+                .whereField("estado", isEqualTo: "Activo")
+                .order(by: "apellidos")
+        }
+        let snap = try await query.getDocuments()
+        return try snap.documents.map { try $0.data(as: FBCliente.self) }
     }
 
-    /// Single client by primary key, or nil if not found.
-    func fetch(byID id: UUID) -> Cliente? {
-        persistence.fetch(Cliente.byID(id)).first
+    /// Single client by document ID, or nil if not found.
+    func fetch(byID id: String) async throws -> FBCliente? {
+        return try await FirestoreService.fetch(Collections.clientes, id: id, as: FBCliente.self)
     }
 
     /// Single client by DNI, or nil if not found.
-    func fetch(byDNI dni: String) -> Cliente? {
-        persistence.fetch(Cliente.byDNI(dni.trimmed)).first
-    }
-
-    // ─────────────────────────────────────────
-    // MARK: - Search & Filter
-    // ─────────────────────────────────────────
-
-    /// Full-text search across nombres, apellidos, and DNI.
-    /// Returns all clients when `text` is empty.
-    func search(text: String, onlyActive: Bool = false) -> [Cliente] {
-        let trimmed = text.trimmed
-        guard trimmed.isNotBlank else { return fetchAll(onlyActive: onlyActive) }
-        return persistence.fetch(Cliente.search(text: trimmed, onlyActive: onlyActive))
-    }
-
-    /// Returns all clients matching the given status ("Activo" or "Inactivo").
-    func filter(byStatus status: String) -> [Cliente] {
-        let req = Cliente.fetchRequest()
-        req.predicate       = NSPredicate(format: "estado == %@", status)
-        req.sortDescriptors = [NSSortDescriptor(key: "apellidos", ascending: true)]
-        return persistence.fetch(req)
+    func fetch(byDNI dni: String) async throws -> FBCliente? {
+        let snap = try await db.collection(Collections.clientes)
+            .whereField("dni", isEqualTo: dni.trimmed)
+            .limit(to: 1)
+            .getDocuments()
+        return try snap.documents.first.map { try $0.data(as: FBCliente.self) }
     }
 
     // ─────────────────────────────────────────
@@ -59,32 +50,23 @@ final class ClienteService {
     // ─────────────────────────────────────────
 
     /// True when no other client uses this 8-digit DNI.
-    ///
-    /// Pass `excludingID` during edits so the client can keep its own DNI.
-    func isDNIUnique(_ dni: String, excludingID: UUID? = nil) -> Bool {
-        let req = Cliente.fetchRequest()
-
-        if let excludeID = excludingID {
-            req.predicate = NSPredicate(
-                format: "dni == %@ AND idCliente != %@",
-                dni.trimmed, excludeID as CVarArg
-            )
-        } else {
-            req.predicate = NSPredicate(format: "dni == %@", dni.trimmed)
-        }
-
-        req.fetchLimit = 1
-        return persistence.count(req) == 0
+    func isDNIUnique(_ dni: String, excludingID: String? = nil) async throws -> Bool {
+        let snap = try await db.collection(Collections.clientes)
+            .whereField("dni", isEqualTo: dni.trimmed)
+            .limit(to: 1)
+            .getDocuments()
+        guard let doc = snap.documents.first else { return true }
+        return doc.documentID == excludingID
     }
 
     // ─────────────────────────────────────────
     // MARK: - Create
     // ─────────────────────────────────────────
 
-    /// Insert a new client in the database.
+    /// Insert a new client in Firestore.
     ///
     /// - Throws: `ServiceError.duplicateDNI` if the DNI is already taken.
-    /// - Returns: The newly created `Cliente`.
+    /// - Returns: The document ID of the newly created client.
     @discardableResult
     func create(
         dni:       String,
@@ -93,24 +75,24 @@ final class ClienteService {
         telefono:  String? = nil,
         correo:    String? = nil,
         direccion: String? = nil
-    ) throws -> Cliente {
-        guard isDNIUnique(dni) else {
+    ) async throws -> String {
+        guard try await isDNIUnique(dni.trimmed) else {
             throw ServiceError.duplicateDNI
         }
 
-        let client            = Cliente(context: context)
-        client.idCliente      = UUID()
-        client.dni            = dni.trimmed
-        client.nombres        = nombres.trimmed
-        client.apellidos      = apellidos.trimmed
-        client.telefono       = nonEmpty(telefono)
-        client.correo         = nonEmpty(correo)
-        client.direccion      = nonEmpty(direccion)
-        client.estado         = "Activo"
-        client.fechaRegistro  = Date()
-
-        persistence.save()
-        return client
+        let cliente = FBCliente(
+            id:            nil,
+            dni:           dni.trimmed,
+            nombres:       nombres.trimmed,
+            apellidos:     apellidos.trimmed,
+            telefono:      nonEmpty(telefono),
+            correo:        nonEmpty(correo),
+            direccion:     nonEmpty(direccion),
+            estado:        "Activo",
+            fechaRegistro: Date(),
+            ubicacion:     nil
+        )
+        return try await FirestoreService.add(Collections.clientes, cliente)
     }
 
     // ─────────────────────────────────────────
@@ -120,8 +102,9 @@ final class ClienteService {
     /// Replace all mutable fields on an existing client.
     ///
     /// - Throws: `ServiceError.duplicateDNI` if the new DNI belongs to a different client.
+    ///           `ServiceError.notFound` if the client has no document ID.
     func update(
-        _ client:  Cliente,
+        _ cliente: FBCliente,
         dni:       String,
         nombres:   String,
         apellidos: String,
@@ -129,41 +112,43 @@ final class ClienteService {
         correo:    String?,
         direccion: String?,
         estado:    String
-    ) throws {
+    ) async throws {
+        guard let id = cliente.id else { throw ServiceError.notFound }
         let normalizedDNI = dni.trimmed
-        if normalizedDNI != client.dniValue {
-            guard isDNIUnique(normalizedDNI) else {
+
+        if normalizedDNI != cliente.dni {
+            guard try await isDNIUnique(normalizedDNI, excludingID: id) else {
                 throw ServiceError.duplicateDNI
             }
         }
 
-        client.dni       = normalizedDNI
-        client.nombres   = nombres.trimmed
-        client.apellidos = apellidos.trimmed
-        client.telefono  = nonEmpty(telefono)
-        client.correo    = nonEmpty(correo)
-        client.direccion = nonEmpty(direccion)
-        client.estado    = estado
+        var fields: [String: Any] = [
+            "dni":       normalizedDNI,
+            "nombres":   nombres.trimmed,
+            "apellidos": apellidos.trimmed,
+            "estado":    estado
+        ]
+        fields["telefono"]  = nonEmpty(telefono) as Any? ?? NSNull()
+        fields["correo"]    = nonEmpty(correo) as Any? ?? NSNull()
+        fields["direccion"] = nonEmpty(direccion) as Any? ?? NSNull()
 
-        persistence.save()
+        try await FirestoreService.update(Collections.clientes, id: id, fields)
     }
 
     // ─────────────────────────────────────────
     // MARK: - Delete
     // ─────────────────────────────────────────
 
-    /// Physically remove a client (and cascade-delete their Ubicaciones).
-    /// Ventas referencing this client are nullified automatically.
-    func delete(_ client: Cliente) {
-        context.delete(client)
-        persistence.save()
+    /// Remove a client document from Firestore (ubicacion is embedded — deleted with the doc).
+    func delete(_ cliente: FBCliente) async throws {
+        guard let id = cliente.id else { throw ServiceError.notFound }
+        try await FirestoreService.delete(Collections.clientes, id: id)
     }
 
     // ─────────────────────────────────────────
     // MARK: - Private Helpers
     // ─────────────────────────────────────────
 
-    /// Returns the trimmed string if non-empty, otherwise nil.
     private func nonEmpty(_ value: String?) -> String? {
         let t = value?.trimmed
         return t?.isNotBlank == true ? t : nil
