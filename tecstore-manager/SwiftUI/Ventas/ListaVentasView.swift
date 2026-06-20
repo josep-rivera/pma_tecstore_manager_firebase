@@ -8,16 +8,18 @@ import Combine
 @MainActor
 final class ListaVentasViewModel: ObservableObject {
 
-    @Published var ventas:          [Venta] = []
-    @Published var allVentas:       [Venta] = []
+    @Published var ventas:          [FBVenta] = []
+    @Published var allVentas:       [FBVenta] = []
     @Published var isDateFiltering: Bool    = false
     @Published var showDateFilter:  Bool    = false
     @Published var startDate: Date = Calendar.current.date(byAdding: .month, value: -1, to: Date()) ?? Date()
     @Published var endDate:   Date = Date()
 
     func loadAll() {
-        allVentas = VentaService.shared.fetchAll()
-        ventas    = allVentas
+        Task {
+            let all = (try? await VentaService.shared.fetchAll()) ?? []
+            allVentas = all; ventas = all
+        }
     }
 
     func applySearch(_ text: String) {
@@ -28,8 +30,10 @@ final class ListaVentasViewModel: ObservableObject {
     }
 
     func applyDateFilter() {
-        allVentas = VentaService.shared.fetch(from: startDate, to: endDate)
-        ventas    = allVentas
+        Task {
+            let all = (try? await VentaService.shared.fetch(from: startDate, to: endDate)) ?? []
+            allVentas = all; ventas = all
+        }
     }
 
     func clearFilter() {
@@ -46,7 +50,7 @@ struct ListaVentasView: View {
 
     @ObservedObject var viewModel: ListaVentasViewModel
     @State private var searchText: String = ""
-    var onSelectVenta: ((Venta) -> Void)? = nil
+    var onSelectVenta: ((FBVenta) -> Void)? = nil
     var onAddSale:     (() -> Void)?      = nil
 
     var body: some View {
@@ -148,7 +152,7 @@ struct ListaVentasView: View {
 // ─────────────────────────────────────────────
 
 struct VentaRow: View {
-    let venta: Venta
+    let venta: FBVenta
 
     var body: some View {
         HStack(spacing: 12) {
@@ -170,7 +174,7 @@ struct VentaRow: View {
                 Text(venta.clientName)
                     .font(.headline)
                     .lineLimit(1)
-                Text("\(venta.detallesArray.count) producto(s) · \(venta.saleDate.displayTime)")
+                Text("\(venta.detalles.count) producto(s) · \(venta.saleDate.displayTime)")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }

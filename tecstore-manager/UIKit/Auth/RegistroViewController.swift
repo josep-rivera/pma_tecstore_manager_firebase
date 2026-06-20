@@ -143,18 +143,21 @@ final class RegistroViewController: UIViewController {
     @objc private func handleRegister() {
         hasAttemptedSubmit = true
         guard validate() else { return }
-        do {
-            try AuthService.shared.register(
-                fullName: nombreField.text ?? "",
-                email:    correoField.text ?? "",
-                password: passwordField.text ?? ""
-            )
-            (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.switchToMenu()
-        } catch let error as ServiceError {
-            showAlert(title: "Error al registrarse",
-                      message: error.errorDescription ?? "")
-        } catch {
-            showAlert(title: "Error", message: error.localizedDescription)
+        Task {
+            do {
+                try await AuthService.shared.register(
+                    fullName: nombreField.text ?? "",
+                    email:    correoField.text ?? "",
+                    password: passwordField.text ?? ""
+                )
+                await MainActor.run {
+                    (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.switchToMenu()
+                }
+            } catch let error as ServiceError {
+                await MainActor.run { self.showAlert(title: "Error al registrarse", message: error.errorDescription ?? "") }
+            } catch {
+                await MainActor.run { self.showAlert(title: "Error", message: error.localizedDescription) }
+            }
         }
     }
 

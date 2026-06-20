@@ -5,7 +5,7 @@ import CoreLocation
 final class FormularioClienteViewController: UIViewController {
 
     // MARK: - Mode
-    var cliente: Cliente?
+    var cliente: FBCliente?
     var onSave:  (() -> Void)?
 
     private var isEditMode: Bool { cliente != nil }
@@ -242,38 +242,46 @@ final class FormularioClienteViewController: UIViewController {
 
     @objc private func handleSave() {
         guard validate() else { return }
-        do {
-            let dni       = dniField.text?.trimmed ?? ""
-            let nombres   = nombresField.text?.trimmed ?? ""
-            let apellidos = apellidosField.text?.trimmed ?? ""
-            let telefono  = telefonoField.text
-            let correo    = correoField.text
-            let direccion = direccionField.text
+        let dni       = dniField.text?.trimmed ?? ""
+        let nombres   = nombresField.text?.trimmed ?? ""
+        let apellidos = apellidosField.text?.trimmed ?? ""
+        let telefono  = telefonoField.text
+        let correo    = correoField.text
+        let direccion = direccionField.text
+        let estado    = estadoSwitch.isOn ? "Activo" : "Inactivo"
+        let lat       = selectedLatitude
+        let lon       = selectedLongitude
+        let ref       = direccionField.text
 
-            let savedCliente: Cliente
-            if isEditMode, let c = cliente {
-                try ClienteService.shared.update(c, dni: dni, nombres: nombres,
-                                                 apellidos: apellidos, telefono: telefono,
-                                                 correo: correo, direccion: direccion,
-                                                 estado: estadoSwitch.isOn ? "Activo" : "Inactivo")
-                savedCliente = c
-            } else {
-                savedCliente = try ClienteService.shared.create(
-                    dni: dni, nombres: nombres, apellidos: apellidos,
-                    telefono: telefono, correo: correo, direccion: direccion)
-            }
+        Task {
+            do {
+                let clienteID: String
+                if self.isEditMode, let c = self.cliente {
+                    try await ClienteService.shared.update(c, dni: dni, nombres: nombres,
+                                                           apellidos: apellidos, telefono: telefono,
+                                                           correo: correo, direccion: direccion,
+                                                           estado: estado)
+                    clienteID = c.id ?? ""
+                } else {
+                    clienteID = try await ClienteService.shared.create(
+                        dni: dni, nombres: nombres, apellidos: apellidos,
+                        telefono: telefono, correo: correo, direccion: direccion)
+                }
 
-            if selectedLatitude != 0 || selectedLongitude != 0 {
-                UbicacionService.shared.saveOrUpdate(
-                    latitude: selectedLatitude, longitude: selectedLongitude,
-                    reference: direccionField.text, cliente: savedCliente)
+                if lat != 0 || lon != 0 {
+                    try await UbicacionService.shared.saveOrUpdate(
+                        latitude: lat, longitude: lon,
+                        reference: ref, clienteID: clienteID)
+                }
+                await MainActor.run {
+                    self.onSave?()
+                    self.navigationController?.popViewController(animated: true)
+                }
+            } catch let error as ServiceError {
+                await MainActor.run { self.showAlert(title: "Error al guardar", message: error.errorDescription ?? "") }
+            } catch {
+                await MainActor.run { self.showAlert(title: "Error", message: error.localizedDescription) }
             }
-            onSave?()
-            navigationController?.popViewController(animated: true)
-        } catch let error as ServiceError {
-            showAlert(title: "Error al guardar", message: error.errorDescription ?? "")
-        } catch {
-            showAlert(title: "Error", message: error.localizedDescription)
         }
     }
 

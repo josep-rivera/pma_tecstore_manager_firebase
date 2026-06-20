@@ -18,11 +18,15 @@ final class ReportesViewModel: ObservableObject {
     func loadReport() {
         isLoading = true
         Task {
-            self.report       = ReporteService.shared.generateReport()
-            self.byCategory   = ReporteService.shared.revenueByCategory()
-            self.topProductos = ReporteService.shared.topProductosByRevenue(limit: 3)
-            self.weeklyTrend  = ReporteService.shared.salesByDay(lastDays: 14)
-            self.isLoading    = false
+            do {
+                self.report       = try await ReporteService.shared.generateReport()
+                self.byCategory   = try await ReporteService.shared.revenueByCategory()
+                self.topProductos = try await ReporteService.shared.topProductosByRevenue(limit: 3)
+                self.weeklyTrend  = try await ReporteService.shared.salesByDay(lastDays: 14)
+            } catch {
+                // leave previous data intact on error; could surface alert here
+            }
+            self.isLoading = false
         }
     }
 }

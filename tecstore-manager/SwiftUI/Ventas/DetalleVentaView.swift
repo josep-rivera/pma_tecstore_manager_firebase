@@ -7,7 +7,7 @@ import SwiftUI
 
 struct DetalleVentaView: View {
 
-    let venta: Venta
+    let venta: FBVenta
 
     var body: some View {
         ScrollView {
@@ -57,9 +57,9 @@ struct DetalleVentaView: View {
     // ── Productos ──
     private var productosCard: some View {
         VStack(alignment: .leading, spacing: 0) {
-            cardHeader("Productos (\(venta.detallesArray.count))")
+            cardHeader("Productos (\(venta.detalles.count))")
             Divider()
-            ForEach(Array(venta.detallesArray.enumerated()), id: \.offset) { idx, detalle in
+            ForEach(Array(venta.detalles.enumerated()), id: \.offset) { idx, detalle in
                 if idx > 0 {
                     Divider().padding(.leading, CGFloat(AppLayout.paddingLarge))
                 }

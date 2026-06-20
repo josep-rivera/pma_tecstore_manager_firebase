@@ -4,7 +4,7 @@ import MapKit
 final class DetalleClienteViewController: UIViewController {
 
     // MARK: - Data
-    var cliente: Cliente!
+    var cliente: FBCliente!
 
     // MARK: - IBOutlets (storyboard-placed, styled in code)
     @IBOutlet weak var nameLabel: UILabel!
@@ -42,8 +42,8 @@ final class DetalleClienteViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if let updated = ClienteService.shared.fetch(byID: cliente.id) { cliente = updated }
         populate()
+        Task { if let updated = try? await ClienteService.shared.fetch(byID: cliente.id ?? "") { await MainActor.run { self.cliente = updated; self.populate() } } }
     }
 
     // MARK: - Setup

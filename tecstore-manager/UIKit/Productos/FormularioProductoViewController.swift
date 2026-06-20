@@ -4,7 +4,7 @@ import PhotosUI
 final class FormularioProductoViewController: UIViewController {
 
     // MARK: - Mode
-    var producto: Producto?                 // nil → create,  non-nil → edit
+    var producto: FBProducto?               // nil → create,  non-nil → edit
     var onSave: (() -> Void)?
 
     private var isEditMode: Bool { producto != nil }
@@ -217,32 +217,35 @@ final class FormularioProductoViewController: UIViewController {
     @objc private func handleSave() {
         guard validate() else { return }
 
-        let code      = generatedCode
-        let name      = nombreField.text?.trimmed ?? ""
-        let category  = selectedCategory
-        let priceStr  = precioField.text?.trimmed ?? "0"
-        let stockStr  = stockField.text?.trimmed ?? "0"
-        let price     = Decimal(string: priceStr) ?? 0
-        let stock     = Int(stockStr) ?? 0
-        let estado    = estadoSwitch.isOn ? "Activo" : "Inactivo"
+        let code     = generatedCode
+        let name     = nombreField.text?.trimmed ?? ""
+        let category = selectedCategory
+        let price    = Double(precioField.text?.trimmed ?? "0") ?? 0
+        let stock    = Int(stockField.text?.trimmed ?? "0") ?? 0
+        let estado   = estadoSwitch.isOn ? "Activo" : "Inactivo"
+        let photo    = selectedPhotoPath
 
-        do {
-            if isEditMode, let p = producto {
-                try ProductoService.shared.update(p, code: code, name: name, category: category,
-                                                  price: price, stock: stock,
-                                                  photoPath: selectedPhotoPath ?? p.productImagePath,
-                                                  estado: estado)
-            } else {
-                try ProductoService.shared.create(code: code, name: name, category: category,
-                                                  price: price, stock: stock,
-                                                  photoPath: selectedPhotoPath)
+        Task {
+            do {
+                if self.isEditMode, let p = self.producto {
+                    try await ProductoService.shared.update(p, code: code, name: name, category: category,
+                                                            price: price, stock: stock,
+                                                            photoPath: photo ?? p.productImagePath,
+                                                            estado: estado)
+                } else {
+                    try await ProductoService.shared.create(code: code, name: name, category: category,
+                                                            price: price, stock: stock,
+                                                            photoPath: photo)
+                }
+                await MainActor.run {
+                    self.onSave?()
+                    self.navigationController?.popViewController(animated: true)
+                }
+            } catch let error as ServiceError {
+                await MainActor.run { self.showAlert(title: "Error al guardar", message: error.errorDescription ?? "") }
+            } catch {
+                await MainActor.run { self.showAlert(title: "Error", message: error.localizedDescription) }
             }
-            onSave?()
-            navigationController?.popViewController(animated: true)
-        } catch let error as ServiceError {
-            showAlert(title: "Error al guardar", message: error.errorDescription ?? "")
-        } catch {
-            showAlert(title: "Error", message: error.localizedDescription)
         }
     }
 
@@ -287,7 +290,7 @@ final class FormularioProductoViewController: UIViewController {
     }
 
     private func refreshAutoCode() {
-        generatedCode = ProductoService.shared.generateCode(for: selectedCategory)
+        Task { if let code = try? await ProductoService.shared.generateCode(for: selectedCategory) { await MainActor.run { self.generatedCode = code } } }
     }
 
     @objc private func estadoChanged() { updateEstadoLabel() }

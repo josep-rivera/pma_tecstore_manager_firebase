@@ -83,12 +83,9 @@ final class ReporteService {
     }
 
     func fetchProductoMenorStock() async throws -> FBProducto? {
-        let snap = try await db.collection(Collections.productos)
-            .whereField("estado", isEqualTo: "Activo")
-            .order(by: "stock")
-            .limit(to: 1)
-            .getDocuments()
-        return try snap.documents.first.map { try $0.data(as: FBProducto.self) }
+        let snap = try await db.collection(Collections.productos).getDocuments()
+        let all = try snap.documents.map { try $0.data(as: FBProducto.self) }
+        return all.filter { $0.isActive }.min(by: { $0.stock < $1.stock })
     }
 
     func fetchVentaMasReciente() async throws -> FBVenta? {
@@ -117,11 +114,9 @@ final class ReporteService {
 
     /// Number of active products whose stock is 0.
     func countOutOfStock() async throws -> Int {
-        let snap = try await db.collection(Collections.productos)
-            .whereField("estado", isEqualTo: "Activo")
-            .whereField("stock", isEqualTo: 0)
-            .getDocuments()
-        return snap.count
+        let snap = try await db.collection(Collections.productos).getDocuments()
+        let all = try snap.documents.map { try $0.data(as: FBProducto.self) }
+        return all.filter { $0.isActive && $0.stock == 0 }.count
     }
 
     /// Total revenue grouped by product category, highest first.

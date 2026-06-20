@@ -17,18 +17,12 @@ final class ProductoService {
     // MARK: - Fetch
     // ─────────────────────────────────────────
 
-    /// All products, sorted by name.
-    /// - Parameter onlyActive: when true, excludes products with estado == "Inactivo".
+    /// All products, sorted by name. Client-side filter avoids composite index requirement.
     func fetchAll(onlyActive: Bool = false) async throws -> [FBProducto] {
-        var query: Query = db.collection(Collections.productos)
-            .order(by: "nombre")
-        if onlyActive {
-            query = db.collection(Collections.productos)
-                .whereField("estado", isEqualTo: "Activo")
-                .order(by: "nombre")
-        }
-        let snap = try await query.getDocuments()
-        return try snap.documents.map { try $0.data(as: FBProducto.self) }
+        let snap = try await db.collection(Collections.productos).getDocuments()
+        var all = try snap.documents.map { try $0.data(as: FBProducto.self) }
+        if onlyActive { all = all.filter { $0.isActive } }
+        return all.sorted { $0.nombre.localizedCompare($1.nombre) == .orderedAscending }
     }
 
     /// Single product by document ID, or nil if not found.
@@ -40,24 +34,16 @@ final class ProductoService {
     // MARK: - Low Stock
     // ─────────────────────────────────────────
 
-    /// Active products whose stock is at or below the given threshold.
+    /// Active products whose stock is at or below the given threshold, sorted by stock ascending.
     func fetchLowStock(threshold: Int = 5) async throws -> [FBProducto] {
-        let snap = try await db.collection(Collections.productos)
-            .whereField("estado", isEqualTo: "Activo")
-            .whereField("stock", isLessThanOrEqualTo: threshold)
-            .order(by: "stock")
-            .getDocuments()
-        return try snap.documents.map { try $0.data(as: FBProducto.self) }
+        let all = try await fetchAll(onlyActive: true)
+        return all.filter { $0.stock <= threshold }.sorted { $0.stock < $1.stock }
     }
 
-    /// The single active product with the fewest units (client-side min after fetchLowStock).
+    /// The single active product with the fewest units.
     func fetchLowestStockProduct() async throws -> FBProducto? {
-        let snap = try await db.collection(Collections.productos)
-            .whereField("estado", isEqualTo: "Activo")
-            .order(by: "stock")
-            .limit(to: 1)
-            .getDocuments()
-        return try snap.documents.first.map { try $0.data(as: FBProducto.self) }
+        let all = try await fetchAll(onlyActive: true)
+        return all.min(by: { $0.stock < $1.stock })
     }
 
     // ─────────────────────────────────────────

@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		4465177D2FE62A9700554506 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 4465177C2FE62A9700554506 /* FirebaseCore */; };
+		4465177F2FE62AA000554506 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 4465177E2FE62AA000554506 /* FirebaseFirestore */; };
+		446517812FE62AA700554506 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 446517802FE62AA700554506 /* FirebaseAuth */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		44734B3C2FE4AEC500B59692 /* tecstore-manager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "tecstore-manager.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,16 +42,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4465177D2FE62A9700554506 /* FirebaseCore in Frameworks */,
+				446517812FE62AA700554506 /* FirebaseAuth in Frameworks */,
+				4465177F2FE62AA000554506 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4465177B2FE62A9700554506 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		44734B332FE4AEC500B59692 = {
 			isa = PBXGroup;
 			children = (
 				44734B3E2FE4AEC500B59692 /* tecstore-manager */,
+				4465177B2FE62A9700554506 /* Frameworks */,
 				44734B3D2FE4AEC500B59692 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -78,6 +95,9 @@
 			);
 			name = "tecstore-manager";
 			packageProductDependencies = (
+				4465177C2FE62A9700554506 /* FirebaseCore */,
+				4465177E2FE62AA000554506 /* FirebaseFirestore */,
+				446517802FE62AA700554506 /* FirebaseAuth */,
 			);
 			productName = "tecstore-manager";
 			productReference = 44734B3C2FE4AEC500B59692 /* tecstore-manager.app */;
@@ -107,6 +127,9 @@
 			);
 			mainGroup = 44734B332FE4AEC500B59692;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				446517762FE6252F00554506 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 44734B3D2FE4AEC500B59692 /* Products */;
 			projectDirPath = "";
@@ -347,6 +370,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		446517762FE6252F00554506 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.15.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4465177C2FE62A9700554506 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 446517762FE6252F00554506 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		4465177E2FE62AA000554506 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 446517762FE6252F00554506 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		446517802FE62AA700554506 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 446517762FE6252F00554506 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 44734B342FE4AEC500B59692 /* Project object */;
 }

@@ -12,7 +12,7 @@ final class SeederService {
     private init() {}
 
     private let db = Firestore.firestore()
-    private let seededKey = "seederCompleted_v6"
+    private let seededKey = "seederCompleted_v8"
 
     // ─────────────────────────────────────────
     // MARK: - Public Entry Point
@@ -54,7 +54,7 @@ final class SeederService {
             Collections.usuarios
         ]
         for name in collections {
-            let snap = try await db.collection(name).getDocuments()
+            let snap = try await db.collection(name).getDocuments(source: .server)
             for doc in snap.documents {
                 try await doc.reference.delete()
             }
@@ -142,7 +142,7 @@ final class SeederService {
         var productos: [FBProducto] = []
         for item in data {
             let ref = db.collection(Collections.productos).document()
-            var producto = FBProducto(
+            let producto = FBProducto(
                 id:            ref.documentID,
                 codigo:        item.code,
                 nombre:        item.name,

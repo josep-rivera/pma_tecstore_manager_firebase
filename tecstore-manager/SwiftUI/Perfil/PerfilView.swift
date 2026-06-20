@@ -9,9 +9,9 @@ import PhotosUI
 @MainActor
 final class PerfilViewModel: ObservableObject {
 
-    @Published var user:           Usuario? = nil
-    @Published var isDarkMode:     Bool     = UserDefaults.standard.bool(forKey: UserDefaultsKeys.darkModeEnabled)
-    @Published var profileImage:   UIImage? = nil
+    @Published var user:           FBUsuario? = nil
+    @Published var isDarkMode:     Bool       = UserDefaults.standard.bool(forKey: UserDefaultsKeys.darkModeEnabled)
+    @Published var profileImage:   UIImage?   = nil
 
     // Password change state
     @Published var currentPwd:  String = ""
@@ -26,9 +26,15 @@ final class PerfilViewModel: ObservableObject {
     @Published var errorMessage:     String = ""
 
     func loadUser() {
-        user = AuthService.shared.currentUser
-        if let path = user?.profileImagePath {
-            profileImage = UIImage.fromDocuments(named: path)
+        Task {
+            do {
+                user = try await AuthService.shared.currentUsuario()
+                if let path = user?.profileImagePath {
+                    profileImage = UIImage.fromDocuments(named: path)
+                }
+            } catch {
+                // user stays nil
+            }
         }
     }
 
@@ -37,12 +43,18 @@ final class PerfilViewModel: ObservableObject {
     }
 
     func saveProfilePhoto(_ image: UIImage) {
-        let resized    = image.resized(maxDimension: 600)
-        let fileName   = "profile_\(user?.id.compact ?? "unknown").jpg"
-        let savedPath  = resized.saveToDocuments(named: fileName)
-        profileImage   = resized
-        AuthService.shared.updateProfile(fullName: user?.fullName ?? "", photoPath: savedPath)
-        loadUser()
+        let resized   = image.resized(maxDimension: 600)
+        let fileName  = "profile_\(user?.id ?? "unknown").jpg"
+        let savedPath = resized.saveToDocuments(named: fileName)
+        profileImage  = resized
+        Task {
+            do {
+                try await AuthService.shared.updateProfile(fullName: user?.fullName ?? "", photoPath: savedPath)
+                user = try await AuthService.shared.currentUsuario()
+            } catch {
+                // silently ignore photo save errors
+            }
+        }
     }
 
     func changePassword() {
@@ -55,16 +67,18 @@ final class PerfilViewModel: ObservableObject {
             pwdError = "Las contraseñas no coinciden."
             return
         }
-        do {
-            try AuthService.shared.changePassword(current: currentPwd, new: newPwd)
-            pwdSuccess  = true
-            currentPwd  = ""
-            newPwd      = ""
-            confirmPwd  = ""
-        } catch let error as ServiceError {
-            pwdError = error.errorDescription ?? "Error al cambiar contraseña."
-        } catch {
-            pwdError = error.localizedDescription
+        Task {
+            do {
+                try await AuthService.shared.changePassword(current: currentPwd, new: newPwd)
+                pwdSuccess = true
+                currentPwd = ""
+                newPwd     = ""
+                confirmPwd = ""
+            } catch let error as ServiceError {
+                pwdError = error.errorDescription ?? "Error al cambiar contraseña."
+            } catch {
+                pwdError = error.localizedDescription
+            }
         }
     }
 
@@ -253,9 +267,7 @@ struct CambiarPasswordSheet: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Guardar") {
                         viewModel.changePassword()
-                        if viewModel.pwdSuccess {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { dismiss() }
-                        }
+                        // Dismiss is triggered by watching pwdSuccess via .onChange below
                     }
                     .fontWeight(.semibold)
                     .disabled(viewModel.currentPwd.isBlank || viewModel.newPwd.isBlank || viewModel.confirmPwd.isBlank)
@@ -263,6 +275,11 @@ struct CambiarPasswordSheet: View {
             }
         }
         .presentationDetents([.medium])
+        .onChange(of: viewModel.pwdSuccess) { _, success in
+            if success {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { dismiss() }
+            }
+        }
     }
 }
 
@@ -310,7 +327,7 @@ struct AcercaDeView: View {
             Section("Stack tecnológico") {
                 LabeledContent("Lenguaje",    value: "Swift")
                 LabeledContent("UI",          value: "UIKit + SwiftUI")
-                LabeledContent("Base de datos", value: "Core Data (SQLite)")
+                LabeledContent("Base de datos", value: "Firebase Firestore")
                 LabeledContent("Mapas",       value: "MapKit + CoreLocation")
                 LabeledContent("Plataforma",  value: "iOS 17+")
                 LabeledContent("Arquitectura", value: "MVC (UIKit) · MVVM (SwiftUI)")

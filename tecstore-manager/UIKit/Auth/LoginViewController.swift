@@ -184,17 +184,25 @@ final class LoginViewController: UIViewController {
     @objc private func handleLogin() {
         hasAttemptedSubmit = true
         guard validate() else { return }
-        do {
-            try AuthService.shared.login(
-                email:    correoField.text ?? "",
-                password: passwordField.text ?? ""
-            )
-            (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.switchToMenu()
-        } catch let error as ServiceError {
-            showAlert(title: "Error al iniciar sesión",
-                      message: error.errorDescription ?? "")
-        } catch {
-            showAlert(title: "Error", message: error.localizedDescription)
+        loginButton.isEnabled = false
+        loginButton.alpha     = 0.6
+        Task {
+            do {
+                try await AuthService.shared.login(
+                    email:    correoField.text ?? "",
+                    password: passwordField.text ?? ""
+                )
+                (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.switchToMenu()
+            } catch let error as ServiceError {
+                showAlert(title: "Error al iniciar sesión",
+                          message: error.errorDescription ?? "")
+                loginButton.isEnabled = true
+                loginButton.alpha     = 1
+            } catch {
+                showAlert(title: "Error", message: error.localizedDescription)
+                loginButton.isEnabled = true
+                loginButton.alpha     = 1
+            }
         }
     }
 

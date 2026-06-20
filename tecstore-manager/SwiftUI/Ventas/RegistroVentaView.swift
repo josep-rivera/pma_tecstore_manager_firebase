@@ -9,11 +9,11 @@ import Combine
 final class RegistroVentaViewModel: ObservableObject {
 
     // Data
-    @Published var activeClientes:  [Cliente]   = []
-    @Published var activeProductos: [Producto]  = []
+    @Published var activeClientes:  [FBCliente]  = []
+    @Published var activeProductos: [FBProducto] = []
 
     // Form state
-    @Published var selectedCliente: Cliente?    = nil
+    @Published var selectedCliente: FBCliente?  = nil
     @Published var cartItems:       [VentaItem] = []
     @Published var searchProducto:  String      = ""
 
@@ -25,7 +25,7 @@ final class RegistroVentaViewModel: ObservableObject {
 
     // ── Derived ──
 
-    var filteredProductos: [Producto] {
+    var filteredProductos: [FBProducto] {
         let text = searchProducto.trimmed
         let base = activeProductos.filter { $0.hasStock }
         guard text.isNotBlank else { return base }
@@ -37,20 +37,24 @@ final class RegistroVentaViewModel: ObservableObject {
 
     var canConfirm: Bool { selectedCliente != nil && !cartItems.isEmpty }
 
-    var totals: (subtotal: Decimal, igv: Decimal, total: Decimal) {
+    var totals: (subtotal: Double, igv: Double, total: Double) {
         VentaService.shared.calculateTotals(for: cartItems)
     }
 
     // ── Load ──
 
     func loadData() {
-        activeClientes  = ClienteService.shared.fetchAll(onlyActive: true)
-        activeProductos = ProductoService.shared.fetchAll(onlyActive: true)
+        Task {
+            async let clientes  = ClienteService.shared.fetchAll(onlyActive: true)
+            async let productos = ProductoService.shared.fetchAll(onlyActive: true)
+            activeClientes  = (try? await clientes)  ?? []
+            activeProductos = (try? await productos) ?? []
+        }
     }
 
     // ── Cart Operations ──
 
-    func addToCart(_ producto: Producto) {
+    func addToCart(_ producto: FBProducto) {
         if let idx = cartItems.firstIndex(where: { $0.producto.id == producto.id }) {
             guard cartItems[idx].cantidad < producto.stockInt else { return }
             cartItems[idx].cantidad += 1
@@ -79,18 +83,20 @@ final class RegistroVentaViewModel: ObservableObject {
     // ── Confirm ──
 
     func confirmSale() {
-        guard let cliente = selectedCliente,
-              let usuario = AuthService.shared.currentUser else { return }
-        do {
-            try VentaService.shared.register(
-                cliente: cliente, usuario: usuario, items: cartItems)
-            saleCompleted = true
-        } catch let error as ServiceError {
-            errorMessage = error.errorDescription ?? "Error al registrar la venta."
-            showError    = true
-        } catch {
-            errorMessage = error.localizedDescription
-            showError    = true
+        guard let cliente = selectedCliente else { return }
+        let items = cartItems
+        Task {
+            do {
+                guard let usuario = try await AuthService.shared.currentUsuario() else { return }
+                try await VentaService.shared.register(cliente: cliente, usuario: usuario, items: items)
+                saleCompleted = true
+            } catch let error as ServiceError {
+                errorMessage = error.errorDescription ?? "Error al registrar la venta."
+                showError    = true
+            } catch {
+                errorMessage = error.localizedDescription
+                showError    = true
+            }
         }
     }
 }
@@ -115,7 +121,7 @@ struct RegistroVentaView: View {
                 Picker("Cliente", selection: $viewModel.selectedCliente) {
                     Text("Elige un cliente activo")
                         .foregroundColor(.secondary)
-                        .tag(nil as Cliente?)
+                        .tag(nil as FBCliente?)
                     ForEach(viewModel.activeClientes) { c in
                         Text(c.fullName).tag(Optional(c))
                     }
@@ -361,7 +367,7 @@ struct ConfirmacionVentaSheet: View {
 
 /// Row for product selection in RegistroVentaView
 struct ProductPickerRow: View {
-    let producto:  Producto
+    let producto:  FBProducto
     let onAdd:     () -> Void
 
     var body: some View {

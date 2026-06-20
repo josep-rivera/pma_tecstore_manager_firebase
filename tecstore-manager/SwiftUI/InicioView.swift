@@ -8,17 +8,30 @@ import Combine
 @MainActor
 final class InicioViewModel: ObservableObject {
 
-    @Published var todaySalesCount:  Int    = 0
-    @Published var todaySalesTotal:  Double = 0
-    @Published var outOfStockCount:  Int    = 0
-    @Published var totalClientes:    Int    = 0
+    @Published var todaySalesCount:  Int     = 0
+    @Published var todaySalesTotal:  Double  = 0
+    @Published var outOfStockCount:  Int     = 0
+    @Published var totalClientes:    Int     = 0
+    @Published var userName:         String? = nil
 
     func loadMetrics() {
-        let today        = ReporteService.shared.todayMetrics()
-        todaySalesCount  = today.count
-        todaySalesTotal  = today.total
-        outOfStockCount  = ReporteService.shared.countOutOfStock()
-        totalClientes    = ReporteService.shared.countClientes()
+        Task {
+            do {
+                async let today         = ReporteService.shared.todayMetrics()
+                async let outOfStock    = ReporteService.shared.countOutOfStock()
+                async let clientesCount = ReporteService.shared.countClientes()
+                async let usuario       = AuthService.shared.currentUsuario()
+
+                let t = try await today
+                todaySalesCount = t.count
+                todaySalesTotal = t.total
+                outOfStockCount = try await outOfStock
+                totalClientes   = try await clientesCount
+                userName        = try await usuario?.fullName
+            } catch {
+                // metrics stay at zero on error
+            }
+        }
     }
 }
 
@@ -74,7 +87,7 @@ struct InicioView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Bienvenido")
                     .font(.system(.title2).bold())
-                if let name = AuthService.shared.currentUser?.fullName {
+                if let name = viewModel.userName {
                     Text(name)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
@@ -141,7 +154,7 @@ struct InicioView: View {
 
 struct StockBajoView: View {
 
-    @State private var productos: [Producto] = []
+    @State private var productos: [FBProducto] = []
 
     var body: some View {
         Group {
@@ -202,9 +215,16 @@ struct StockBajoView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.visible, for: .navigationBar)
         .onAppear {
-            productos = ProductoService.shared.fetchAll()
-                .filter { $0.isActive && $0.stockInt <= 5 }
-                .sorted { $0.stockInt < $1.stockInt }
+            Task {
+                do {
+                    let all = try await ProductoService.shared.fetchAll()
+                    productos = all
+                        .filter { $0.isActive && $0.stockInt <= 5 }
+                        .sorted { $0.stockInt < $1.stockInt }
+                } catch {
+                    // leave list empty on error
+                }
+            }
         }
     }
 }

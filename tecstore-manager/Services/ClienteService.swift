@@ -17,18 +17,12 @@ final class ClienteService {
     // MARK: - Fetch
     // ─────────────────────────────────────────
 
-    /// All clients sorted by apellidos.
-    /// - Parameter onlyActive: when true, excludes clients with estado == "Inactivo".
+    /// All clients sorted by apellidos. Client-side filter avoids composite index requirement.
     func fetchAll(onlyActive: Bool = false) async throws -> [FBCliente] {
-        var query: Query = db.collection(Collections.clientes)
-            .order(by: "apellidos")
-        if onlyActive {
-            query = db.collection(Collections.clientes)
-                .whereField("estado", isEqualTo: "Activo")
-                .order(by: "apellidos")
-        }
-        let snap = try await query.getDocuments()
-        return try snap.documents.map { try $0.data(as: FBCliente.self) }
+        let snap = try await db.collection(Collections.clientes).getDocuments()
+        var all = try snap.documents.map { try $0.data(as: FBCliente.self) }
+        if onlyActive { all = all.filter { $0.isActive } }
+        return all.sorted { $0.apellidos.localizedCompare($1.apellidos) == .orderedAscending }
     }
 
     /// Single client by document ID, or nil if not found.
