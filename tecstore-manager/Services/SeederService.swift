@@ -54,7 +54,7 @@ final class SeederService {
             Collections.usuarios
         ]
         for name in collections {
-            let snap = try await db.collection(name).getDocuments(source: .server)
+            let snap = try await db.collection(name).getDocuments()
             for doc in snap.documents {
                 try await doc.reference.delete()
             }
