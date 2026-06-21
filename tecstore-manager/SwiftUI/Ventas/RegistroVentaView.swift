@@ -108,7 +108,6 @@ final class RegistroVentaViewModel: ObservableObject {
 struct RegistroVentaView: View {
 
     var onSave:  () -> Void
-    var isModal: Bool = false
 
     @StateObject private var viewModel = RegistroVentaViewModel()
     @Environment(\.dismiss) private var dismiss
@@ -212,17 +211,7 @@ struct RegistroVentaView: View {
             }
             .background(Color(UIColor.appGrouped).ignoresSafeArea())
         }
-        .toolbar {
-            if isModal {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { dismiss() } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(.secondary)
-                            .font(.system(.title3))
-                    }
-                }
-            }
-        }
+        .toolbar {}
         // Confirmation Sheet
         .sheet(isPresented: $viewModel.showConfirmSheet) {
             ConfirmacionVentaSheet(viewModel: viewModel)

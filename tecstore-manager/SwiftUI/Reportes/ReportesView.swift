@@ -18,15 +18,15 @@ final class ReportesViewModel: ObservableObject {
     func loadReport() {
         isLoading = true
         Task {
-            do {
-                self.report       = try await ReporteService.shared.generateReport()
-                self.byCategory   = try await ReporteService.shared.revenueByCategory()
-                self.topProductos = try await ReporteService.shared.topProductosByRevenue(limit: 3)
-                self.weeklyTrend  = try await ReporteService.shared.salesByDay(lastDays: 14)
-            } catch {
-                // leave previous data intact on error; could surface alert here
-            }
-            self.isLoading = false
+            async let report      = ReporteService.shared.generateReport()
+            async let byCategory  = ReporteService.shared.revenueByCategory()
+            async let topProductos = ReporteService.shared.topProductosByRevenue(limit: 3)
+            async let weeklyTrend = ReporteService.shared.salesByDay(lastDays: 14)
+            self.report       = try? await report
+            self.byCategory   = (try? await byCategory)   ?? []
+            self.topProductos = (try? await topProductos) ?? []
+            self.weeklyTrend  = (try? await weeklyTrend)  ?? []
+            self.isLoading    = false
         }
     }
 }
@@ -169,7 +169,7 @@ struct TrendChart: View {
             AxisMarks(values: .automatic(desiredCount: 3))
         }
         .padding(CGFloat(AppLayout.padding))
-        .background(Color(UIColor.appSurface))
+        .background(Color(UIColor.appBackground))
         .cornerRadius(CGFloat(AppLayout.cornerRadius))
         .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
     }
@@ -211,7 +211,7 @@ struct CategoryRevenueChart: View {
             }
         }
         .padding(CGFloat(AppLayout.padding))
-        .background(Color(UIColor.appSurface))
+        .background(Color(UIColor.appBackground))
         .cornerRadius(CGFloat(AppLayout.cornerRadius))
         .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
     }
@@ -252,7 +252,7 @@ struct TopProductosCard: View {
                 }
             }
         }
-        .background(Color(UIColor.appSurface))
+        .background(Color(UIColor.appBackground))
         .cornerRadius(CGFloat(AppLayout.cornerRadius))
         .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
     }
@@ -306,7 +306,7 @@ struct ReporteCard: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(CGFloat(AppLayout.padding))
-        .background(Color(UIColor.appSurface))
+        .background(Color(UIColor.appBackground))
         .cornerRadius(CGFloat(AppLayout.cornerRadius))
         .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
     }
@@ -345,7 +345,7 @@ struct ReporteAlertCard: View {
             Spacer()
         }
         .padding(CGFloat(AppLayout.padding))
-        .background(Color(UIColor.appSurface))
+        .background(Color(UIColor.appBackground))
         .cornerRadius(CGFloat(AppLayout.cornerRadius))
         .shadow(color: .black.opacity(0.06), radius: 4, x: 0, y: 2)
     }
