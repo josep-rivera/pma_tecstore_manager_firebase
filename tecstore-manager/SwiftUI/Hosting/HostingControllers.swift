@@ -106,47 +106,14 @@ final class PerfilViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Perfil"
+        title = "Configuración"
         navigationItem.largeTitleDisplayMode = .always
 
-        hosting = UIHostingController(rootView: PerfilView())
-        addChild(hosting)
-        hosting.view.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(hosting.view)
-        NSLayoutConstraint.activate([
-            hosting.view.topAnchor.constraint(equalTo: view.topAnchor),
-            hosting.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            hosting.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            hosting.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-        ])
-        hosting.didMove(toParent: self)
-    }
-}
-
-// MARK: - BienvenidaViewController
-// BienvenidaView requires onLogin and onRegister callbacks.
-// When loaded from the storyboard, navigation is handled by SceneDelegate.
-
-final class BienvenidaViewController: UIViewController {
-    private var hosting: UIHostingController<BienvenidaView>!
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        navigationController?.setNavigationBarHidden(true, animated: false)
-
-        let sb = UIStoryboard(name: "Main", bundle: nil)
-        let swiftUIView = BienvenidaView(
-            onLogin: { [weak self] in
-                let loginVC = sb.instantiateViewController(withIdentifier: "LoginViewController")
-                self?.navigationController?.pushViewController(loginVC, animated: true)
-            },
-            onRegister: { [weak self] in
-                let registroVC = sb.instantiateViewController(withIdentifier: "RegistroViewController")
-                self?.navigationController?.pushViewController(registroVC, animated: true)
+        hosting = UIHostingController(rootView: PerfilView(
+            onAcercaDe: { [weak self] in
+                self?.performSegue(withIdentifier: "showAcercaDe", sender: nil)
             }
-        )
-
-        hosting = UIHostingController(rootView: swiftUIView)
+        ))
         addChild(hosting)
         hosting.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(hosting.view)
@@ -288,6 +255,30 @@ final class StockBajoViewController: UIViewController {
         navigationItem.largeTitleDisplayMode = .never
 
         hosting = UIHostingController(rootView: StockBajoView())
+        addChild(hosting)
+        hosting.view.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(hosting.view)
+        NSLayoutConstraint.activate([
+            hosting.view.topAnchor.constraint(equalTo: view.topAnchor),
+            hosting.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            hosting.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            hosting.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+        hosting.didMove(toParent: self)
+    }
+}
+
+// MARK: - AcercaDeViewController
+
+final class AcercaDeViewController: UIViewController {
+    private var hosting: UIHostingController<AcercaDeView>!
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        title = "Acerca de"
+        navigationItem.largeTitleDisplayMode = .never
+
+        hosting = UIHostingController(rootView: AcercaDeView())
         addChild(hosting)
         hosting.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(hosting.view)

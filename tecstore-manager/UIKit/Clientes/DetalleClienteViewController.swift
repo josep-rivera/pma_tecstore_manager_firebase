@@ -15,21 +15,21 @@ final class DetalleClienteViewController: UIViewController {
     @IBOutlet weak var direccionLabel: UILabel!
     @IBOutlet weak var mapView: MKMapView!
 
-    // MARK: - UI (programmatic — not IBOutlets)
+    // Storyboard-placed separator views and placeholder label
+    @IBOutlet weak var contactDiv1: UIView!
+    @IBOutlet weak var contactDiv2: UIView!
+    @IBOutlet weak var contactDiv3: UIView!
+    @IBOutlet weak var contactDiv4: UIView!
+    @IBOutlet weak var noLocationLabel: UILabel!
+
+    // MARK: - UI (programmatic — dynamic, not IBOutlets)
     // Header
     private let avatarView   = UIView()
     private let avatarLetter = UILabel()
 
     // Contact card
-    private let contactCard    = UIView()
-    private let contactDiv1    = UIView()
-    private let contactDiv2    = UIView()
-    private let contactDiv3    = UIView()
-    private let contactDiv4    = UIView()
-    private let fechaLabel     = UILabel()
-
-    // Map supporting
-    private let noLocationLabel = UILabel()
+    private let contactCard = UIView()
+    private let fechaLabel  = UILabel()
 
     // MARK: - Lifecycle
 
@@ -115,7 +115,8 @@ final class DetalleClienteViewController: UIViewController {
         fechaLabel.font      = AppFont.footnote()
         fechaLabel.textColor = .appTextTertiary
 
-        for div in [contactDiv1, contactDiv2, contactDiv3, contactDiv4] {
+        // contactDiv1-4 come from storyboard; apply separator color
+        for div in ([contactDiv1, contactDiv2, contactDiv3, contactDiv4] as [UIView]) {
             div.translatesAutoresizingMaskIntoConstraints = false
             div.backgroundColor = .appSeparator
         }
@@ -135,13 +136,10 @@ final class DetalleClienteViewController: UIViewController {
         )
         contentView.addSubview(contactCard)
 
-        // Map already in contentView via storyboard; reparent mapView is not needed.
-        // noLocationLabel goes on top of mapView
+        // noLocationLabel comes from storyboard; apply styling and reparent above mapView
         noLocationLabel.translatesAutoresizingMaskIntoConstraints = false
-        noLocationLabel.text          = "Sin ubicación registrada"
         noLocationLabel.font          = AppFont.footnote()
         noLocationLabel.textColor     = .appTextTertiary
-        noLocationLabel.textAlignment = .center
         contentView.addSubview(noLocationLabel)
 
         NSLayoutConstraint.activate([

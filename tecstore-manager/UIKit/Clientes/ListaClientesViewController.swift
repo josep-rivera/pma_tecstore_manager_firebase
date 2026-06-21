@@ -9,10 +9,10 @@ final class ListaClientesViewController: UIViewController {
 
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var emptyLabel: UILabel!
 
     // MARK: - UI
     private let searchController = UISearchController(searchResultsController: nil)
-    private let emptyLabel       = UILabel()
     private var filterButton:    UIBarButtonItem!
 
     // MARK: - Lifecycle
@@ -64,21 +64,14 @@ final class ListaClientesViewController: UIViewController {
     }
 
     private func setupEmptyLabel() {
-        emptyLabel.translatesAutoresizingMaskIntoConstraints = false
-        emptyLabel.text          = "No hay clientes"
-        emptyLabel.font          = AppFont.body()
-        emptyLabel.textColor     = .appTextSecondary
-        emptyLabel.textAlignment = .center
-        emptyLabel.isHidden      = true
-        view.addSubview(emptyLabel)
+        // emptyLabel is storyboard-placed; apply styling only
+        emptyLabel.font      = AppFont.body()
+        emptyLabel.textColor = .appTextSecondary
+        emptyLabel.isHidden  = true
     }
 
     private func setupConstraints() {
         view.backgroundColor = .appBackground
-        NSLayoutConstraint.activate([
-            emptyLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            emptyLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-        ])
     }
 
     // MARK: - Data

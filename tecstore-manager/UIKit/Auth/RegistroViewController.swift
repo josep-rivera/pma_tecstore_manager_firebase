@@ -10,32 +10,20 @@ final class RegistroViewController: UIViewController {
     @IBOutlet weak var registerButton: UIButton!
     @IBOutlet weak var loginButton: UIButton!
 
+    // Storyboard-placed decorative views
+    @IBOutlet weak var logoBackground: UIView!
+    @IBOutlet weak var logoImageView: UIImageView!
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var subtitleLabel: UILabel!
+
+    // Storyboard-placed error labels (T-05)
+    @IBOutlet weak var nombreError: UILabel!
+    @IBOutlet weak var correoError: UILabel!
+    @IBOutlet weak var passwordError: UILabel!
+    @IBOutlet weak var confirmError: UILabel!
+
     private var hasAttemptedSubmit = false
-
-    // MARK: - UI (programmatic — not IBOutlets)
-    private let nombreError   = AppStyle.makeErrorLabel()
-    private let correoError   = AppStyle.makeErrorLabel()
-    private let passwordError = AppStyle.makeErrorLabel()
-    private let confirmError  = AppStyle.makeErrorLabel()
-
-    private let titleLabel: UILabel = {
-        let l = UILabel()
-        l.translatesAutoresizingMaskIntoConstraints = false
-        l.text          = "Crear cuenta"
-        l.font          = AppFont.title1()
-        l.textColor     = .appTextPrimary
-        l.textAlignment = .center
-        return l
-    }()
-    private let subtitleLabel: UILabel = {
-        let l = UILabel()
-        l.translatesAutoresizingMaskIntoConstraints = false
-        l.text          = "Completa los datos para registrarte"
-        l.font          = AppFont.body()
-        l.textColor     = .appTextSecondary
-        l.textAlignment = .center
-        return l
-    }()
+    private var savedSecure: [UITextField: String] = [:]
 
     // MARK: - Lifecycle
 
@@ -44,15 +32,19 @@ final class RegistroViewController: UIViewController {
         setupView()
         setupFields()
         setupButtons()
-        setupProgrammaticViews()
+        applyThemeColors()
         setupKeyboard()
-        registerButton.isEnabled = false
-        registerButton.alpha = 0.6
+        // button always enabled — errors show only after first submit
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: animated)
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        navigationController?.navigationBar.standardAppearance   = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationController?.navigationBar.tintColor = .brandPrimary
+        navigationController?.setNavigationBarHidden(false, animated: animated)
     }
 
     // MARK: - Setup
@@ -75,58 +67,28 @@ final class RegistroViewController: UIViewController {
             AppStyle.style(textField: field, placeholder: ph, icon: icon,
                            isSecure: secure, keyboardType: keyboard, returnKey: returnKey)
             field.delegate = self
-            field.addTarget(self, action: #selector(fieldsChanged), for: .editingChanged)
         }
         nombreField.autocapitalizationType = .words
     }
 
     private func setupButtons() {
         AppStyle.applyPrimary(to: registerButton, title: "Crear cuenta")
-        registerButton.addTarget(self, action: #selector(handleRegister), for: .touchUpInside)
-
         AppStyle.applyText(to: loginButton, title: "Ya tengo una cuenta")
-        loginButton.addTarget(self, action: #selector(handleGoToLogin), for: .touchUpInside)
     }
 
-    /// Add error labels to the storyboard's contentView.
-    /// `nombreField.superview` is the storyboard-provided contentView inside the scrollView.
-    private func setupProgrammaticViews() {
-        guard let contentView = nombreField.superview else { return }
-        let ph = AppLayout.paddingLarge
-
-        for v in [titleLabel, subtitleLabel] { contentView.addSubview(v) }
+    /// Apply theme colors to storyboard-placed decorative views.
+    private func applyThemeColors() {
+        logoBackground.backgroundColor    = UIColor.brandPrimary.withAlphaComponent(0.10)
+        logoBackground.layer.cornerRadius = 50
+        logoImageView.tintColor           = .brandPrimary
+        titleLabel.font          = AppFont.title1()
+        titleLabel.textColor     = .appTextPrimary
+        subtitleLabel.font       = AppFont.body()
+        subtitleLabel.textColor  = .appTextSecondary
         for label in [nombreError, correoError, passwordError, confirmError] {
-            label.translatesAutoresizingMaskIntoConstraints = false
-            contentView.addSubview(label)
+            label?.textColor = .appError
+            label?.font      = AppFont.caption1()
         }
-
-        NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: ph),
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: ph),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -ph),
-
-            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
-            subtitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: ph),
-            subtitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -ph),
-
-            nombreField.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 32),
-
-            nombreError.topAnchor.constraint(equalTo: nombreField.bottomAnchor, constant: 4),
-            nombreError.leadingAnchor.constraint(equalTo: nombreField.leadingAnchor),
-            nombreError.trailingAnchor.constraint(equalTo: nombreField.trailingAnchor),
-
-            correoError.topAnchor.constraint(equalTo: correoField.bottomAnchor, constant: 4),
-            correoError.leadingAnchor.constraint(equalTo: correoField.leadingAnchor),
-            correoError.trailingAnchor.constraint(equalTo: correoField.trailingAnchor),
-
-            passwordError.topAnchor.constraint(equalTo: passwordField.bottomAnchor, constant: 4),
-            passwordError.leadingAnchor.constraint(equalTo: passwordField.leadingAnchor),
-            passwordError.trailingAnchor.constraint(equalTo: passwordField.trailingAnchor),
-
-            confirmError.topAnchor.constraint(equalTo: confirmField.bottomAnchor, constant: 4),
-            confirmError.leadingAnchor.constraint(equalTo: confirmField.leadingAnchor),
-            confirmError.trailingAnchor.constraint(equalTo: confirmField.trailingAnchor),
-        ])
     }
 
     private func setupKeyboard() {
@@ -140,7 +102,7 @@ final class RegistroViewController: UIViewController {
 
     // MARK: - Actions
 
-    @objc private func handleRegister() {
+    @IBAction @objc private func handleRegister(_ sender: UIButton) {
         hasAttemptedSubmit = true
         guard validate() else { return }
         Task {
@@ -161,10 +123,11 @@ final class RegistroViewController: UIViewController {
         }
     }
 
-    @objc private func handleGoToLogin() {
+    @IBAction @objc private func handleGoToLogin(_ sender: UIButton) {
         navigationController?.popViewController(animated: true)
     }
-    @objc private func fieldsChanged()   { _ = validate() }
+
+    @IBAction @objc private func fieldsChanged(_ sender: UITextField) { _ = validate() }
     @objc private func tapToDismiss() { view.endEditing(true) }
 
     @objc private func keyboardWillShow(_ n: NSNotification) {
@@ -191,9 +154,11 @@ final class RegistroViewController: UIViewController {
         let nombre = nombreField.text?.trimmed ?? ""
         if nombre.isEmpty {
             if hasAttemptedSubmit { setError(nombreError, nombreField, "El nombre es requerido.") }
+            else { clearError(nombreError, nombreField) }
             valid = false
         } else if nombre.count < 3 {
             if hasAttemptedSubmit { setError(nombreError, nombreField, "Ingresa tu nombre completo.") }
+            else { clearError(nombreError, nombreField) }
             valid = false
         } else { clearError(nombreError, nombreField) }
 
@@ -201,9 +166,11 @@ final class RegistroViewController: UIViewController {
         let correo = correoField.text?.trimmed ?? ""
         if correo.isEmpty {
             if hasAttemptedSubmit { setError(correoError, correoField, "El correo es requerido.") }
+            else { clearError(correoError, correoField) }
             valid = false
         } else if !correo.isValidEmail {
             if hasAttemptedSubmit { setError(correoError, correoField, "Formato de correo inválido.") }
+            else { clearError(correoError, correoField) }
             valid = false
         } else { clearError(correoError, correoField) }
 
@@ -211,9 +178,11 @@ final class RegistroViewController: UIViewController {
         let pwd = passwordField.text ?? ""
         if pwd.isEmpty {
             if hasAttemptedSubmit { setError(passwordError, passwordField, "La contraseña es requerida.") }
+            else { clearError(passwordError, passwordField) }
             valid = false
         } else if pwd.count < 6 {
             if hasAttemptedSubmit { setError(passwordError, passwordField, "Mínimo 6 caracteres.") }
+            else { clearError(passwordError, passwordField) }
             valid = false
         } else { clearError(passwordError, passwordField) }
 
@@ -221,14 +190,13 @@ final class RegistroViewController: UIViewController {
         let confirm = confirmField.text ?? ""
         if confirm.isEmpty {
             if hasAttemptedSubmit { setError(confirmError, confirmField, "Confirma tu contraseña.") }
+            else { clearError(confirmError, confirmField) }
             valid = false
         } else if confirm != pwd {
             if hasAttemptedSubmit { setError(confirmError, confirmField, "Las contraseñas no coinciden.") }
+            else { clearError(confirmError, confirmField) }
             valid = false
         } else { clearError(confirmError, confirmField) }
-
-        registerButton.isEnabled = valid
-        registerButton.alpha     = valid ? 1 : 0.6
         return valid
     }
 
@@ -250,8 +218,19 @@ extension RegistroViewController: UITextFieldDelegate {
         case nombreField:   correoField.becomeFirstResponder()
         case correoField:   passwordField.becomeFirstResponder()
         case passwordField: confirmField.becomeFirstResponder()
-        default:            textField.resignFirstResponder(); handleRegister()
+        default:            textField.resignFirstResponder(); handleRegister(registerButton)
         }
         return true
+    }
+
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if textField.isSecureTextEntry { savedSecure[textField] = textField.text }
+    }
+
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        guard textField.isSecureTextEntry,
+              let saved = savedSecure[textField], !saved.isEmpty,
+              (textField.text ?? "").isEmpty else { return }
+        textField.text = saved
     }
 }

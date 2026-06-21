@@ -8,55 +8,19 @@ final class LoginViewController: UIViewController {
     @IBOutlet weak var loginButton: UIButton!
     @IBOutlet weak var registerButton: UIButton!
 
+    // Storyboard-placed decorative views
+    @IBOutlet weak var logoBackground: UIView!
+    @IBOutlet weak var logoImageView: UIImageView!
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var subtitleLabel: UILabel!
+    @IBOutlet weak var seedCredentialsLabel: UILabel!
+
+    // Storyboard-placed error labels (T-03)
+    @IBOutlet weak var correoError: UILabel!
+    @IBOutlet weak var passwordError: UILabel!
+
     private var hasAttemptedSubmit = false
-
-    // MARK: - UI (programmatic — decorative, not IBOutlets)
-    private let correoError   = AppStyle.makeErrorLabel()
-    private let passwordError = AppStyle.makeErrorLabel()
-
-    private let logoBackground: UIView = {
-        let v = UIView()
-        v.translatesAutoresizingMaskIntoConstraints = false
-        v.backgroundColor    = UIColor.brandPrimary.withAlphaComponent(0.10)
-        v.layer.cornerRadius = 50
-        return v
-    }()
-    private let logoImageView: UIImageView = {
-        let iv = UIImageView(image: UIImage(systemName: "storefront.fill"))
-        iv.translatesAutoresizingMaskIntoConstraints = false
-        iv.tintColor   = .brandPrimary
-        iv.contentMode = .scaleAspectFit
-        return iv
-    }()
-    private let titleLabel: UILabel = {
-        let l = UILabel()
-        l.translatesAutoresizingMaskIntoConstraints = false
-        l.text          = "TecStore Manager"
-        l.font          = AppFont.title1()
-        l.textColor     = .appTextPrimary
-        l.textAlignment = .center
-        return l
-    }()
-    private let subtitleLabel: UILabel = {
-        let l = UILabel()
-        l.translatesAutoresizingMaskIntoConstraints = false
-        l.text          = "Inicia sesión para continuar"
-        l.font          = AppFont.body()
-        l.textColor     = .appTextSecondary
-        l.textAlignment = .center
-        return l
-    }()
-
-    private let seedCredentialsLabel: UILabel = {
-        let l = UILabel()
-        l.translatesAutoresizingMaskIntoConstraints = false
-        l.numberOfLines = 0
-        l.textAlignment = .center
-        l.font          = AppFont.caption1()
-        l.textColor     = .appTextTertiary
-        l.text          = "Cuentas de prueba\nana.garcia@tecsup.edu.pe  •  123456\ncarlos.mendoza@tecsup.edu.pe  •  123456"
-        return l
-    }()
+    private var savedSecure: [UITextField: String] = [:]
 
     // MARK: - Lifecycle
 
@@ -65,15 +29,19 @@ final class LoginViewController: UIViewController {
         setupView()
         setupFields()
         setupButtons()
-        setupProgrammaticViews()
+        applyThemeColors()
         setupKeyboard()
-        loginButton.isEnabled = false
-        loginButton.alpha = 0.6
+        // button always enabled — errors show only after first submit
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: animated)
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        navigationController?.navigationBar.standardAppearance   = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationController?.navigationBar.tintColor = .brandPrimary
+        navigationController?.setNavigationBarHidden(false, animated: animated)
     }
 
     // MARK: - Setup
@@ -92,7 +60,6 @@ final class LoginViewController: UIViewController {
                        keyboardType: .emailAddress,
                        returnKey: .next)
         correoField.delegate = self
-        correoField.addTarget(self, action: #selector(fieldsChanged), for: .editingChanged)
 
         AppStyle.style(textField: passwordField,
                        placeholder: "Contraseña",
@@ -100,74 +67,28 @@ final class LoginViewController: UIViewController {
                        isSecure: true,
                        returnKey: .done)
         passwordField.delegate = self
-        passwordField.addTarget(self, action: #selector(fieldsChanged), for: .editingChanged)
     }
 
     private func setupButtons() {
         AppStyle.applyPrimary(to: loginButton, title: "Iniciar sesión")
-        loginButton.addTarget(self, action: #selector(handleLogin), for: .touchUpInside)
-
         AppStyle.applyText(to: registerButton, title: "Crear una cuenta nueva")
     }
 
-    /// Add error labels and seed credentials to the view hierarchy.
-    /// Error labels are placed relative to their IBOutlet fields in the storyboard's contentView.
-    private func setupProgrammaticViews() {
-        guard let contentView = correoField.superview else { return }
-        let ph = AppLayout.paddingLarge
-
-        // Decorative header: logo + title + subtitle above the IBOutlet fields
-        logoBackground.addSubview(logoImageView)
-        for v in [logoBackground, titleLabel, subtitleLabel] { contentView.addSubview(v) }
-
-        // Error labels below their fields
-        for label in [correoError, passwordError] {
-            label.translatesAutoresizingMaskIntoConstraints = false
-            contentView.addSubview(label)
-        }
-
-        // Seed credentials hint at the bottom of the root view
-        view.addSubview(seedCredentialsLabel)
-
-        NSLayoutConstraint.activate([
-            // Logo circle
-            logoBackground.topAnchor.constraint(equalTo: contentView.topAnchor, constant: ph),
-            logoBackground.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            logoBackground.widthAnchor.constraint(equalToConstant: 100),
-            logoBackground.heightAnchor.constraint(equalToConstant: 100),
-
-            logoImageView.centerXAnchor.constraint(equalTo: logoBackground.centerXAnchor),
-            logoImageView.centerYAnchor.constraint(equalTo: logoBackground.centerYAnchor),
-            logoImageView.widthAnchor.constraint(equalToConstant: 48),
-            logoImageView.heightAnchor.constraint(equalToConstant: 48),
-
-            // Title
-            titleLabel.topAnchor.constraint(equalTo: logoBackground.bottomAnchor, constant: 16),
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: ph),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -ph),
-
-            // Subtitle
-            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
-            subtitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: ph),
-            subtitleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -ph),
-
-            // First field below subtitle
-            correoField.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 32),
-
-            // Error labels
-            correoError.topAnchor.constraint(equalTo: correoField.bottomAnchor, constant: 4),
-            correoError.leadingAnchor.constraint(equalTo: correoField.leadingAnchor),
-            correoError.trailingAnchor.constraint(equalTo: correoField.trailingAnchor),
-
-            passwordError.topAnchor.constraint(equalTo: passwordField.bottomAnchor, constant: 4),
-            passwordError.leadingAnchor.constraint(equalTo: passwordField.leadingAnchor),
-            passwordError.trailingAnchor.constraint(equalTo: passwordField.trailingAnchor),
-
-            // Seed hint
-            seedCredentialsLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: ph),
-            seedCredentialsLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -ph),
-            seedCredentialsLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-        ])
+    /// Apply theme colors to storyboard-placed decorative views.
+    private func applyThemeColors() {
+        logoBackground.backgroundColor    = UIColor.brandPrimary.withAlphaComponent(0.10)
+        logoBackground.layer.cornerRadius = 50
+        logoImageView.tintColor           = .brandPrimary
+        titleLabel.font                   = AppFont.title1()
+        titleLabel.textColor              = .appTextPrimary
+        subtitleLabel.font                = AppFont.body()
+        subtitleLabel.textColor           = .appTextSecondary
+        seedCredentialsLabel.font         = AppFont.caption1()
+        seedCredentialsLabel.textColor    = .appTextTertiary
+        correoError.textColor             = .appError
+        correoError.font                  = AppFont.caption1()
+        passwordError.textColor           = .appError
+        passwordError.font                = AppFont.caption1()
     }
 
     private func setupKeyboard() {
@@ -181,7 +102,7 @@ final class LoginViewController: UIViewController {
 
     // MARK: - Actions
 
-    @objc private func handleLogin() {
+    @IBAction @objc private func handleLogin(_ sender: UIButton) {
         hasAttemptedSubmit = true
         guard validate() else { return }
         loginButton.isEnabled = false
@@ -206,7 +127,7 @@ final class LoginViewController: UIViewController {
         }
     }
 
-    @objc private func fieldsChanged()   { _ = validate() }
+    @IBAction @objc private func fieldsChanged(_ sender: UITextField) { _ = validate() }
     @objc private func tapToDismiss() { view.endEditing(true) }
 
     @objc private func keyboardWillShow(_ n: NSNotification) {
@@ -232,9 +153,11 @@ final class LoginViewController: UIViewController {
         let correo = correoField.text?.trimmed ?? ""
         if correo.isEmpty {
             if hasAttemptedSubmit { setError(correoError, correoField, "El correo es requerido.") }
+            else { clearError(correoError, correoField) }
             valid = false
         } else if !correo.isValidEmail {
             if hasAttemptedSubmit { setError(correoError, correoField, "Formato de correo inválido.") }
+            else { clearError(correoError, correoField) }
             valid = false
         } else {
             clearError(correoError, correoField)
@@ -243,16 +166,15 @@ final class LoginViewController: UIViewController {
         let pwd = passwordField.text ?? ""
         if pwd.isEmpty {
             if hasAttemptedSubmit { setError(passwordError, passwordField, "La contraseña es requerida.") }
+            else { clearError(passwordError, passwordField) }
             valid = false
         } else if pwd.count < 6 {
             if hasAttemptedSubmit { setError(passwordError, passwordField, "Mínimo 6 caracteres.") }
+            else { clearError(passwordError, passwordField) }
             valid = false
         } else {
             clearError(passwordError, passwordField)
         }
-
-        loginButton.isEnabled = valid
-        loginButton.alpha     = valid ? 1 : 0.6
         return valid
     }
 
@@ -272,7 +194,18 @@ final class LoginViewController: UIViewController {
 extension LoginViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField == correoField { passwordField.becomeFirstResponder() }
-        else { textField.resignFirstResponder(); handleLogin() }
+        else { textField.resignFirstResponder(); handleLogin(loginButton) }
         return true
+    }
+
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if textField.isSecureTextEntry { savedSecure[textField] = textField.text }
+    }
+
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        guard textField.isSecureTextEntry,
+              let saved = savedSecure[textField], !saved.isEmpty,
+              (textField.text ?? "").isEmpty else { return }
+        textField.text = saved
     }
 }

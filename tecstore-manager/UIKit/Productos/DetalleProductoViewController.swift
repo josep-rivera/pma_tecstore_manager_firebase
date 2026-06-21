@@ -12,15 +12,20 @@ final class DetalleProductoViewController: UIViewController {
     @IBOutlet weak var stockBadge:     UILabel!
     @IBOutlet weak var estadoBadge:    UILabel!
 
+    // MARK: - IBOutlets (storyboard-placed, styled in code)
+    @IBOutlet weak var infoCard: UIView!
+    @IBOutlet weak var div1: UIView!
+    @IBOutlet weak var div2: UIView!
+    @IBOutlet weak var div3: UIView!
+    @IBOutlet weak var div4: UIView!
+
     // MARK: - UI (programmatic)
     private let codeLabel     = UILabel()
-    private let infoCard      = UIView()
     private let stockRow      = InfoRow()
     private let estadoRow     = InfoRow()
     private let codigoRow     = InfoRow()
     private let categoriaRow  = InfoRow()
     private let fechaRow      = InfoRow()
-    private let div1 = UIView(), div2 = UIView(), div3 = UIView(), div4 = UIView()
 
     // MARK: - Lifecycle
 
@@ -67,36 +72,32 @@ final class DetalleProductoViewController: UIViewController {
         let ph = AppLayout.paddingLarge
         let p  = AppLayout.padding
 
-        // Code/category subtitle below nombreLabel
+        // infoCard comes from storyboard; apply corner radius and color
+        infoCard.backgroundColor    = .appSurface
+        infoCard.layer.cornerRadius = AppLayout.cornerRadius
+        infoCard.layer.cornerCurve  = .continuous
+
+        // divs come from storyboard; apply separator color
+        for div in ([div1, div2, div3, div4] as [UIView]) {
+            div.backgroundColor = .appSeparator
+        }
+
+        // Code/category subtitle below nombreLabel (programmatic — dynamic content)
         codeLabel.translatesAutoresizingMaskIntoConstraints = false
         codeLabel.font      = .systemFont(ofSize: 13, weight: .regular)
         codeLabel.textColor = .appTextSecondary
         contentView.addSubview(codeLabel)
 
-        // Card
-        infoCard.translatesAutoresizingMaskIntoConstraints = false
-        infoCard.backgroundColor    = .appSurface
-        infoCard.layer.cornerRadius = AppLayout.cornerRadius
-        infoCard.layer.cornerCurve  = .continuous
-        contentView.addSubview(infoCard)
-
         let rows: [InfoRow] = [stockRow, estadoRow, codigoRow, categoriaRow, fechaRow]
-        let divs: [UIView]  = [div1, div2, div3, div4]
         for row in rows { row.translatesAutoresizingMaskIntoConstraints = false; infoCard.addSubview(row) }
-        for div in divs { div.translatesAutoresizingMaskIntoConstraints = false; div.backgroundColor = .appSeparator; infoCard.addSubview(div) }
 
         NSLayoutConstraint.activate([
             codeLabel.topAnchor.constraint(equalTo: nombreLabel.bottomAnchor, constant: 4),
             codeLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: ph),
             codeLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -ph),
-
-            infoCard.topAnchor.constraint(equalTo: codeLabel.bottomAnchor, constant: ph),
-            infoCard.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: ph),
-            infoCard.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -ph),
-            infoCard.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -ph),
         ])
 
-        // Stack rows inside infoCard with dividers
+        // Stack rows inside infoCard with storyboard-placed dividers
         NSLayoutConstraint.activate([
             stockRow.topAnchor.constraint(equalTo: infoCard.topAnchor),
             stockRow.leadingAnchor.constraint(equalTo: infoCard.leadingAnchor),

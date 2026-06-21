@@ -22,54 +22,97 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="AAA-14-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="200" y="200"/>
+            <point key="canvasLocation" x="199" y="-11"/>
         </scene>
         <!--Login View Controller-->
         <scene sceneID="BBB-10-sce">
             <objects>
                 <viewController storyboardIdentifier="LoginViewController" id="BBB-11-lvc" customClass="LoginViewController" customModule="tecstore_manager" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="BBB-12-vew">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="793"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BBB-13-scv">
-                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="793"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BBB-14-cnt">
-                                        <rect key="frame" x="0.0" y="0.0" width="393" height="798"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="393" height="721"/>
                                         <subviews>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BBB-50-lbg">
+                                                <rect key="frame" x="146.66666666666666" y="24" width="100" height="100"/>
+                                                <subviews>
+                                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="storefront.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="BBB-51-liv">
+                                                        <rect key="frame" x="26" y="26" width="48" height="48"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="48" id="BBB-57-liw"/>
+                                                            <constraint firstAttribute="height" constant="48" id="BBB-58-lih"/>
+                                                        </constraints>
+                                                    </imageView>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="100" id="BBB-55-lbw"/>
+                                                    <constraint firstAttribute="height" constant="100" id="BBB-56-lbh"/>
+                                                    <constraint firstItem="BBB-51-liv" firstAttribute="centerX" secondItem="BBB-50-lbg" secondAttribute="centerX" id="BBB-59-lcx"/>
+                                                    <constraint firstItem="BBB-51-liv" firstAttribute="centerY" secondItem="BBB-50-lbg" secondAttribute="centerY" id="BBB-60-lcy"/>
+                                                </constraints>
+                                            </view>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="TecStore Manager" textAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BBB-52-ttl">
+                                                <rect key="frame" x="24" y="140" width="345" height="21"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Inicia sesión para continuar" textAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BBB-53-sub">
+                                                <rect key="frame" x="24" y="169" width="345" height="18"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                            </label>
                                             <textField contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Correo electrónico" translatesAutoresizingMaskIntoConstraints="NO" id="BBB-20-cof">
-                                                <rect key="frame" x="24" y="280" width="345" height="44"/>
+                                                <rect key="frame" x="24" y="219" width="345" height="44"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <textInputTraits key="textInputTraits"/>
+                                                <connections>
+                                                    <action selector="fieldsChanged:" destination="BBB-11-lvc" eventType="editingChanged" id="BBB-a20-fch"/>
+                                                </connections>
                                             </textField>
+                                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" numberOfLines="0" translatesAutoresizingMaskIntoConstraints="NO" id="BBB-28-cer">
+                                                <rect key="frame" x="24" y="267" width="345" height="0.0"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                            </label>
                                             <textField contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Contraseña" translatesAutoresizingMaskIntoConstraints="NO" id="BBB-21-pwf">
-                                                <rect key="frame" x="24" y="340" width="345" height="44"/>
+                                                <rect key="frame" x="24" y="271" width="345" height="44"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <textInputTraits key="textInputTraits"/>
+                                                <connections>
+                                                    <action selector="fieldsChanged:" destination="BBB-11-lvc" eventType="editingChanged" id="BBB-a21-fch"/>
+                                                </connections>
                                             </textField>
+                                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" numberOfLines="0" translatesAutoresizingMaskIntoConstraints="NO" id="BBB-29-per">
+                                                <rect key="frame" x="24" y="319" width="345" height="0.0"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                            </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BBB-22-lbt">
-                                                <rect key="frame" x="24" y="408" width="345" height="50"/>
+                                                <rect key="frame" x="24" y="331" width="345" height="50"/>
                                                 <state key="normal" title="Iniciar sesión"/>
+                                                <connections>
+                                                    <action selector="handleLogin:" destination="BBB-11-lvc" eventType="touchUpInside" id="BBB-a22-hlo"/>
+                                                </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BBB-23-rbt">
-                                                <rect key="frame" x="24" y="474" width="345" height="44"/>
+                                                <rect key="frame" x="24" y="397" width="345" height="44"/>
                                                 <state key="normal" title="Crear cuenta"/>
                                                 <connections>
-                                                    <segue destination="CCC-11-rvc" kind="show" id="BBB-80-seg"/>
+                                                    <segue destination="CCC-11-rvc" kind="show" id="BBB-seg-register"/>
                                                 </connections>
                                             </button>
                                         </subviews>
                                         <constraints>
-                                            <constraint firstItem="BBB-20-cof" firstAttribute="top" secondItem="BBB-14-cnt" secondAttribute="top" constant="280" id="BBB-30-c01"/>
+                                            <constraint firstItem="BBB-20-cof" firstAttribute="top" secondItem="BBB-53-sub" secondAttribute="bottom" constant="32" id="BBB-30-c01"/>
                                             <constraint firstItem="BBB-20-cof" firstAttribute="leading" secondItem="BBB-14-cnt" secondAttribute="leading" constant="24" id="BBB-31-c02"/>
                                             <constraint firstAttribute="trailing" secondItem="BBB-20-cof" secondAttribute="trailing" constant="24" id="BBB-32-c03"/>
                                             <constraint firstItem="BBB-20-cof" firstAttribute="height" constant="44" id="BBB-33-c04"/>
-                                            <constraint firstItem="BBB-21-pwf" firstAttribute="top" secondItem="BBB-20-cof" secondAttribute="bottom" constant="16" id="BBB-34-c05"/>
+                                            <constraint firstItem="BBB-21-pwf" firstAttribute="top" secondItem="BBB-28-cer" secondAttribute="bottom" constant="4" id="BBB-34-c05"/>
                                             <constraint firstItem="BBB-21-pwf" firstAttribute="leading" secondItem="BBB-14-cnt" secondAttribute="leading" constant="24" id="BBB-35-c06"/>
                                             <constraint firstAttribute="trailing" secondItem="BBB-21-pwf" secondAttribute="trailing" constant="24" id="BBB-36-c07"/>
                                             <constraint firstItem="BBB-21-pwf" firstAttribute="height" constant="44" id="BBB-37-c08"/>
-                                            <constraint firstItem="BBB-22-lbt" firstAttribute="top" secondItem="BBB-21-pwf" secondAttribute="bottom" constant="24" id="BBB-38-c09"/>
+                                            <constraint firstItem="BBB-22-lbt" firstAttribute="top" secondItem="BBB-29-per" secondAttribute="bottom" constant="12" id="BBB-38-c09"/>
                                             <constraint firstItem="BBB-22-lbt" firstAttribute="leading" secondItem="BBB-14-cnt" secondAttribute="leading" constant="24" id="BBB-39-c10"/>
                                             <constraint firstAttribute="trailing" secondItem="BBB-22-lbt" secondAttribute="trailing" constant="24" id="BBB-40-c11"/>
                                             <constraint firstItem="BBB-22-lbt" firstAttribute="height" constant="50" id="BBB-41-c12"/>
@@ -78,6 +121,20 @@
                                             <constraint firstAttribute="trailing" secondItem="BBB-23-rbt" secondAttribute="trailing" constant="24" id="BBB-44-c15"/>
                                             <constraint firstItem="BBB-23-rbt" firstAttribute="height" constant="44" id="BBB-45-c16"/>
                                             <constraint firstItem="BBB-23-rbt" firstAttribute="bottom" secondItem="BBB-14-cnt" secondAttribute="bottom" constant="-280" id="BBB-46-c17"/>
+                                            <constraint firstItem="BBB-50-lbg" firstAttribute="top" secondItem="BBB-14-cnt" secondAttribute="top" constant="24" id="BBB-61-lbt"/>
+                                            <constraint firstItem="BBB-50-lbg" firstAttribute="centerX" secondItem="BBB-14-cnt" secondAttribute="centerX" id="BBB-62-lcx"/>
+                                            <constraint firstItem="BBB-52-ttl" firstAttribute="top" secondItem="BBB-50-lbg" secondAttribute="bottom" constant="16" id="BBB-63-ttt"/>
+                                            <constraint firstItem="BBB-52-ttl" firstAttribute="leading" secondItem="BBB-14-cnt" secondAttribute="leading" constant="24" id="BBB-64-ttl"/>
+                                            <constraint firstAttribute="trailing" secondItem="BBB-52-ttl" secondAttribute="trailing" constant="24" id="BBB-65-ttr"/>
+                                            <constraint firstItem="BBB-53-sub" firstAttribute="top" secondItem="BBB-52-ttl" secondAttribute="bottom" constant="8" id="BBB-66-sbt"/>
+                                            <constraint firstItem="BBB-53-sub" firstAttribute="leading" secondItem="BBB-14-cnt" secondAttribute="leading" constant="24" id="BBB-67-sbl"/>
+                                            <constraint firstAttribute="trailing" secondItem="BBB-53-sub" secondAttribute="trailing" constant="24" id="BBB-68-sbtr"/>
+                                            <constraint firstItem="BBB-28-cer" firstAttribute="leading" secondItem="BBB-20-cof" secondAttribute="leading" id="BBB-c28-l"/>
+                                            <constraint firstItem="BBB-28-cer" firstAttribute="trailing" secondItem="BBB-20-cof" secondAttribute="trailing" id="BBB-c28-r"/>
+                                            <constraint firstItem="BBB-28-cer" firstAttribute="top" secondItem="BBB-20-cof" secondAttribute="bottom" constant="4" id="BBB-c28-t"/>
+                                            <constraint firstItem="BBB-29-per" firstAttribute="leading" secondItem="BBB-21-pwf" secondAttribute="leading" id="BBB-c29-l"/>
+                                            <constraint firstItem="BBB-29-per" firstAttribute="trailing" secondItem="BBB-21-pwf" secondAttribute="trailing" id="BBB-c29-r"/>
+                                            <constraint firstItem="BBB-29-per" firstAttribute="top" secondItem="BBB-21-pwf" secondAttribute="bottom" constant="4" id="BBB-c29-t"/>
                                         </constraints>
                                     </view>
                                 </subviews>
@@ -90,6 +147,13 @@
                                     <constraint firstItem="BBB-14-cnt" firstAttribute="width" secondItem="BBB-13-scv" secondAttribute="width" id="BBB-54-c22"/>
                                 </constraints>
                             </scrollView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" translatesAutoresizingMaskIntoConstraints="NO" id="BBB-54-sed">
+                                <rect key="frame" x="24" y="737.33333333333337" width="345" height="39.666666666666629"/>
+                                <string key="text">Cuentas de prueba
+ana.garcia@tecsup.edu.pe  •  123456
+carlos.mendoza@tecsup.edu.pe  •  123456</string>
+                                <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="BBB-15-sag"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -98,80 +162,150 @@
                             <constraint firstItem="BBB-13-scv" firstAttribute="leading" secondItem="BBB-12-vew" secondAttribute="leading" id="BBB-61-c24"/>
                             <constraint firstItem="BBB-13-scv" firstAttribute="trailing" secondItem="BBB-12-vew" secondAttribute="trailing" id="BBB-62-c25"/>
                             <constraint firstItem="BBB-13-scv" firstAttribute="bottom" secondItem="BBB-12-vew" secondAttribute="bottom" id="BBB-63-c26"/>
+                            <constraint firstItem="BBB-54-sed" firstAttribute="leading" secondItem="BBB-12-vew" secondAttribute="leading" constant="24" id="BBB-69-sel"/>
+                            <constraint firstAttribute="trailing" secondItem="BBB-54-sed" secondAttribute="trailing" constant="24" id="BBB-70-setr"/>
+                            <constraint firstItem="BBB-54-sed" firstAttribute="bottom" secondItem="BBB-15-sag" secondAttribute="bottom" constant="-16" id="BBB-71-seb"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="correoError" destination="BBB-28-cer" id="BBB-o28-cer"/>
                         <outlet property="correoField" destination="BBB-20-cof" id="BBB-70-o01"/>
                         <outlet property="loginButton" destination="BBB-22-lbt" id="BBB-72-o03"/>
+                        <outlet property="logoBackground" destination="BBB-50-lbg" id="BBB-74-o05"/>
+                        <outlet property="logoImageView" destination="BBB-51-liv" id="BBB-75-o06"/>
+                        <outlet property="passwordError" destination="BBB-29-per" id="BBB-o29-per"/>
                         <outlet property="passwordField" destination="BBB-21-pwf" id="BBB-71-o02"/>
                         <outlet property="registerButton" destination="BBB-23-rbt" id="BBB-73-o04"/>
+                        <outlet property="seedCredentialsLabel" destination="BBB-54-sed" id="BBB-76-o07"/>
+                        <outlet property="subtitleLabel" destination="BBB-53-sub" id="BBB-78-o09"/>
+                        <outlet property="titleLabel" destination="BBB-52-ttl" id="BBB-77-o08"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BBB-16-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="900" y="200"/>
+            <point key="canvasLocation" x="900" y="-11"/>
         </scene>
         <!--Registro View Controller-->
         <scene sceneID="CCC-10-sce">
             <objects>
                 <viewController storyboardIdentifier="RegistroViewController" id="CCC-11-rvc" customClass="RegistroViewController" customModule="tecstore_manager" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="CCC-12-vew">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="793"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CCC-13-scv">
-                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="793"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CCC-14-cnt">
-                                        <rect key="frame" x="0.0" y="0.0" width="393" height="718"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="393" height="745"/>
                                         <subviews>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CCC-90-lbg">
+                                                <rect key="frame" x="146.66666666666666" y="24" width="100" height="100"/>
+                                                <subviews>
+                                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="storefront.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="CCC-91-liv">
+                                                        <rect key="frame" x="26" y="26" width="48" height="48"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="48" id="CCC-96-liw"/>
+                                                            <constraint firstAttribute="height" constant="48" id="CCC-97-lih"/>
+                                                        </constraints>
+                                                    </imageView>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="100" id="CCC-92-lbw"/>
+                                                    <constraint firstAttribute="height" constant="100" id="CCC-93-lbh"/>
+                                                    <constraint firstItem="CCC-91-liv" firstAttribute="centerX" secondItem="CCC-90-lbg" secondAttribute="centerX" id="CCC-94-lcx"/>
+                                                    <constraint firstItem="CCC-91-liv" firstAttribute="centerY" secondItem="CCC-90-lbg" secondAttribute="centerY" id="CCC-95-lcy"/>
+                                                </constraints>
+                                            </view>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Crear cuenta" textAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CCC-26-ttl">
+                                                <rect key="frame" x="24" y="140" width="345" height="21"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Completa los datos para registrarte" textAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CCC-27-sub">
+                                                <rect key="frame" x="24" y="169" width="345" height="18"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                            </label>
                                             <textField contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Nombre completo" translatesAutoresizingMaskIntoConstraints="NO" id="CCC-20-nmf">
-                                                <rect key="frame" x="24" y="160" width="345" height="44"/>
+                                                <rect key="frame" x="24" y="219" width="345" height="44"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <textInputTraits key="textInputTraits"/>
+                                                <connections>
+                                                    <action selector="fieldsChanged:" destination="CCC-11-rvc" eventType="editingChanged" id="CCC-a20-fch"/>
+                                                </connections>
                                             </textField>
+                                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" numberOfLines="0" translatesAutoresizingMaskIntoConstraints="NO" id="CCC-30-ner">
+                                                <rect key="frame" x="24" y="267" width="345" height="0.0"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                            </label>
                                             <textField contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Correo electrónico" translatesAutoresizingMaskIntoConstraints="NO" id="CCC-21-cof">
-                                                <rect key="frame" x="24" y="220" width="345" height="44"/>
+                                                <rect key="frame" x="24" y="271" width="345" height="44"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <textInputTraits key="textInputTraits"/>
+                                                <connections>
+                                                    <action selector="fieldsChanged:" destination="CCC-11-rvc" eventType="editingChanged" id="CCC-a21-fch"/>
+                                                </connections>
                                             </textField>
+                                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" numberOfLines="0" translatesAutoresizingMaskIntoConstraints="NO" id="CCC-31-cer">
+                                                <rect key="frame" x="24" y="319" width="345" height="0.0"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                            </label>
                                             <textField contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Contraseña" translatesAutoresizingMaskIntoConstraints="NO" id="CCC-22-pwf">
-                                                <rect key="frame" x="24" y="280" width="345" height="44"/>
+                                                <rect key="frame" x="24" y="323" width="345" height="44"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <textInputTraits key="textInputTraits"/>
+                                                <connections>
+                                                    <action selector="fieldsChanged:" destination="CCC-11-rvc" eventType="editingChanged" id="CCC-a22-fch"/>
+                                                </connections>
                                             </textField>
+                                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" numberOfLines="0" translatesAutoresizingMaskIntoConstraints="NO" id="CCC-32-per">
+                                                <rect key="frame" x="24" y="371" width="345" height="0.0"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                            </label>
                                             <textField contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Confirmar contraseña" translatesAutoresizingMaskIntoConstraints="NO" id="CCC-23-cnf">
-                                                <rect key="frame" x="24" y="340" width="345" height="44"/>
+                                                <rect key="frame" x="24" y="375" width="345" height="44"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <textInputTraits key="textInputTraits"/>
+                                                <connections>
+                                                    <action selector="fieldsChanged:" destination="CCC-11-rvc" eventType="editingChanged" id="CCC-a23-fch"/>
+                                                </connections>
                                             </textField>
+                                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" numberOfLines="0" translatesAutoresizingMaskIntoConstraints="NO" id="CCC-33-cfer">
+                                                <rect key="frame" x="24" y="423" width="345" height="0.0"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                            </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CCC-24-rbt">
-                                                <rect key="frame" x="24" y="408" width="345" height="50"/>
+                                                <rect key="frame" x="24" y="435" width="345" height="50"/>
                                                 <state key="normal" title="Registrarse"/>
+                                                <connections>
+                                                    <action selector="handleRegister:" destination="CCC-11-rvc" eventType="touchUpInside" id="CCC-a24-hrg"/>
+                                                </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CCC-25-lbt">
-                                                <rect key="frame" x="24" y="474" width="345" height="44"/>
+                                                <rect key="frame" x="24" y="501" width="345" height="44"/>
                                                 <state key="normal" title="Ya tengo cuenta"/>
+                                                <connections>
+                                                    <action selector="handleGoToLogin:" destination="CCC-11-rvc" eventType="touchUpInside" id="CCC-a25-hgl"/>
+                                                </connections>
                                             </button>
                                         </subviews>
                                         <constraints>
-                                            <constraint firstItem="CCC-20-nmf" firstAttribute="top" secondItem="CCC-14-cnt" secondAttribute="top" constant="160" id="CCC-30-c01"/>
+                                            <constraint firstItem="CCC-20-nmf" firstAttribute="top" secondItem="CCC-27-sub" secondAttribute="bottom" constant="32" id="CCC-30-c01"/>
                                             <constraint firstItem="CCC-20-nmf" firstAttribute="leading" secondItem="CCC-14-cnt" secondAttribute="leading" constant="24" id="CCC-31-c02"/>
                                             <constraint firstAttribute="trailing" secondItem="CCC-20-nmf" secondAttribute="trailing" constant="24" id="CCC-32-c03"/>
                                             <constraint firstItem="CCC-20-nmf" firstAttribute="height" constant="44" id="CCC-33-c04"/>
-                                            <constraint firstItem="CCC-21-cof" firstAttribute="top" secondItem="CCC-20-nmf" secondAttribute="bottom" constant="16" id="CCC-34-c05"/>
+                                            <constraint firstItem="CCC-21-cof" firstAttribute="top" secondItem="CCC-30-ner" secondAttribute="bottom" constant="4" id="CCC-34-c05"/>
                                             <constraint firstItem="CCC-21-cof" firstAttribute="leading" secondItem="CCC-14-cnt" secondAttribute="leading" constant="24" id="CCC-35-c06"/>
                                             <constraint firstAttribute="trailing" secondItem="CCC-21-cof" secondAttribute="trailing" constant="24" id="CCC-36-c07"/>
                                             <constraint firstItem="CCC-21-cof" firstAttribute="height" constant="44" id="CCC-37-c08"/>
-                                            <constraint firstItem="CCC-22-pwf" firstAttribute="top" secondItem="CCC-21-cof" secondAttribute="bottom" constant="16" id="CCC-38-c09"/>
+                                            <constraint firstItem="CCC-22-pwf" firstAttribute="top" secondItem="CCC-31-cer" secondAttribute="bottom" constant="4" id="CCC-38-c09"/>
                                             <constraint firstItem="CCC-22-pwf" firstAttribute="leading" secondItem="CCC-14-cnt" secondAttribute="leading" constant="24" id="CCC-39-c10"/>
                                             <constraint firstAttribute="trailing" secondItem="CCC-22-pwf" secondAttribute="trailing" constant="24" id="CCC-40-c11"/>
                                             <constraint firstItem="CCC-22-pwf" firstAttribute="height" constant="44" id="CCC-41-c12"/>
-                                            <constraint firstItem="CCC-23-cnf" firstAttribute="top" secondItem="CCC-22-pwf" secondAttribute="bottom" constant="16" id="CCC-42-c13"/>
+                                            <constraint firstItem="CCC-23-cnf" firstAttribute="top" secondItem="CCC-32-per" secondAttribute="bottom" constant="4" id="CCC-42-c13"/>
                                             <constraint firstItem="CCC-23-cnf" firstAttribute="leading" secondItem="CCC-14-cnt" secondAttribute="leading" constant="24" id="CCC-43-c14"/>
                                             <constraint firstAttribute="trailing" secondItem="CCC-23-cnf" secondAttribute="trailing" constant="24" id="CCC-44-c15"/>
                                             <constraint firstItem="CCC-23-cnf" firstAttribute="height" constant="44" id="CCC-45-c16"/>
-                                            <constraint firstItem="CCC-24-rbt" firstAttribute="top" secondItem="CCC-23-cnf" secondAttribute="bottom" constant="24" id="CCC-46-c17"/>
+                                            <constraint firstItem="CCC-24-rbt" firstAttribute="top" secondItem="CCC-33-cfer" secondAttribute="bottom" constant="12" id="CCC-46-c17"/>
                                             <constraint firstItem="CCC-24-rbt" firstAttribute="leading" secondItem="CCC-14-cnt" secondAttribute="leading" constant="24" id="CCC-47-c18"/>
                                             <constraint firstAttribute="trailing" secondItem="CCC-24-rbt" secondAttribute="trailing" constant="24" id="CCC-48-c19"/>
                                             <constraint firstItem="CCC-24-rbt" firstAttribute="height" constant="50" id="CCC-49-c20"/>
@@ -180,6 +314,26 @@
                                             <constraint firstAttribute="trailing" secondItem="CCC-25-lbt" secondAttribute="trailing" constant="24" id="CCC-52-c23"/>
                                             <constraint firstItem="CCC-25-lbt" firstAttribute="height" constant="44" id="CCC-53-c24"/>
                                             <constraint firstItem="CCC-25-lbt" firstAttribute="bottom" secondItem="CCC-14-cnt" secondAttribute="bottom" constant="-200" id="CCC-54-c25"/>
+                                            <constraint firstItem="CCC-26-ttl" firstAttribute="top" secondItem="CCC-14-cnt" secondAttribute="top" constant="140" id="CCC-56-ttt"/>
+                                            <constraint firstItem="CCC-26-ttl" firstAttribute="leading" secondItem="CCC-14-cnt" secondAttribute="leading" constant="24" id="CCC-57-ttl"/>
+                                            <constraint firstAttribute="trailing" secondItem="CCC-26-ttl" secondAttribute="trailing" constant="24" id="CCC-58-ttr"/>
+                                            <constraint firstItem="CCC-27-sub" firstAttribute="top" secondItem="CCC-26-ttl" secondAttribute="bottom" constant="8" id="CCC-59-sbt"/>
+                                            <constraint firstItem="CCC-27-sub" firstAttribute="leading" secondItem="CCC-14-cnt" secondAttribute="leading" constant="24" id="CCC-60-sbl"/>
+                                            <constraint firstAttribute="trailing" secondItem="CCC-27-sub" secondAttribute="trailing" constant="24" id="CCC-61-sbtr"/>
+                                            <constraint firstItem="CCC-90-lbg" firstAttribute="top" secondItem="CCC-14-cnt" secondAttribute="top" constant="24" id="CCC-98-ltp"/>
+                                            <constraint firstItem="CCC-90-lbg" firstAttribute="centerX" secondItem="CCC-14-cnt" secondAttribute="centerX" id="CCC-99-lcx"/>
+                                            <constraint firstItem="CCC-30-ner" firstAttribute="leading" secondItem="CCC-20-nmf" secondAttribute="leading" id="CCC-c30-l"/>
+                                            <constraint firstItem="CCC-30-ner" firstAttribute="trailing" secondItem="CCC-20-nmf" secondAttribute="trailing" id="CCC-c30-r"/>
+                                            <constraint firstItem="CCC-30-ner" firstAttribute="top" secondItem="CCC-20-nmf" secondAttribute="bottom" constant="4" id="CCC-c30-t"/>
+                                            <constraint firstItem="CCC-31-cer" firstAttribute="leading" secondItem="CCC-21-cof" secondAttribute="leading" id="CCC-c31-l"/>
+                                            <constraint firstItem="CCC-31-cer" firstAttribute="trailing" secondItem="CCC-21-cof" secondAttribute="trailing" id="CCC-c31-r"/>
+                                            <constraint firstItem="CCC-31-cer" firstAttribute="top" secondItem="CCC-21-cof" secondAttribute="bottom" constant="4" id="CCC-c31-t"/>
+                                            <constraint firstItem="CCC-32-per" firstAttribute="leading" secondItem="CCC-22-pwf" secondAttribute="leading" id="CCC-c32-l"/>
+                                            <constraint firstItem="CCC-32-per" firstAttribute="trailing" secondItem="CCC-22-pwf" secondAttribute="trailing" id="CCC-c32-r"/>
+                                            <constraint firstItem="CCC-32-per" firstAttribute="top" secondItem="CCC-22-pwf" secondAttribute="bottom" constant="4" id="CCC-c32-t"/>
+                                            <constraint firstItem="CCC-33-cfer" firstAttribute="leading" secondItem="CCC-23-cnf" secondAttribute="leading" id="CCC-c33-l"/>
+                                            <constraint firstItem="CCC-33-cfer" firstAttribute="trailing" secondItem="CCC-23-cnf" secondAttribute="trailing" id="CCC-c33-r"/>
+                                            <constraint firstItem="CCC-33-cfer" firstAttribute="top" secondItem="CCC-23-cnf" secondAttribute="bottom" constant="4" id="CCC-c33-t"/>
                                         </constraints>
                                     </view>
                                 </subviews>
@@ -203,17 +357,25 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="confirmError" destination="CCC-33-cfer" id="CCC-o33-cfer"/>
                         <outlet property="confirmField" destination="CCC-23-cnf" id="CCC-83-o04"/>
+                        <outlet property="correoError" destination="CCC-31-cer" id="CCC-o31-cer"/>
                         <outlet property="correoField" destination="CCC-21-cof" id="CCC-81-o02"/>
                         <outlet property="loginButton" destination="CCC-25-lbt" id="CCC-85-o06"/>
+                        <outlet property="logoBackground" destination="CCC-90-lbg" id="CCC-o90-lbg"/>
+                        <outlet property="logoImageView" destination="CCC-91-liv" id="CCC-o91-liv"/>
+                        <outlet property="nombreError" destination="CCC-30-ner" id="CCC-o30-ner"/>
                         <outlet property="nombreField" destination="CCC-20-nmf" id="CCC-80-o01"/>
+                        <outlet property="passwordError" destination="CCC-32-per" id="CCC-o32-per"/>
                         <outlet property="passwordField" destination="CCC-22-pwf" id="CCC-82-o03"/>
                         <outlet property="registerButton" destination="CCC-24-rbt" id="CCC-84-o05"/>
+                        <outlet property="subtitleLabel" destination="CCC-27-sub" id="CCC-87-o08"/>
+                        <outlet property="titleLabel" destination="CCC-26-ttl" id="CCC-86-o07"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CCC-16-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1600" y="200"/>
+            <point key="canvasLocation" x="1599" y="-11"/>
         </scene>
         <!--Lista Productos View Controller-->
         <scene sceneID="DDD-10-sce">
@@ -230,6 +392,9 @@
                                     <segment title="Con stock"/>
                                     <segment title="Sin stock"/>
                                 </segments>
+                                <connections>
+                                    <action selector="segmentChanged:" destination="DDD-11-lvc" eventType="valueChanged" id="DDD-a20-sgc"/>
+                                </connections>
                             </segmentedControl>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="DDD-21-tbv">
                                 <rect key="frame" x="0.0" y="211" width="393" height="641"/>
@@ -243,6 +408,10 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No hay productos" textAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DDD-23-eml">
+                                <rect key="frame" x="132" y="416.33333333333331" width="129" height="19.333333333333314"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="DDD-15-sag"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -254,6 +423,8 @@
                             <constraint firstItem="DDD-21-tbv" firstAttribute="leading" secondItem="DDD-12-vew" secondAttribute="leading" id="DDD-34-c05"/>
                             <constraint firstItem="DDD-21-tbv" firstAttribute="trailing" secondItem="DDD-12-vew" secondAttribute="trailing" id="DDD-35-c06"/>
                             <constraint firstItem="DDD-21-tbv" firstAttribute="bottom" secondItem="DDD-12-vew" secondAttribute="bottom" id="DDD-36-c07"/>
+                            <constraint firstItem="DDD-23-eml" firstAttribute="centerX" secondItem="DDD-12-vew" secondAttribute="centerX" id="DDD-37-eml-cx"/>
+                            <constraint firstItem="DDD-23-eml" firstAttribute="centerY" secondItem="DDD-12-vew" secondAttribute="centerY" id="DDD-38-eml-cy"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="DDD-90-nvi">
@@ -264,6 +435,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="emptyLabel" destination="DDD-23-eml" id="DDD-42-o03"/>
                         <outlet property="segmentedControl" destination="DDD-20-sgc" id="DDD-40-o01"/>
                         <outlet property="tableView" destination="DDD-21-tbv" id="DDD-41-o02"/>
                     </connections>
@@ -286,35 +458,54 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EEE-14-cnt">
                                         <rect key="frame" x="0.0" y="0.0" width="393" height="768"/>
                                         <subviews>
-                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="EEE-20-img">
+                                            <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="camera.fill" id="EEE-20-img">
                                                 <rect key="frame" x="24" y="24" width="345" height="200"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             </imageView>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EEE-21-pbt">
                                                 <rect key="frame" x="24" y="240" width="345" height="44"/>
                                                 <state key="normal" title="Seleccionar foto"/>
+                                                <connections>
+                                                    <action selector="handleSelectPhoto:" destination="EEE-11-fvc" eventType="touchUpInside" id="EEE-a21-hsp"/>
+                                                </connections>
                                             </button>
                                             <textField contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Nombre del producto" translatesAutoresizingMaskIntoConstraints="NO" id="EEE-22-nmf">
                                                 <rect key="frame" x="24" y="300" width="345" height="44"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <textInputTraits key="textInputTraits"/>
+                                                <connections>
+                                                    <action selector="fieldsChanged:" destination="EEE-11-fvc" eventType="editingChanged" id="EEE-a22-fch"/>
+                                                </connections>
                                             </textField>
                                             <textField contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Categoría" translatesAutoresizingMaskIntoConstraints="NO" id="EEE-23-ctf">
                                                 <rect key="frame" x="24" y="360" width="345" height="44"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <textInputTraits key="textInputTraits"/>
+                                                <connections>
+                                                    <action selector="fieldsChanged:" destination="EEE-11-fvc" eventType="editingChanged" id="EEE-a23-fch"/>
+                                                </connections>
                                             </textField>
                                             <textField contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Precio" translatesAutoresizingMaskIntoConstraints="NO" id="EEE-24-prf">
                                                 <rect key="frame" x="24" y="420" width="345" height="44"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <textInputTraits key="textInputTraits"/>
+                                                <connections>
+                                                    <action selector="fieldsChanged:" destination="EEE-11-fvc" eventType="editingChanged" id="EEE-a24-fch"/>
+                                                </connections>
                                             </textField>
                                             <textField contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Stock" translatesAutoresizingMaskIntoConstraints="NO" id="EEE-25-stf">
                                                 <rect key="frame" x="24" y="480" width="345" height="44"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <textInputTraits key="textInputTraits"/>
+                                                <connections>
+                                                    <action selector="fieldsChanged:" destination="EEE-11-fvc" eventType="editingChanged" id="EEE-a25-fch"/>
+                                                </connections>
                                             </textField>
                                             <switch contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="EEE-26-swt">
                                                 <rect key="frame" x="24" y="540" width="63" height="28"/>
+                                                <connections>
+                                                    <action selector="estadoChanged:" destination="EEE-11-fvc" eventType="valueChanged" id="EEE-a26-evc"/>
+                                                </connections>
                                             </switch>
                                         </subviews>
                                         <constraints>
@@ -367,6 +558,13 @@
                             <constraint firstItem="EEE-13-scv" firstAttribute="bottom" secondItem="EEE-12-vew" secondAttribute="bottom" id="EEE-73-c36"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="EEE-nav-itm">
+                        <barButtonItem key="rightBarButtonItem" title="Guardar" style="done" id="EEE-sav-btn">
+                            <connections>
+                                <action selector="handleSave:" destination="EEE-11-fvc" id="EEE-sav-act"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="categoriaField" destination="EEE-23-ctf" id="EEE-83-o04"/>
                         <outlet property="estadoSwitch" destination="EEE-26-swt" id="EEE-86-o07"/>
@@ -414,6 +612,28 @@
                                                 <rect key="frame" x="24" y="316" width="345" height="0.0"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             </label>
+                                            <view contentMode="scaleToFill" id="FFF-25-icd">
+                                                <rect key="frame" x="24" y="330" width="345" height="240"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <subviews>
+                                                    <view contentMode="scaleToFill" id="FFF-26-dv1">
+                                                        <rect key="frame" x="0.0" y="48" width="345" height="0.5"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    </view>
+                                                    <view contentMode="scaleToFill" id="FFF-27-dv2">
+                                                        <rect key="frame" x="0.0" y="96" width="345" height="0.5"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    </view>
+                                                    <view contentMode="scaleToFill" id="FFF-28-dv3">
+                                                        <rect key="frame" x="0.0" y="144" width="345" height="0.5"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    </view>
+                                                    <view contentMode="scaleToFill" id="FFF-29-dv4">
+                                                        <rect key="frame" x="0.0" y="192" width="345" height="0.5"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    </view>
+                                                </subviews>
+                                            </view>
                                         </subviews>
                                         <constraints>
                                             <constraint firstItem="FFF-20-img" firstAttribute="top" secondItem="FFF-14-cnt" secondAttribute="top" id="FFF-30-c01"/>
@@ -463,7 +683,12 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="div1" destination="FFF-26-dv1" id="FFF-85-o06"/>
+                        <outlet property="div2" destination="FFF-27-dv2" id="FFF-86-o07"/>
+                        <outlet property="div3" destination="FFF-28-dv3" id="FFF-87-o08"/>
+                        <outlet property="div4" destination="FFF-29-dv4" id="FFF-88-o09"/>
                         <outlet property="estadoBadge" destination="FFF-24-edb" id="FFF-74-o05"/>
+                        <outlet property="infoCard" destination="FFF-25-icd" id="FFF-84-o10"/>
                         <outlet property="nombreLabel" destination="FFF-21-nml" id="FFF-71-o02"/>
                         <outlet property="photoImageView" destination="FFF-20-img" id="FFF-70-o01"/>
                         <outlet property="precioLabel" destination="FFF-22-prl" id="FFF-72-o03"/>
@@ -494,6 +719,10 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No hay clientes" textAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GGG-23-eml">
+                                <rect key="frame" x="141" y="416.33333333333331" width="111" height="19.333333333333314"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="GGG-15-sag"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -502,6 +731,8 @@
                             <constraint firstItem="GGG-20-tbv" firstAttribute="leading" secondItem="GGG-12-vew" secondAttribute="leading" id="GGG-31-c02"/>
                             <constraint firstItem="GGG-20-tbv" firstAttribute="trailing" secondItem="GGG-12-vew" secondAttribute="trailing" id="GGG-32-c03"/>
                             <constraint firstItem="GGG-20-tbv" firstAttribute="bottom" secondItem="GGG-12-vew" secondAttribute="bottom" id="GGG-33-c04"/>
+                            <constraint firstItem="GGG-23-eml" firstAttribute="centerX" secondItem="GGG-12-vew" secondAttribute="centerX" id="GGG-34-eml-cx"/>
+                            <constraint firstItem="GGG-23-eml" firstAttribute="centerY" secondItem="GGG-12-vew" secondAttribute="centerY" id="GGG-35-eml-cy"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="GGG-90-nvi">
@@ -512,6 +743,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="emptyLabel" destination="GGG-23-eml" id="GGG-42-o02"/>
                         <outlet property="tableView" destination="GGG-20-tbv" id="GGG-40-o01"/>
                     </connections>
                 </viewController>
@@ -531,43 +763,70 @@
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HHH-14-cnt">
-                                        <rect key="frame" x="0.0" y="0.0" width="393" height="732"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="393" height="759.33333333333337"/>
                                         <subviews>
                                             <textField contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="DNI (8 dígitos)" translatesAutoresizingMaskIntoConstraints="NO" id="HHH-20-dnf">
                                                 <rect key="frame" x="24" y="24" width="345" height="44"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <textInputTraits key="textInputTraits"/>
+                                                <connections>
+                                                    <action selector="dniChanged:" destination="HHH-11-fvc" eventType="editingChanged" id="HHH-a20-dni"/>
+                                                    <action selector="fieldsChanged:" destination="HHH-11-fvc" eventType="editingChanged" id="HHH-a20-fch"/>
+                                                </connections>
                                             </textField>
                                             <textField contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Nombres" translatesAutoresizingMaskIntoConstraints="NO" id="HHH-21-nmf">
                                                 <rect key="frame" x="24" y="84" width="345" height="44"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <textInputTraits key="textInputTraits"/>
+                                                <connections>
+                                                    <action selector="fieldsChanged:" destination="HHH-11-fvc" eventType="editingChanged" id="HHH-a21-fch"/>
+                                                </connections>
                                             </textField>
                                             <textField contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Apellidos" translatesAutoresizingMaskIntoConstraints="NO" id="HHH-22-apf">
                                                 <rect key="frame" x="24" y="144" width="345" height="44"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <textInputTraits key="textInputTraits"/>
+                                                <connections>
+                                                    <action selector="fieldsChanged:" destination="HHH-11-fvc" eventType="editingChanged" id="HHH-a22-fch"/>
+                                                </connections>
                                             </textField>
                                             <textField contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Teléfono" translatesAutoresizingMaskIntoConstraints="NO" id="HHH-23-tlf">
                                                 <rect key="frame" x="24" y="204" width="345" height="44"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <textInputTraits key="textInputTraits"/>
+                                                <connections>
+                                                    <action selector="fieldsChanged:" destination="HHH-11-fvc" eventType="editingChanged" id="HHH-a23-fch"/>
+                                                </connections>
                                             </textField>
                                             <textField contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Correo" translatesAutoresizingMaskIntoConstraints="NO" id="HHH-24-cof">
                                                 <rect key="frame" x="24" y="264" width="345" height="44"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <textInputTraits key="textInputTraits"/>
+                                                <connections>
+                                                    <action selector="fieldsChanged:" destination="HHH-11-fvc" eventType="editingChanged" id="HHH-a24-fch"/>
+                                                </connections>
                                             </textField>
                                             <textField contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Dirección" translatesAutoresizingMaskIntoConstraints="NO" id="HHH-25-drf">
                                                 <rect key="frame" x="24" y="324" width="345" height="44"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                 <textInputTraits key="textInputTraits"/>
+                                                <connections>
+                                                    <action selector="direccionChanged:" destination="HHH-11-fvc" eventType="editingChanged" id="HHH-a25-dch"/>
+                                                    <action selector="fieldsChanged:" destination="HHH-11-fvc" eventType="editingChanged" id="HHH-a25-fch"/>
+                                                </connections>
                                             </textField>
                                             <switch contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="HHH-26-swt">
                                                 <rect key="frame" x="24" y="384" width="63" height="28"/>
+                                                <connections>
+                                                    <action selector="estadoChanged:" destination="HHH-11-fvc" eventType="valueChanged" id="HHH-a26-evc"/>
+                                                </connections>
                                             </switch>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Ubicación del cliente" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HHH-28-lhl">
+                                                <rect key="frame" x="24" y="428" width="345" height="19.333333333333314"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            </label>
                                             <mapView contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="HHH-27-map">
-                                                <rect key="frame" x="24" y="428" width="345" height="280"/>
+                                                <rect key="frame" x="24" y="455.33333333333326" width="345" height="280"/>
                                             </mapView>
                                         </subviews>
                                         <constraints>
@@ -597,11 +856,14 @@
                                             <constraint firstItem="HHH-25-drf" firstAttribute="height" constant="44" id="HHH-53-c24"/>
                                             <constraint firstItem="HHH-26-swt" firstAttribute="top" secondItem="HHH-25-drf" secondAttribute="bottom" constant="16" id="HHH-54-c25"/>
                                             <constraint firstItem="HHH-26-swt" firstAttribute="leading" secondItem="HHH-14-cnt" secondAttribute="leading" constant="24" id="HHH-55-c26"/>
-                                            <constraint firstItem="HHH-27-map" firstAttribute="top" secondItem="HHH-26-swt" secondAttribute="bottom" constant="16" id="HHH-56-c27"/>
+                                            <constraint firstItem="HHH-28-lhl" firstAttribute="top" secondItem="HHH-26-swt" secondAttribute="bottom" constant="16" id="HHH-56-c27"/>
                                             <constraint firstItem="HHH-27-map" firstAttribute="leading" secondItem="HHH-14-cnt" secondAttribute="leading" constant="24" id="HHH-57-c28"/>
                                             <constraint firstAttribute="trailing" secondItem="HHH-27-map" secondAttribute="trailing" constant="24" id="HHH-58-c29"/>
                                             <constraint firstItem="HHH-27-map" firstAttribute="height" constant="280" id="HHH-59-c30"/>
                                             <constraint firstItem="HHH-27-map" firstAttribute="bottom" secondItem="HHH-14-cnt" secondAttribute="bottom" constant="-24" id="HHH-60-c31"/>
+                                            <constraint firstItem="HHH-28-lhl" firstAttribute="leading" secondItem="HHH-14-cnt" secondAttribute="leading" constant="24" id="HHH-85-lhl"/>
+                                            <constraint firstItem="HHH-27-map" firstAttribute="top" secondItem="HHH-28-lhl" secondAttribute="bottom" constant="8" id="HHH-86-maptop"/>
+                                            <constraint firstAttribute="trailing" secondItem="HHH-28-lhl" secondAttribute="trailing" constant="24" id="HHH-87-lhlr"/>
                                         </constraints>
                                     </view>
                                 </subviews>
@@ -624,12 +886,20 @@
                             <constraint firstItem="HHH-13-scv" firstAttribute="bottom" secondItem="HHH-12-vew" secondAttribute="bottom" id="HHH-83-c40"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="HHH-nav-itm">
+                        <barButtonItem key="rightBarButtonItem" title="Guardar" style="done" id="HHH-sav-btn">
+                            <connections>
+                                <action selector="handleSave:" destination="HHH-11-fvc" id="HHH-sav-act"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="apellidosField" destination="HHH-22-apf" id="HHH-92-o03"/>
                         <outlet property="correoField" destination="HHH-24-cof" id="HHH-94-o05"/>
                         <outlet property="direccionField" destination="HHH-25-drf" id="HHH-95-o06"/>
                         <outlet property="dniField" destination="HHH-20-dnf" id="HHH-90-o01"/>
                         <outlet property="estadoSwitch" destination="HHH-26-swt" id="HHH-96-o07"/>
+                        <outlet property="locationHeaderLabel" destination="HHH-28-lhl" id="HHH-98-o09"/>
                         <outlet property="mapView" destination="HHH-27-map" id="HHH-97-o08"/>
                         <outlet property="nombresField" destination="HHH-21-nmf" id="HHH-91-o02"/>
                         <outlet property="telefonoField" destination="HHH-23-tlf" id="HHH-93-o04"/>
@@ -680,6 +950,30 @@
                                             <mapView contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="III-26-map">
                                                 <rect key="frame" x="24" y="258" width="345" height="200"/>
                                             </mapView>
+                                            <view contentMode="scaleToFill" id="III-30-dv1">
+                                                <rect key="frame" x="0.0" y="0.0" width="0.0" height="1"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            </view>
+                                            <view contentMode="scaleToFill" id="III-31-dv2">
+                                                <rect key="frame" x="0.0" y="0.0" width="0.0" height="1"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            </view>
+                                            <view contentMode="scaleToFill" id="III-32-dv3">
+                                                <rect key="frame" x="0.0" y="0.0" width="0.0" height="1"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            </view>
+                                            <view contentMode="scaleToFill" id="III-33-dv4">
+                                                <rect key="frame" x="0.0" y="0.0" width="0.0" height="1"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            </view>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sin ubicación registrada" textAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="III-34-nll">
+                                                <rect key="frame" x="24" y="258" width="345" height="21"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="345" id="III-34-c-w"/>
+                                                    <constraint firstAttribute="height" constant="21" id="III-34-c-h"/>
+                                                </constraints>
+                                            </label>
                                         </subviews>
                                         <constraints>
                                             <constraint firstItem="III-20-nml" firstAttribute="top" secondItem="III-14-cnt" secondAttribute="top" constant="120" id="III-30-c01"/>
@@ -735,11 +1029,16 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="contactDiv1" destination="III-30-dv1" id="III-90-o08"/>
+                        <outlet property="contactDiv2" destination="III-31-dv2" id="III-91-o09"/>
+                        <outlet property="contactDiv3" destination="III-32-dv3" id="III-92-o10"/>
+                        <outlet property="contactDiv4" destination="III-33-dv4" id="III-93-o11"/>
                         <outlet property="correoLabel" destination="III-24-col" id="III-84-o05"/>
                         <outlet property="direccionLabel" destination="III-25-drl" id="III-85-o06"/>
                         <outlet property="dniLabel" destination="III-22-dnl" id="III-82-o03"/>
                         <outlet property="mapView" destination="III-26-map" id="III-86-o07"/>
                         <outlet property="nameLabel" destination="III-20-nml" id="III-80-o01"/>
+                        <outlet property="noLocationLabel" destination="III-34-nll" id="III-94-o12"/>
                         <outlet property="statusBadge" destination="III-21-stb" id="III-81-o02"/>
                         <outlet property="telefonoLabel" destination="III-23-tll" id="III-83-o04"/>
                     </connections>
@@ -898,10 +1197,28 @@
                         <viewLayoutGuide key="safeArea" id="Ubh-Cq-rtd"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
+                    <connections>
+                        <segue destination="P17-11-avc" kind="show" identifier="showAcercaDe" id="P17-seg-avc"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="H05-14-frs" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3700" y="5400"/>
+        </scene>
+        <!--Acerca De View Controller-->
+        <scene sceneID="P17-10-sce">
+            <objects>
+                <viewController storyboardIdentifier="AcercaDeViewController" id="P17-11-avc" customClass="AcercaDeViewController" customModule="tecstore_manager" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="P17-12-vew">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="XGx-7C-lTX"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="P17-14-frs" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3700" y="6196"/>
         </scene>
         <!--Bienvenida View Controller-->
         <scene sceneID="H06-10-sce">
@@ -910,13 +1227,113 @@
                     <view key="view" contentMode="scaleToFill" id="H06-12-vew">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="H06-20-out">
+                                <rect key="frame" x="131.66666666666666" y="261" width="129.99999999999997" height="130"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="H06-21-inn">
+                                        <rect key="frame" x="10" y="10" width="110" height="110"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="110" id="H06-c21-h"/>
+                                            <constraint firstAttribute="width" constant="110" id="H06-c21-w"/>
+                                        </constraints>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <real key="value" value="55"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                    </view>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="storefront.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="H06-22-img">
+                                        <rect key="frame" x="37" y="37" width="56" height="56"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="56" id="H06-c22-h"/>
+                                            <constraint firstAttribute="width" constant="56" id="H06-c22-w"/>
+                                        </constraints>
+                                    </imageView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="H06-21-inn" firstAttribute="centerX" secondItem="H06-20-out" secondAttribute="centerX" id="H06-c20-cx"/>
+                                    <constraint firstItem="H06-21-inn" firstAttribute="centerY" secondItem="H06-20-out" secondAttribute="centerY" id="H06-c20-cy"/>
+                                    <constraint firstAttribute="height" constant="130" id="H06-c20-h"/>
+                                    <constraint firstItem="H06-22-img" firstAttribute="centerX" secondItem="H06-20-out" secondAttribute="centerX" id="H06-c20-icx"/>
+                                    <constraint firstItem="H06-22-img" firstAttribute="centerY" secondItem="H06-20-out" secondAttribute="centerY" id="H06-c20-icy"/>
+                                    <constraint firstAttribute="width" constant="130" id="H06-c20-w"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <real key="value" value="65"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="TecStore Manager" textAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="H06-23-ttl">
+                                <rect key="frame" x="77.666666666666686" y="423" width="238" height="34"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="28"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" translatesAutoresizingMaskIntoConstraints="NO" id="H06-24-sub">
+                                <rect key="frame" x="24" y="467" width="345" height="40.666666666666686"/>
+                                <string key="text">Gestiona productos, clientes
+y ventas de tu tienda</string>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="H06-25-lbt">
+                                <rect key="frame" x="24" y="589.66666666666663" width="345" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="H06-c25-h"/>
+                                </constraints>
+                                <state key="normal" title="Iniciar sesión"/>
+                                <connections>
+                                    <segue destination="BBB-11-lvc" kind="show" id="H06-seg-login"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="H06-26-rbt">
+                                <rect key="frame" x="24" y="651.66666666666663" width="345" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="H06-c26-h"/>
+                                </constraints>
+                                <state key="normal" title="Crear cuenta"/>
+                                <connections>
+                                    <segue destination="CCC-11-rvc" kind="show" id="H06-seg-register"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="TECSUP · Desarrollo de Apps Móviles" textAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="H06-27-ftr">
+                                <rect key="frame" x="90.666666666666686" y="725.66666666666663" width="212" height="14.333333333333371"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                            </label>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="RLN-oR-FDv"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="H06-20-out" firstAttribute="centerX" secondItem="H06-12-vew" secondAttribute="centerX" id="H06-c01-cx"/>
+                            <constraint firstItem="H06-20-out" firstAttribute="centerY" secondItem="H06-12-vew" secondAttribute="centerY" constant="-100" id="H06-c01-cy"/>
+                            <constraint firstItem="H06-23-ttl" firstAttribute="centerX" secondItem="H06-12-vew" secondAttribute="centerX" id="H06-c02-cx"/>
+                            <constraint firstItem="H06-23-ttl" firstAttribute="top" secondItem="H06-20-out" secondAttribute="bottom" constant="32" id="H06-c02-tt"/>
+                            <constraint firstItem="H06-24-sub" firstAttribute="leading" secondItem="H06-12-vew" secondAttribute="leading" constant="24" id="H06-c03-l"/>
+                            <constraint firstAttribute="trailing" secondItem="H06-24-sub" secondAttribute="trailing" constant="24" id="H06-c03-r"/>
+                            <constraint firstItem="H06-24-sub" firstAttribute="top" secondItem="H06-23-ttl" secondAttribute="bottom" constant="10" id="H06-c03-tt"/>
+                            <constraint firstItem="H06-25-lbt" firstAttribute="bottom" secondItem="H06-26-rbt" secondAttribute="top" constant="-12" id="H06-c05-b"/>
+                            <constraint firstItem="H06-25-lbt" firstAttribute="leading" secondItem="H06-12-vew" secondAttribute="leading" constant="24" id="H06-c05-l"/>
+                            <constraint firstAttribute="trailing" secondItem="H06-25-lbt" secondAttribute="trailing" constant="24" id="H06-c05-r"/>
+                            <constraint firstItem="H06-26-rbt" firstAttribute="bottom" secondItem="H06-27-ftr" secondAttribute="top" constant="-24" id="H06-c06-b"/>
+                            <constraint firstItem="H06-26-rbt" firstAttribute="leading" secondItem="H06-12-vew" secondAttribute="leading" constant="24" id="H06-c06-l"/>
+                            <constraint firstAttribute="trailing" secondItem="H06-26-rbt" secondAttribute="trailing" constant="24" id="H06-c06-r"/>
+                            <constraint firstItem="H06-27-ftr" firstAttribute="bottom" secondItem="RLN-oR-FDv" secondAttribute="bottom" constant="-44" id="H06-c07-b"/>
+                            <constraint firstItem="H06-27-ftr" firstAttribute="centerX" secondItem="H06-12-vew" secondAttribute="centerX" id="H06-c07-cx"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="footerLabel" destination="H06-27-ftr" id="H06-o27-ftr"/>
+                        <outlet property="loginButton" destination="H06-25-lbt" id="H06-o25-lbt"/>
+                        <outlet property="logoImage" destination="H06-22-img" id="H06-o22-img"/>
+                        <outlet property="logoInner" destination="H06-21-inn" id="H06-o21-inn"/>
+                        <outlet property="logoOuter" destination="H06-20-out" id="H06-o20-out"/>
+                        <outlet property="registerButton" destination="H06-26-rbt" id="H06-o26-rbt"/>
+                        <outlet property="subtitleLabel" destination="H06-24-sub" id="H06-o24-sub"/>
+                        <outlet property="titleLabel" destination="H06-23-ttl" id="H06-o23-ttl"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="H06-14-frs" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="200" y="5400"/>
+            <point key="canvasLocation" x="900" y="730"/>
         </scene>
         <!--Registro Venta View Controller-->
         <scene sceneID="H07-10-sce">
@@ -998,8 +1415,12 @@
         <segue reference="V04-sg-rgv"/>
         <segue reference="GGG-50-sg1"/>
         <segue reference="DDD-50-sg1"/>
+        <segue reference="H06-seg-register"/>
+        <segue reference="H06-seg-login"/>
     </inferredMetricsTieBreakers>
     <resources>
+        <image name="camera.fill" width="128" height="128"/>
+        <image name="storefront.fill" catalog="system" width="128" height="116"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

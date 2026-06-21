@@ -17,12 +17,14 @@ final class MenuViewController: UITabBarController {
             ("Productos",  "shippingbox.fill"),
             ("Clientes",   "person.2.fill"),
             ("Ventas",     "cart.fill"),
-            ("Perfil",     "person.circle.fill")
+            ("Configuración", "gearshape.fill")
         ]
         for (index, (title, icon)) in configs.enumerated() {
             guard let vcs = viewControllers, index < vcs.count else { continue }
-            vcs[index].tabBarItem.title = title
-            vcs[index].tabBarItem.image = UIImage(systemName: icon)
+            let item = UITabBarItem(title: title, image: UIImage(systemName: icon), tag: index)
+            vcs[index].tabBarItem = item
+            // Also set on root VC — UINavigationController proxies tabBarItem in some iOS versions
+            (vcs[index] as? UINavigationController)?.viewControllers.first?.tabBarItem = item
         }
     }
 
