@@ -7,11 +7,6 @@ import SwiftUI
 
 extension UIColor {
 
-    // Brand
-    static let brandPrimary  = UIColor(hex: "#2563EB")   // Blue-600
-    static let brandDark     = UIColor(hex: "#1D4ED8")   // Blue-700
-    static let brandLight    = UIColor(hex: "#DBEAFE")   // Blue-100
-
     // Semantic — automatically adapt to light/dark mode
     static let appBackground   = UIColor.systemBackground
     static let appSurface      = UIColor.secondarySystemBackground
@@ -22,11 +17,6 @@ extension UIColor {
     static let appTextSecondary = UIColor.secondaryLabel
     static let appTextTertiary  = UIColor.tertiaryLabel
     static let appPlaceholder   = UIColor.placeholderText
-
-    // Status
-    static let appSuccess = UIColor.systemGreen
-    static let appWarning = UIColor.systemOrange
-    static let appError   = UIColor(hex: "#DC2626")
 
     // Category badge colors
     static let catElectronica  = UIColor.systemIndigo
@@ -73,13 +63,6 @@ extension UIColor {
 // ─────────────────────────────────────────────
 
 extension Color {
-    static let brandPrimary = Color(UIColor.brandPrimary)
-    static let brandDark    = Color(UIColor.brandDark)
-    static let brandLight   = Color(UIColor.brandLight)
-    static let appError     = Color(UIColor.appError)
-    static let appSuccess   = Color(UIColor.appSuccess)
-    static let appWarning   = Color(UIColor.appWarning)
-
     static func forCategory(_ category: String) -> Color {
         Color(UIColor.colorForCategory(category))
     }
@@ -324,7 +307,9 @@ enum AppStyle {
             btn.setImage(UIImage(systemName: "eye"),       for: .normal)
             btn.setImage(UIImage(systemName: "eye.slash"), for: .selected)
             btn.addAction(UIAction { [weak field, weak btn] _ in
+                let saved = field?.text
                 field?.isSecureTextEntry.toggle()
+                field?.text = saved  // UIKit clears text when toggling isSecureTextEntry back to true
                 btn?.isSelected = !(field?.isSecureTextEntry ?? true)
             }, for: .touchUpInside)
             container.addSubview(btn)
