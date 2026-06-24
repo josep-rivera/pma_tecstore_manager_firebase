@@ -423,8 +423,9 @@ carlos.mendoza@tecsup.edu.pe  •  123456</string>
                             <constraint firstItem="DDD-21-tbv" firstAttribute="leading" secondItem="DDD-12-vew" secondAttribute="leading" id="DDD-34-c05"/>
                             <constraint firstItem="DDD-21-tbv" firstAttribute="trailing" secondItem="DDD-12-vew" secondAttribute="trailing" id="DDD-35-c06"/>
                             <constraint firstItem="DDD-21-tbv" firstAttribute="bottom" secondItem="DDD-12-vew" secondAttribute="bottom" id="DDD-36-c07"/>
-                            <constraint firstItem="DDD-23-eml" firstAttribute="centerX" secondItem="DDD-12-vew" secondAttribute="centerX" id="DDD-37-eml-cx"/>
-                            <constraint firstItem="DDD-23-eml" firstAttribute="centerY" secondItem="DDD-12-vew" secondAttribute="centerY" id="DDD-38-eml-cy"/>
+                            <constraint firstItem="DDD-23-eml" firstAttribute="leading" secondItem="DDD-12-vew" secondAttribute="leading" constant="24" id="DDD-37-eml-l"/>
+                            <constraint firstAttribute="trailing" secondItem="DDD-23-eml" secondAttribute="trailing" constant="24" id="DDD-38-eml-r"/>
+                            <constraint firstItem="DDD-23-eml" firstAttribute="centerY" secondItem="DDD-12-vew" secondAttribute="centerY" id="DDD-39-eml-cy"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="DDD-90-nvi">
@@ -846,8 +847,9 @@ carlos.mendoza@tecsup.edu.pe  •  123456</string>
                             <constraint firstItem="GGG-20-tbv" firstAttribute="leading" secondItem="GGG-12-vew" secondAttribute="leading" id="GGG-31-c02"/>
                             <constraint firstItem="GGG-20-tbv" firstAttribute="trailing" secondItem="GGG-12-vew" secondAttribute="trailing" id="GGG-32-c03"/>
                             <constraint firstItem="GGG-20-tbv" firstAttribute="bottom" secondItem="GGG-12-vew" secondAttribute="bottom" id="GGG-33-c04"/>
-                            <constraint firstItem="GGG-23-eml" firstAttribute="centerX" secondItem="GGG-12-vew" secondAttribute="centerX" id="GGG-34-eml-cx"/>
-                            <constraint firstItem="GGG-23-eml" firstAttribute="centerY" secondItem="GGG-12-vew" secondAttribute="centerY" id="GGG-35-eml-cy"/>
+                            <constraint firstItem="GGG-23-eml" firstAttribute="leading" secondItem="GGG-12-vew" secondAttribute="leading" constant="24" id="GGG-34-eml-l"/>
+                            <constraint firstAttribute="trailing" secondItem="GGG-23-eml" secondAttribute="trailing" constant="24" id="GGG-35-eml-r"/>
+                            <constraint firstItem="GGG-23-eml" firstAttribute="centerY" secondItem="GGG-12-vew" secondAttribute="centerY" id="GGG-36-eml-cy"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="GGG-90-nvi">
@@ -1205,7 +1207,7 @@ carlos.mendoza@tecsup.edu.pe  •  123456</string>
                                             <constraint firstItem="III-21-stb" firstAttribute="top" secondItem="III-20-nml" secondAttribute="bottom" constant="12" id="III-309-stb"/>
                                             <constraint firstItem="III-20-nml" firstAttribute="leading" secondItem="III-14-cnt" secondAttribute="leading" constant="24" id="III-31-c02"/>
                                             <constraint firstItem="III-21-stb" firstAttribute="height" constant="24" id="III-310-stb"/>
-                                            <constraint firstItem="III-21-stb" firstAttribute="width" relation="greaterThanOrEqual" constant="72" id="III-311-stb"/>
+                                            <constraint firstItem="III-21-stb" firstAttribute="width" constant="72" id="III-311-stb"/>
                                             <constraint firstItem="III-42-ccd" firstAttribute="top" secondItem="III-21-stb" secondAttribute="bottom" constant="24" id="III-312-ccd"/>
                                             <constraint firstItem="III-42-ccd" firstAttribute="leading" secondItem="III-14-cnt" secondAttribute="leading" constant="24" id="III-313-ccd"/>
                                             <constraint firstItem="III-42-ccd" firstAttribute="trailing" secondItem="III-14-cnt" secondAttribute="trailing" constant="-24" id="III-314-ccd"/>
@@ -1215,7 +1217,8 @@ carlos.mendoza@tecsup.edu.pe  •  123456</string>
                                             <constraint firstItem="III-26-map" firstAttribute="height" constant="200" id="III-318-map"/>
                                             <constraint firstItem="III-26-map" firstAttribute="bottom" secondItem="III-14-cnt" secondAttribute="bottom" constant="-24" id="III-319-map"/>
                                             <constraint firstAttribute="trailing" secondItem="III-20-nml" secondAttribute="trailing" constant="24" id="III-32-c03"/>
-                                            <constraint firstItem="III-34-nll" firstAttribute="centerX" secondItem="III-26-map" secondAttribute="centerX" id="III-34-c-cx"/>
+                                            <constraint firstItem="III-34-nll" firstAttribute="leading" secondItem="III-26-map" secondAttribute="leading" constant="16" id="III-34-c-l"/>
+                                            <constraint firstItem="III-34-nll" firstAttribute="trailing" secondItem="III-26-map" secondAttribute="trailing" constant="-16" id="III-34-c-r"/>
                                             <constraint firstItem="III-34-nll" firstAttribute="centerY" secondItem="III-26-map" secondAttribute="centerY" id="III-34-c-cy"/>
                                             <constraint firstItem="III-21-stb" firstAttribute="centerX" secondItem="III-14-cnt" secondAttribute="centerX" id="III-34-c05"/>
                                         </constraints>
@@ -1528,7 +1531,8 @@ y ventas de tu tienda</string>
                         <constraints>
                             <constraint firstItem="H06-20-out" firstAttribute="centerX" secondItem="H06-12-vew" secondAttribute="centerX" id="H06-c01-cx"/>
                             <constraint firstItem="H06-20-out" firstAttribute="centerY" secondItem="H06-12-vew" secondAttribute="centerY" constant="-100" id="H06-c01-cy"/>
-                            <constraint firstItem="H06-23-ttl" firstAttribute="centerX" secondItem="H06-12-vew" secondAttribute="centerX" id="H06-c02-cx"/>
+                            <constraint firstItem="H06-23-ttl" firstAttribute="leading" secondItem="H06-12-vew" secondAttribute="leading" constant="24" id="H06-c02-l"/>
+                            <constraint firstAttribute="trailing" secondItem="H06-23-ttl" secondAttribute="trailing" constant="24" id="H06-c02-r"/>
                             <constraint firstItem="H06-23-ttl" firstAttribute="top" secondItem="H06-20-out" secondAttribute="bottom" constant="32" id="H06-c02-tt"/>
                             <constraint firstItem="H06-24-sub" firstAttribute="leading" secondItem="H06-12-vew" secondAttribute="leading" constant="24" id="H06-c03-l"/>
                             <constraint firstAttribute="trailing" secondItem="H06-24-sub" secondAttribute="trailing" constant="24" id="H06-c03-r"/>
@@ -1540,7 +1544,8 @@ y ventas de tu tienda</string>
                             <constraint firstItem="H06-26-rbt" firstAttribute="leading" secondItem="H06-12-vew" secondAttribute="leading" constant="24" id="H06-c06-l"/>
                             <constraint firstAttribute="trailing" secondItem="H06-26-rbt" secondAttribute="trailing" constant="24" id="H06-c06-r"/>
                             <constraint firstItem="H06-27-ftr" firstAttribute="bottom" secondItem="RLN-oR-FDv" secondAttribute="bottom" constant="-44" id="H06-c07-b"/>
-                            <constraint firstItem="H06-27-ftr" firstAttribute="centerX" secondItem="H06-12-vew" secondAttribute="centerX" id="H06-c07-cx"/>
+                            <constraint firstItem="H06-27-ftr" firstAttribute="leading" secondItem="H06-12-vew" secondAttribute="leading" constant="24" id="H06-c07-l"/>
+                            <constraint firstAttribute="trailing" secondItem="H06-27-ftr" secondAttribute="trailing" constant="24" id="H06-c07-r"/>
                         </constraints>
                     </view>
                     <connections>

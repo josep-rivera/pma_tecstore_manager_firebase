@@ -154,6 +154,6 @@ struct VentaRow: View {
         .padding(12)
         .background(Color(UIColor.appSurface))
         .cornerRadius(CGFloat(AppLayout.cornerRadius))
-        .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 1)
+        .shadow(color: Color.black.opacity(0.06), radius: 4, x: 0, y: 2)
     }
 }

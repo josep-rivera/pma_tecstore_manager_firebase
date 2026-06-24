@@ -58,6 +58,7 @@ final class ListaProductosViewController: UIViewController {
         tableView.delegate           = self
         tableView.rowHeight          = UITableView.automaticDimension
         tableView.estimatedRowHeight = AppLayout.cellHeight
+        tableView.backgroundColor    = .appBackground
         tableView.separatorInset     = UIEdgeInsets(top: 0, left: AppLayout.padding, bottom: 0, right: 0)
     }
 
@@ -192,7 +193,8 @@ final class ProductoCell: UITableViewCell {
     required init?(coder: NSCoder) { super.init(coder: coder); buildUI() }
 
     private func buildUI() {
-        backgroundColor = .appBackground
+        backgroundColor = .appSurface
+        contentView.backgroundColor = .appSurface
 
         thumbnailView.translatesAutoresizingMaskIntoConstraints = false
         thumbnailView.contentMode         = .scaleAspectFill

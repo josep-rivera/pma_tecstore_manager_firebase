@@ -65,9 +65,9 @@ struct InicioView: View {
                 .foregroundColor(.brandPrimary)
         }
         .padding(CGFloat(AppLayout.paddingLarge))
-        .background(Color(UIColor.systemBackground))
+        .background(Color(UIColor.appSurface))
         .cornerRadius(CGFloat(AppLayout.cornerRadius))
-        .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 2)
+        .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 2)
         .padding(.horizontal, CGFloat(AppLayout.padding))
     }
 
@@ -173,6 +173,7 @@ struct StockBajoView: View {
                         }
                     }
                     .padding(.vertical, 4)
+                    .listRowBackground(Color(UIColor.appSurface))
                 }
                 .listStyle(.plain)
             }
@@ -212,9 +213,9 @@ struct MetricCard: View {
                 .foregroundColor(.secondary)
         }
         .padding(CGFloat(AppLayout.padding))
-        .background(Color(UIColor.systemBackground))
+        .background(Color(UIColor.appSurface))
         .cornerRadius(CGFloat(AppLayout.cornerRadius))
-        .shadow(color: .black.opacity(0.08), radius: 6, x: 0, y: 2)
+        .shadow(color: Color.black.opacity(0.08), radius: 6, x: 0, y: 2)
     }
 }
 
@@ -248,8 +249,8 @@ struct ShortcutCard: View {
                 .foregroundColor(Color(UIColor.appTextTertiary))
         }
         .padding(CGFloat(AppLayout.padding))
-        .background(Color(UIColor.systemBackground))
+        .background(Color(UIColor.appSurface))
         .cornerRadius(CGFloat(AppLayout.cornerRadius))
-        .shadow(color: .black.opacity(0.08), radius: 6, x: 0, y: 2)
+        .shadow(color: Color.black.opacity(0.08), radius: 6, x: 0, y: 2)
     }
 }

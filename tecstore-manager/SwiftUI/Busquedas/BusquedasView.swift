@@ -188,8 +188,9 @@ struct ProductoBusquedaRow: View {
             }
         }
         .padding(10)
-        .background(Color(UIColor.systemBackground))
+        .background(Color(UIColor.appSurface))
         .cornerRadius(10)
+        .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
         .opacity(producto.isActive ? 1 : 0.6)
     }
 }
@@ -218,8 +219,9 @@ struct ClienteBusquedaRow: View {
                 .cornerRadius(4)
         }
         .padding(10)
-        .background(Color(UIColor.systemBackground))
+        .background(Color(UIColor.appSurface))
         .cornerRadius(10)
+        .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
         .opacity(cliente.isActive ? 1 : 0.7)
     }
 }
