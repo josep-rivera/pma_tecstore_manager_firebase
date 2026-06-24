@@ -88,10 +88,11 @@ struct FBCliente: Codable, Identifiable, Hashable {
     var locationReference: String? { ubicacion?.reference }
 }
 
-// MARK: - FBDetalleVenta  (embedded array inside FBVenta — no own collection)
+// MARK: - FBDetalleVenta  →  embedded in FBVenta.detalles + /detalles_venta/{id}
 
 struct FBDetalleVenta: Codable {
     var id: String
+    var ventaId: String?
     var productoId: String
     var productoNombre: String
     var productoCodigo: String
