@@ -546,6 +546,7 @@ carlos.mendoza@tecsup.edu.pe  •  123456</string>
                                             <constraint firstItem="EEE-26-swt" firstAttribute="leading" secondItem="EEE-31-est" secondAttribute="trailing" constant="16" id="EEE-106-swt"/>
                                             <constraint firstItem="EEE-32-esv" firstAttribute="centerY" secondItem="EEE-26-swt" secondAttribute="centerY" id="EEE-107-esv"/>
                                             <constraint firstItem="EEE-32-esv" firstAttribute="leading" secondItem="EEE-26-swt" secondAttribute="trailing" constant="16" id="EEE-108-esv"/>
+                                            <constraint firstItem="EEE-32-esv" firstAttribute="trailing" secondItem="EEE-14-cnt" secondAttribute="trailing" constant="-24" id="EEE-113-esv"/>
                                             <constraint firstItem="EEE-14-cnt" firstAttribute="bottom" secondItem="EEE-26-swt" secondAttribute="bottom" constant="48" id="EEE-112-cnt"/>
                                             <constraint firstItem="EEE-20-img" firstAttribute="top" secondItem="EEE-14-cnt" secondAttribute="top" constant="24" id="EEE-30-c01"/>
                                             <constraint firstItem="EEE-20-img" firstAttribute="leading" secondItem="EEE-14-cnt" secondAttribute="leading" constant="24" id="EEE-31-c02"/>
@@ -652,19 +653,16 @@ carlos.mendoza@tecsup.edu.pe  •  123456</string>
                                                 <rect key="frame" x="24" y="280" width="345" height="0.0"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" lineBreakMode="tailTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FFF-22-prl">
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FFF-22-prl">
                                                 <rect key="frame" x="24" y="292" width="345" height="0.0"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" lineBreakMode="tailTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FFF-23-skb">
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FFF-23-skb">
                                                 <rect key="frame" x="24" y="304" width="345" height="0.0"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" lineBreakMode="tailTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FFF-24-edb">
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FFF-24-edb">
                                                 <rect key="frame" x="24" y="316" width="345" height="0.0"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             </label>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FFF-25-icd">
@@ -747,6 +745,15 @@ carlos.mendoza@tecsup.edu.pe  •  123456</string>
                                             <constraint firstItem="FFF-40-cdl" firstAttribute="top" secondItem="FFF-21-nml" secondAttribute="bottom" constant="4" id="FFF-120-cdl"/>
                                             <constraint firstItem="FFF-40-cdl" firstAttribute="leading" secondItem="FFF-14-cnt" secondAttribute="leading" constant="24" id="FFF-121-cdl"/>
                                             <constraint firstItem="FFF-40-cdl" firstAttribute="trailing" secondItem="FFF-14-cnt" secondAttribute="trailing" constant="-24" id="FFF-122-cdl"/>
+                                            <constraint firstItem="FFF-22-prl" firstAttribute="top" secondItem="FFF-14-cnt" secondAttribute="top" constant="292" id="FFF-200-prl"/>
+                                            <constraint firstItem="FFF-22-prl" firstAttribute="leading" secondItem="FFF-14-cnt" secondAttribute="leading" constant="24" id="FFF-201-prl"/>
+                                            <constraint firstAttribute="trailing" secondItem="FFF-22-prl" secondAttribute="trailing" constant="24" id="FFF-202-prl"/>
+                                            <constraint firstItem="FFF-23-skb" firstAttribute="top" secondItem="FFF-14-cnt" secondAttribute="top" constant="304" id="FFF-203-skb"/>
+                                            <constraint firstItem="FFF-23-skb" firstAttribute="leading" secondItem="FFF-14-cnt" secondAttribute="leading" constant="24" id="FFF-204-skb"/>
+                                            <constraint firstAttribute="trailing" secondItem="FFF-23-skb" secondAttribute="trailing" constant="24" id="FFF-205-skb"/>
+                                            <constraint firstItem="FFF-24-edb" firstAttribute="top" secondItem="FFF-14-cnt" secondAttribute="top" constant="316" id="FFF-206-edb"/>
+                                            <constraint firstItem="FFF-24-edb" firstAttribute="leading" secondItem="FFF-14-cnt" secondAttribute="leading" constant="24" id="FFF-207-edb"/>
+                                            <constraint firstAttribute="trailing" secondItem="FFF-24-edb" secondAttribute="trailing" constant="24" id="FFF-208-edb"/>
                                             <constraint firstItem="FFF-25-icd" firstAttribute="top" secondItem="FFF-40-cdl" secondAttribute="bottom" constant="20" id="FFF-123-icd"/>
                                             <constraint firstItem="FFF-25-icd" firstAttribute="leading" secondItem="FFF-14-cnt" secondAttribute="leading" constant="24" id="FFF-124-icd"/>
                                             <constraint firstItem="FFF-25-icd" firstAttribute="trailing" secondItem="FFF-14-cnt" secondAttribute="trailing" constant="-24" id="FFF-125-icd"/>
@@ -974,6 +981,7 @@ carlos.mendoza@tecsup.edu.pe  •  123456</string>
                                             <constraint firstItem="HHH-26-swt" firstAttribute="leading" secondItem="HHH-33-est" secondAttribute="trailing" constant="16" id="HHH-105-swt"/>
                                             <constraint firstItem="HHH-34-esv" firstAttribute="centerY" secondItem="HHH-26-swt" secondAttribute="centerY" id="HHH-106-esv"/>
                                             <constraint firstItem="HHH-34-esv" firstAttribute="leading" secondItem="HHH-26-swt" secondAttribute="trailing" constant="16" id="HHH-107-esv"/>
+                                            <constraint firstItem="HHH-34-esv" firstAttribute="trailing" secondItem="HHH-14-cnt" secondAttribute="trailing" constant="-24" id="HHH-113-esv"/>
                                             <constraint firstItem="HHH-35-mhl" firstAttribute="top" secondItem="HHH-27-map" secondAttribute="bottom" constant="6" id="HHH-108-mhl"/>
                                             <constraint firstItem="HHH-35-mhl" firstAttribute="leading" secondItem="HHH-14-cnt" secondAttribute="leading" constant="24" id="HHH-109-mhl"/>
                                             <constraint firstItem="HHH-35-mhl" firstAttribute="trailing" secondItem="HHH-14-cnt" secondAttribute="trailing" constant="-24" id="HHH-110-mhl"/>
