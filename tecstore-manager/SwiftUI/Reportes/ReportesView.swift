@@ -1,35 +1,5 @@
 import SwiftUI
 import Charts
-import Combine
-
-// ─────────────────────────────────────────────
-// MARK: - ReportesViewModel
-// ─────────────────────────────────────────────
-
-@MainActor
-final class ReportesViewModel: ObservableObject {
-
-    @Published var report:          ReporteData? = nil
-    @Published var byCategory:      [(category: String, total: Double)] = []
-    @Published var topProductos:    [(name: String, revenue: Double)]   = []
-    @Published var weeklyTrend:     [(date: Date, count: Int)]          = []
-    @Published var isLoading:       Bool = false
-
-    func loadReport() {
-        isLoading = true
-        Task {
-            async let report      = ReporteService.shared.generateReport()
-            async let byCategory  = ReporteService.shared.revenueByCategory()
-            async let topProductos = ReporteService.shared.topProductosByRevenue(limit: 3)
-            async let weeklyTrend = ReporteService.shared.salesByDay(lastDays: 14)
-            self.report       = try? await report
-            self.byCategory   = (try? await byCategory)   ?? []
-            self.topProductos = (try? await topProductos) ?? []
-            self.weeklyTrend  = (try? await weeklyTrend)  ?? []
-            self.isLoading    = false
-        }
-    }
-}
 
 // ─────────────────────────────────────────────
 // MARK: - ReportesView
@@ -37,7 +7,7 @@ final class ReportesViewModel: ObservableObject {
 
 struct ReportesView: View {
 
-    @StateObject private var viewModel = ReportesViewModel()
+    @ObservedObject var viewModel: ReportesViewModel
 
     var body: some View {
         Group {

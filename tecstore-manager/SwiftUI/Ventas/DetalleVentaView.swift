@@ -7,7 +7,7 @@ import SwiftUI
 
 struct DetalleVentaView: View {
 
-    let venta: FBVenta
+    @ObservedObject var viewModel: DetalleVentaViewModel
 
     var body: some View {
         ScrollView {
@@ -28,10 +28,10 @@ struct DetalleVentaView: View {
             Image(systemName: "checkmark.seal.fill")
                 .font(.system(size: 52))
                 .foregroundColor(.appSuccess)
-            Text(venta.statusValue)
+            Text(viewModel.venta.statusValue)
                 .font(.system(.title2).bold())
                 .foregroundColor(.appSuccess)
-            Text(venta.saleDate.displayDateTime)
+            Text(viewModel.venta.saleDate.displayDateTime)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
         }
@@ -46,9 +46,9 @@ struct DetalleVentaView: View {
         VStack(alignment: .leading, spacing: 0) {
             cardHeader("Participantes")
             Divider()
-            infoRow(icon: "person.fill",        label: "Cliente",  value: venta.clientName)
+            infoRow(icon: "person.fill",        label: "Cliente",  value: viewModel.venta.clientName)
             Divider().padding(.leading, CGFloat(AppLayout.paddingLarge))
-            infoRow(icon: "person.badge.key.fill", label: "Vendedor", value: venta.sellerName)
+            infoRow(icon: "person.badge.key.fill", label: "Vendedor", value: viewModel.venta.sellerName)
         }
         .background(Color(UIColor.appSurface))
         .cornerRadius(CGFloat(AppLayout.cornerRadius))
@@ -57,9 +57,9 @@ struct DetalleVentaView: View {
     // ── Productos ──
     private var productosCard: some View {
         VStack(alignment: .leading, spacing: 0) {
-            cardHeader("Productos (\(venta.detalles.count))")
+            cardHeader("Productos (\(viewModel.venta.detalles.count))")
             Divider()
-            ForEach(Array(venta.detalles.enumerated()), id: \.offset) { idx, detalle in
+            ForEach(Array(viewModel.venta.detalles.enumerated()), id: \.offset) { idx, detalle in
                 if idx > 0 {
                     Divider().padding(.leading, CGFloat(AppLayout.paddingLarge))
                 }
@@ -93,16 +93,16 @@ struct DetalleVentaView: View {
         VStack(spacing: 0) {
             cardHeader("Resumen financiero")
             Divider()
-            resumenRow("Subtotal", venta.subtotalDouble.asCurrency)
+            resumenRow("Subtotal", viewModel.venta.subtotalDouble.asCurrency)
             Divider().padding(.leading, CGFloat(AppLayout.paddingLarge))
-            resumenRow("IGV (18%)", (venta.totalDouble - venta.subtotalDouble).asCurrency)
+            resumenRow("IGV (18%)", viewModel.igv.asCurrency)
             Divider()
             // Total — visually prominent
             HStack {
                 Text("TOTAL")
                     .font(.system(.title3).bold())
                 Spacer()
-                Text(venta.totalDouble.asCurrency)
+                Text(viewModel.venta.totalDouble.asCurrency)
                     .font(.system(.title3).bold())
                     .foregroundColor(.brandPrimary)
             }

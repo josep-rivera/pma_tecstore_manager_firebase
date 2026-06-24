@@ -2,46 +2,12 @@ import SwiftUI
 import Combine
 
 // ─────────────────────────────────────────────
-// MARK: - InicioViewModel
-// ─────────────────────────────────────────────
-
-@MainActor
-final class InicioViewModel: ObservableObject {
-
-    @Published var todaySalesCount:  Int     = 0
-    @Published var todaySalesTotal:  Double  = 0
-    @Published var outOfStockCount:  Int     = 0
-    @Published var totalClientes:    Int     = 0
-    @Published var userName:         String? = nil
-
-    func loadMetrics() {
-        Task {
-            do {
-                async let today         = ReporteService.shared.todayMetrics()
-                async let outOfStock    = ReporteService.shared.countOutOfStock()
-                async let clientesCount = ReporteService.shared.countClientes()
-                async let usuario       = AuthService.shared.currentUsuario()
-
-                let t = try await today
-                todaySalesCount = t.count
-                todaySalesTotal = t.total
-                outOfStockCount = try await outOfStock
-                totalClientes   = try await clientesCount
-                userName        = try await usuario?.fullName
-            } catch {
-                // metrics stay at zero on error
-            }
-        }
-    }
-}
-
-// ─────────────────────────────────────────────
 // MARK: - InicioView
 // ─────────────────────────────────────────────
 
 struct InicioView: View {
 
-    @StateObject private var viewModel = InicioViewModel()
+    @ObservedObject var viewModel: InicioViewModel
 
     var onBusquedas:  (() -> Void)? = nil
     var onReportes:   (() -> Void)? = nil
@@ -65,7 +31,7 @@ struct InicioView: View {
                     MetricCard(icon: "exclamationmark.triangle.fill", color: Color.appWarning,
                                value: "\(viewModel.outOfStockCount)", label: "Sin stock")
                     MetricCard(icon: "person.2.fill", color: Color(UIColor.systemIndigo),
-                               value: "\(viewModel.totalClientes)", label: "Clientes")
+                               value: "\(viewModel.totalClients)", label: "Clientes")
                 }
                 .padding(.horizontal, CGFloat(AppLayout.padding))
 
@@ -139,7 +105,7 @@ struct InicioView: View {
 
             Button { onStockBajo?() } label: {
                 ShortcutCard(icon: "exclamationmark.triangle.fill", title: "Stock bajo",
-                             subtitle: "Productos con 5 unidades o menos",
+                             subtitle: "Productos con \(AppConstants.lowStockThreshold) unidades o menos",
                              color: Color.appWarning)
             }
             .buttonStyle(.plain)
@@ -154,11 +120,11 @@ struct InicioView: View {
 
 struct StockBajoView: View {
 
-    @State private var productos: [FBProducto] = []
+    @ObservedObject var viewModel: StockBajoViewModel
 
     var body: some View {
         Group {
-            if productos.isEmpty {
+            if viewModel.productos.isEmpty {
                 VStack(spacing: 12) {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 44))
@@ -171,7 +137,7 @@ struct StockBajoView: View {
                 .padding()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                List(productos) { p in
+                List(viewModel.productos) { p in
                     HStack(spacing: 12) {
                         Group {
                             if let path = p.productImagePath,
@@ -214,18 +180,7 @@ struct StockBajoView: View {
         .navigationTitle("Stock bajo")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.visible, for: .navigationBar)
-        .onAppear {
-            Task {
-                do {
-                    let all = try await ProductoService.shared.fetchAll()
-                    productos = all
-                        .filter { $0.isActive && $0.stockInt <= 5 }
-                        .sorted { $0.stockInt < $1.stockInt }
-                } catch {
-                    // leave list empty on error
-                }
-            }
-        }
+        .onAppear { viewModel.loadProductos() }
     }
 }
 

@@ -284,10 +284,10 @@ extension Decimal {
 // ─────────────────────────────────────────────
 
 extension Int {
-    /// Color-codes stock level: 0 → error, 1–5 → warning, 6+ → success.
+    /// Color-codes stock level: 0 → error, 1–lowStockThreshold → warning, lowStockThreshold+1+ → success.
     var stockUIColor: UIColor {
         if self == 0 { return .appError }
-        if self <= 5 { return .appWarning }
+        if self <= AppConstants.lowStockThreshold { return .appWarning }
         return .appSuccess
     }
 
@@ -296,7 +296,7 @@ extension Int {
     /// Text label for the stock status.
     var stockLabel: String {
         if self == 0 { return "Sin stock" }
-        if self <= 5 { return "Stock bajo" }
+        if self <= AppConstants.lowStockThreshold { return "Stock bajo" }
         return "En stock"
     }
 }

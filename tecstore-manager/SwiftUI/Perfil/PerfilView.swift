@@ -1,95 +1,5 @@
 import SwiftUI
-import Combine
 import PhotosUI
-
-// ─────────────────────────────────────────────
-// MARK: - PerfilViewModel
-// ─────────────────────────────────────────────
-
-@MainActor
-final class PerfilViewModel: ObservableObject {
-
-    @Published var user:           FBUsuario? = nil
-    @Published var isDarkMode:     Bool       = UserDefaults.standard.bool(forKey: UserDefaultsKeys.darkModeEnabled)
-    @Published var profileImage:   UIImage?   = nil
-
-    // Password change state
-    @Published var currentPwd:  String = ""
-    @Published var newPwd:      String = ""
-    @Published var confirmPwd:  String = ""
-    @Published var pwdError:    String = ""
-    @Published var pwdSuccess:  Bool   = false
-
-    // Alerts
-    @Published var showLogoutAlert:  Bool   = false
-    @Published var showErrorAlert:   Bool   = false
-    @Published var errorMessage:     String = ""
-
-    func loadUser() {
-        Task {
-            do {
-                user = try await AuthService.shared.currentUsuario()
-                if let path = user?.profileImagePath {
-                    profileImage = UIImage.fromDocuments(named: path)
-                }
-            } catch {
-                // user stays nil
-            }
-        }
-    }
-
-    func toggleDarkMode() {
-        SceneDelegate.shared?.setDarkMode(isDarkMode)
-    }
-
-    func saveProfilePhoto(_ image: UIImage) {
-        let resized   = image.resized(maxDimension: 600)
-        let fileName  = "profile_\(user?.id ?? "unknown").jpg"
-        let savedPath = resized.saveToDocuments(named: fileName)
-        profileImage  = resized
-        Task {
-            do {
-                try await AuthService.shared.updateProfile(fullName: user?.fullName ?? "", photoPath: savedPath)
-                user = try await AuthService.shared.currentUsuario()
-            } catch {
-                // silently ignore photo save errors
-            }
-        }
-    }
-
-    func changePassword() {
-        pwdError = ""
-        guard newPwd.count >= 6 else {
-            pwdError = "La nueva contraseña debe tener al menos 6 caracteres."
-            return
-        }
-        guard newPwd == confirmPwd else {
-            pwdError = "Las contraseñas no coinciden."
-            return
-        }
-        Task {
-            do {
-                try await AuthService.shared.changePassword(current: currentPwd, new: newPwd)
-                pwdSuccess = true
-                currentPwd = ""
-                newPwd     = ""
-                confirmPwd = ""
-            } catch let error as ServiceError {
-                pwdError = error.errorDescription ?? "Error al cambiar contraseña."
-            } catch {
-                pwdError = error.localizedDescription
-            }
-        }
-    }
-
-    func logout() {
-        AuthService.shared.logout()
-    }
-
-    var userInitial: String {
-        String(user?.fullName.prefix(1) ?? "?").uppercased()
-    }
-}
 
 // ─────────────────────────────────────────────
 // MARK: - PerfilView  (P16)
@@ -99,9 +9,8 @@ struct PerfilView: View {
 
     var onAcercaDe: () -> Void = {}
 
-    @StateObject private var viewModel    = PerfilViewModel()
+    @ObservedObject var viewModel: PerfilViewModel
     @State private var showChangePassword = false
-    @State private var selectedPhoto:     PhotosPickerItem? = nil
 
     var body: some View {
         Form {
@@ -109,16 +18,11 @@ struct PerfilView: View {
             // ── Avatar + Info ──
             Section {
                 HStack(spacing: 16) {
-                    PhotosPicker(selection: $selectedPhoto, matching: .images) {
+                    PhotosPicker(selection: $viewModel.selectedPhotoItem, matching: .images) {
                         avatarView
                     }
-                    .onChange(of: selectedPhoto) { _, newItem in
-                        Task {
-                            if let data   = try? await newItem?.loadTransferable(type: Data.self),
-                               let image  = UIImage(data: data) {
-                                viewModel.saveProfilePhoto(image)
-                            }
-                        }
+                    .onChange(of: viewModel.selectedPhotoItem) { _, _ in
+                        viewModel.loadSelectedPhoto()
                     }
 
                     VStack(alignment: .leading, spacing: 4) {
@@ -188,6 +92,12 @@ struct PerfilView: View {
             Button("Cerrar sesión", role: .destructive) { viewModel.logout() }
         } message: {
             Text("¿Estás seguro de que quieres cerrar sesión?")
+        }
+        // Image / sync errors
+        .alert("Error", isPresented: $viewModel.showErrorAlert) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(viewModel.errorMessage)
         }
         .onAppear { viewModel.loadUser() }
     }

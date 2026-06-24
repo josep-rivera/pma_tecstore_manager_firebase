@@ -5,6 +5,7 @@ import Combine
 // MARK: - InicioViewController
 
 final class InicioViewController: UIViewController {
+    private let viewModel = InicioViewModel()
     private var hosting: UIHostingController<InicioView>!
 
     override func viewDidLoad() {
@@ -13,6 +14,7 @@ final class InicioViewController: UIViewController {
         navigationItem.largeTitleDisplayMode = .always
 
         hosting = UIHostingController(rootView: InicioView(
+            viewModel: viewModel,
             onBusquedas:  { [weak self] in self?.performSegue(withIdentifier: "showBusquedas", sender: nil) },
             onReportes:   { [weak self] in self?.performSegue(withIdentifier: "showReportes", sender: nil) },
             onStockBajo:  { [weak self] in self?.performSegue(withIdentifier: "showStockBajo", sender: nil) },
@@ -102,6 +104,7 @@ final class ListaVentasViewController: UIViewController {
 // MARK: - PerfilViewController
 
 final class PerfilViewController: UIViewController {
+    private let viewModel = PerfilViewModel()
     private var hosting: UIHostingController<PerfilView>!
 
     override func viewDidLoad() {
@@ -112,7 +115,8 @@ final class PerfilViewController: UIViewController {
         hosting = UIHostingController(rootView: PerfilView(
             onAcercaDe: { [weak self] in
                 self?.performSegue(withIdentifier: "showAcercaDe", sender: nil)
-            }
+            },
+            viewModel: viewModel
         ))
         addChild(hosting)
         hosting.view.translatesAutoresizingMaskIntoConstraints = false
@@ -132,6 +136,7 @@ final class PerfilViewController: UIViewController {
 // When used standalone (not modal), dismissing is handled by the navigation stack.
 
 final class RegistroVentaViewController: UIViewController {
+    private let viewModel = RegistroVentaViewModel()
     private var hosting: UIHostingController<RegistroVentaView>!
 
     override func viewDidLoad() {
@@ -139,13 +144,16 @@ final class RegistroVentaViewController: UIViewController {
         title = "Nueva venta"
         navigationItem.largeTitleDisplayMode = .never
 
-        let swiftUIView = RegistroVentaView(onSave: { [weak self] in
-            if self?.presentingViewController != nil {
-                self?.dismiss(animated: true)
-            } else {
-                self?.navigationController?.popViewController(animated: true)
-            }
-        })
+        let swiftUIView = RegistroVentaView(
+            onSave: { [weak self] in
+                if self?.presentingViewController != nil {
+                    self?.dismiss(animated: true)
+                } else {
+                    self?.navigationController?.popViewController(animated: true)
+                }
+            },
+            viewModel: viewModel
+        )
 
         hosting = UIHostingController(rootView: swiftUIView)
         addChild(hosting)
@@ -166,12 +174,14 @@ final class RegistroVentaViewController: UIViewController {
 // Inject via the venta property before or after instantiation.
 
 final class DetalleVentaViewController: UIViewController {
+    private var viewModel: DetalleVentaViewModel?
     private var hosting: UIHostingController<AnyView>!
 
     var venta: FBVenta? {
         didSet {
             if let venta {
-                hosting?.rootView = AnyView(DetalleVentaView(venta: venta))
+                viewModel = DetalleVentaViewModel(venta: venta)
+                hosting?.rootView = AnyView(DetalleVentaView(viewModel: viewModel!))
             }
         }
     }
@@ -181,7 +191,10 @@ final class DetalleVentaViewController: UIViewController {
         title = "Detalle de venta"
         navigationItem.largeTitleDisplayMode = .never
 
-        let content: AnyView = venta.map { AnyView(DetalleVentaView(venta: $0)) } ?? AnyView(EmptyView())
+        if let venta {
+            viewModel = DetalleVentaViewModel(venta: venta)
+        }
+        let content: AnyView = viewModel.map { AnyView(DetalleVentaView(viewModel: $0)) } ?? AnyView(EmptyView())
         hosting = UIHostingController(rootView: content)
         addChild(hosting)
         hosting.view.translatesAutoresizingMaskIntoConstraints = false
@@ -199,6 +212,7 @@ final class DetalleVentaViewController: UIViewController {
 // MARK: - BusquedasViewController
 
 final class BusquedasViewController: UIViewController {
+    private let viewModel = BusquedasViewModel()
     private var hosting: UIHostingController<BusquedasView>!
 
     override func viewDidLoad() {
@@ -206,7 +220,7 @@ final class BusquedasViewController: UIViewController {
         title = "Búsquedas"
         navigationItem.largeTitleDisplayMode = .always
 
-        hosting = UIHostingController(rootView: BusquedasView())
+        hosting = UIHostingController(rootView: BusquedasView(viewModel: viewModel))
         addChild(hosting)
         hosting.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(hosting.view)
@@ -223,6 +237,7 @@ final class BusquedasViewController: UIViewController {
 // MARK: - ReportesViewController
 
 final class ReportesViewController: UIViewController {
+    private let viewModel = ReportesViewModel()
     private var hosting: UIHostingController<ReportesView>!
 
     override func viewDidLoad() {
@@ -230,7 +245,7 @@ final class ReportesViewController: UIViewController {
         title = "Reportes"
         navigationItem.largeTitleDisplayMode = .always
 
-        hosting = UIHostingController(rootView: ReportesView())
+        hosting = UIHostingController(rootView: ReportesView(viewModel: viewModel))
         addChild(hosting)
         hosting.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(hosting.view)
@@ -247,6 +262,7 @@ final class ReportesViewController: UIViewController {
 // MARK: - StockBajoViewController
 
 final class StockBajoViewController: UIViewController {
+    private let viewModel = StockBajoViewModel()
     private var hosting: UIHostingController<StockBajoView>!
 
     override func viewDidLoad() {
@@ -254,7 +270,7 @@ final class StockBajoViewController: UIViewController {
         title = "Stock bajo"
         navigationItem.largeTitleDisplayMode = .never
 
-        hosting = UIHostingController(rootView: StockBajoView())
+        hosting = UIHostingController(rootView: StockBajoView(viewModel: viewModel))
         addChild(hosting)
         hosting.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(hosting.view)

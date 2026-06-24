@@ -140,6 +140,18 @@ enum AppLayout {
 }
 
 // ─────────────────────────────────────────────
+// MARK: - Business Constants
+// ─────────────────────────────────────────────
+
+enum AppConstants {
+    static let lowStockThreshold:       Int = 5
+    static let profileImageMaxDimension: CGFloat = 600
+    static let passwordMinLength:        Int = 6
+    static let topProductosLimit:        Int = 3
+    static let salesTrendWindowDays:     Int = 14
+}
+
+// ─────────────────────────────────────────────
 // MARK: - AppStyle — UIKit Styling Helpers
 // ─────────────────────────────────────────────
 

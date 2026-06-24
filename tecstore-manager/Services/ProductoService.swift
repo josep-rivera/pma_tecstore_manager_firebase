@@ -35,7 +35,7 @@ final class ProductoService {
     // ─────────────────────────────────────────
 
     /// Active products whose stock is at or below the given threshold, sorted by stock ascending.
-    func fetchLowStock(threshold: Int = 5) async throws -> [FBProducto] {
+    func fetchLowStock(threshold: Int = AppConstants.lowStockThreshold) async throws -> [FBProducto] {
         let all = try await fetchAll(onlyActive: true)
         return all.filter { $0.stock <= threshold }.sorted { $0.stock < $1.stock }
     }
