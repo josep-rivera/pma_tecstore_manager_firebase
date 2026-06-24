@@ -42,6 +42,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     // MARK: - Root View Controller
 
+    /// Auth root replacement is a justified exception to the storyboard-segue rule.
+    /// Login/logout swap the entire window root before the Main storyboard flow is active,
+    /// so a manual root change is safer than trying to route them through segues.
     private func makeRootViewController() -> UIViewController {
         let sb = UIStoryboard(name: "Main", bundle: nil)
         if AuthService.shared.hasActiveSession {
@@ -56,7 +59,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     // MARK: - Transitions
 
-    /// Replace root with MenuViewController (after login or register)
+    /// Replace root with MenuViewController (after login or register).
+    /// Intentionally code-driven: the auth flow is outside the active storyboard hierarchy.
     func switchToMenu() {
         guard let window else { return }
         let sb = UIStoryboard(name: "Main", bundle: nil)
@@ -66,7 +70,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
 
-    /// Replace root with auth flow (after logout)
+    /// Replace root with auth flow (after logout).
+    /// Intentionally code-driven: the auth flow is outside the active storyboard hierarchy.
     func switchToAuth() {
         guard let window else { return }
         let sb = UIStoryboard(name: "Main", bundle: nil)
