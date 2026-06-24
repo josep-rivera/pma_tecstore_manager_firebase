@@ -114,7 +114,7 @@ final class RegistroViewController: UIViewController {
         viewModel.onError = { [weak self] message in
             self?.showAlert(title: "Error al registrarse", message: message)
         }
-        viewModel.onSuccess = { [weak self] in
+        viewModel.onSuccess = {
             (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.switchToMenu()
         }
     }
