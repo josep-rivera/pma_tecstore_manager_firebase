@@ -19,7 +19,7 @@ final class LoginViewController: UIViewController {
     @IBOutlet weak var correoError: UILabel!
     @IBOutlet weak var passwordError: UILabel!
 
-    private var hasAttemptedSubmit = false
+    private let viewModel = LoginViewModel()
     private var savedSecure: [UITextField: String] = [:]
 
     // MARK: - Lifecycle
@@ -31,6 +31,7 @@ final class LoginViewController: UIViewController {
         setupButtons()
         applyThemeColors()
         setupKeyboard()
+        bindViewModel()
         // button always enabled — errors show only after first submit
     }
 
@@ -100,34 +101,54 @@ final class LoginViewController: UIViewController {
 
     deinit { NotificationCenter.default.removeObserver(self) }
 
-    // MARK: - Actions
+    // MARK: - ViewModel Binding
 
-    @IBAction @objc private func handleLogin(_ sender: UIButton) {
-        hasAttemptedSubmit = true
-        guard validate() else { return }
-        loginButton.isEnabled = false
-        loginButton.alpha     = 0.6
-        Task {
-            do {
-                try await AuthService.shared.login(
-                    email:    correoField.text ?? "",
-                    password: passwordField.text ?? ""
-                )
-                (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.switchToMenu()
-            } catch let error as ServiceError {
-                showAlert(title: "Error al iniciar sesión",
-                          message: error.errorDescription ?? "")
-                loginButton.isEnabled = true
-                loginButton.alpha     = 1
-            } catch {
-                showAlert(title: "Error", message: error.localizedDescription)
-                loginButton.isEnabled = true
-                loginButton.alpha     = 1
-            }
+    private func bindViewModel() {
+        viewModel.onValidationErrors = { [weak self] validation in
+            self?.apply(validation: validation)
+        }
+        viewModel.onLoading = { [weak self] isLoading in
+            self?.loginButton.isEnabled = !isLoading
+            self?.loginButton.alpha     = isLoading ? 0.6 : 1
+        }
+        viewModel.onError = { [weak self] message in
+            self?.showAlert(title: "Error al iniciar sesión", message: message)
+        }
+        viewModel.onSuccess = { [weak self] in
+            (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.switchToMenu()
         }
     }
 
-    @IBAction @objc private func fieldsChanged(_ sender: UITextField) { _ = validate() }
+    private func apply(validation: LoginValidation) {
+        updateErrorLabel(correoError, for: correoField, message: validation.emailError)
+        updateErrorLabel(passwordError, for: passwordField, message: validation.passwordError)
+    }
+
+    private func updateErrorLabel(_ label: UILabel, for field: UITextField, message: String?) {
+        if let message {
+            label.text = message
+            label.isHidden = false
+            AppStyle.markFieldError(field, hasError: true)
+        } else {
+            label.isHidden = true
+            AppStyle.markFieldError(field, hasError: false)
+        }
+    }
+
+    // MARK: - Actions
+
+    @IBAction @objc private func handleLogin(_ sender: UIButton) {
+        viewModel.login()
+    }
+
+    @IBAction @objc private func fieldsChanged(_ sender: UITextField) {
+        switch sender {
+        case correoField:   viewModel.updateEmail(sender.text ?? "")
+        case passwordField: viewModel.updatePassword(sender.text ?? "")
+        default: break
+        }
+    }
+
     @objc private func tapToDismiss() { view.endEditing(true) }
 
     @objc private func keyboardWillShow(_ n: NSNotification) {
@@ -142,50 +163,6 @@ final class LoginViewController: UIViewController {
             scrollView.contentInset.bottom                  = 0
             scrollView.verticalScrollIndicatorInsets.bottom = 0
         }
-    }
-
-    // MARK: - Validation
-
-    @discardableResult
-    private func validate() -> Bool {
-        var valid = true
-
-        let correo = correoField.text?.trimmed ?? ""
-        if correo.isEmpty {
-            if hasAttemptedSubmit { setError(correoError, correoField, "El correo es requerido.") }
-            else { clearError(correoError, correoField) }
-            valid = false
-        } else if !correo.isValidEmail {
-            if hasAttemptedSubmit { setError(correoError, correoField, "Formato de correo inválido.") }
-            else { clearError(correoError, correoField) }
-            valid = false
-        } else {
-            clearError(correoError, correoField)
-        }
-
-        let pwd = passwordField.text ?? ""
-        if pwd.isEmpty {
-            if hasAttemptedSubmit { setError(passwordError, passwordField, "La contraseña es requerida.") }
-            else { clearError(passwordError, passwordField) }
-            valid = false
-        } else if pwd.count < 6 {
-            if hasAttemptedSubmit { setError(passwordError, passwordField, "Mínimo 6 caracteres.") }
-            else { clearError(passwordError, passwordField) }
-            valid = false
-        } else {
-            clearError(passwordError, passwordField)
-        }
-        return valid
-    }
-
-    private func setError(_ label: UILabel, _ field: UITextField, _ msg: String) {
-        label.text     = msg
-        label.isHidden = false
-        AppStyle.markFieldError(field, hasError: true)
-    }
-    private func clearError(_ label: UILabel, _ field: UITextField) {
-        label.isHidden = true
-        AppStyle.markFieldError(field, hasError: false)
     }
 }
 

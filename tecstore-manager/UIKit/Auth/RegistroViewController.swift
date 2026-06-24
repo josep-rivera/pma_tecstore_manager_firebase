@@ -22,7 +22,7 @@ final class RegistroViewController: UIViewController {
     @IBOutlet weak var passwordError: UILabel!
     @IBOutlet weak var confirmError: UILabel!
 
-    private var hasAttemptedSubmit = false
+    private let viewModel = RegistroViewModel()
     private var savedSecure: [UITextField: String] = [:]
 
     // MARK: - Lifecycle
@@ -34,6 +34,7 @@ final class RegistroViewController: UIViewController {
         setupButtons()
         applyThemeColors()
         setupKeyboard()
+        bindViewModel()
         // button always enabled — errors show only after first submit
     }
 
@@ -100,34 +101,62 @@ final class RegistroViewController: UIViewController {
 
     deinit { NotificationCenter.default.removeObserver(self) }
 
+    // MARK: - ViewModel Binding
+
+    private func bindViewModel() {
+        viewModel.onValidationErrors = { [weak self] validation in
+            self?.apply(validation: validation)
+        }
+        viewModel.onLoading = { [weak self] isLoading in
+            self?.registerButton.isEnabled = !isLoading
+            self?.registerButton.alpha     = isLoading ? 0.6 : 1
+        }
+        viewModel.onError = { [weak self] message in
+            self?.showAlert(title: "Error al registrarse", message: message)
+        }
+        viewModel.onSuccess = { [weak self] in
+            (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.switchToMenu()
+        }
+    }
+
+    private func apply(validation: RegistroValidation) {
+        updateErrorLabel(nombreError, for: nombreField, message: validation.nameError)
+        updateErrorLabel(correoError, for: correoField, message: validation.emailError)
+        updateErrorLabel(passwordError, for: passwordField, message: validation.passwordError)
+        updateErrorLabel(confirmError, for: confirmField, message: validation.confirmError)
+    }
+
+    private func updateErrorLabel(_ label: UILabel, for field: UITextField, message: String?) {
+        if let message {
+            label.text = message
+            label.isHidden = false
+            AppStyle.markFieldError(field, hasError: true)
+        } else {
+            label.isHidden = true
+            AppStyle.markFieldError(field, hasError: false)
+        }
+    }
+
     // MARK: - Actions
 
     @IBAction @objc private func handleRegister(_ sender: UIButton) {
-        hasAttemptedSubmit = true
-        guard validate() else { return }
-        Task {
-            do {
-                try await AuthService.shared.register(
-                    fullName: nombreField.text ?? "",
-                    email:    correoField.text ?? "",
-                    password: passwordField.text ?? ""
-                )
-                await MainActor.run {
-                    (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.switchToMenu()
-                }
-            } catch let error as ServiceError {
-                await MainActor.run { self.showAlert(title: "Error al registrarse", message: error.errorDescription ?? "") }
-            } catch {
-                await MainActor.run { self.showAlert(title: "Error", message: error.localizedDescription) }
-            }
-        }
+        viewModel.register()
     }
 
     @IBAction @objc private func handleGoToLogin(_ sender: UIButton) {
         navigationController?.popViewController(animated: true)
     }
 
-    @IBAction @objc private func fieldsChanged(_ sender: UITextField) { _ = validate() }
+    @IBAction @objc private func fieldsChanged(_ sender: UITextField) {
+        switch sender {
+        case nombreField:    viewModel.updateFullName(sender.text ?? "")
+        case correoField:    viewModel.updateEmail(sender.text ?? "")
+        case passwordField:  viewModel.updatePassword(sender.text ?? "")
+        case confirmField:   viewModel.updateConfirmPassword(sender.text ?? "")
+        default: break
+        }
+    }
+
     @objc private func tapToDismiss() { view.endEditing(true) }
 
     @objc private func keyboardWillShow(_ n: NSNotification) {
@@ -142,71 +171,6 @@ final class RegistroViewController: UIViewController {
             scrollView.contentInset.bottom                  = 0
             scrollView.verticalScrollIndicatorInsets.bottom = 0
         }
-    }
-
-    // MARK: - Validation
-
-    @discardableResult
-    private func validate() -> Bool {
-        var valid = true
-
-        // Nombre
-        let nombre = nombreField.text?.trimmed ?? ""
-        if nombre.isEmpty {
-            if hasAttemptedSubmit { setError(nombreError, nombreField, "El nombre es requerido.") }
-            else { clearError(nombreError, nombreField) }
-            valid = false
-        } else if nombre.count < 3 {
-            if hasAttemptedSubmit { setError(nombreError, nombreField, "Ingresa tu nombre completo.") }
-            else { clearError(nombreError, nombreField) }
-            valid = false
-        } else { clearError(nombreError, nombreField) }
-
-        // Correo
-        let correo = correoField.text?.trimmed ?? ""
-        if correo.isEmpty {
-            if hasAttemptedSubmit { setError(correoError, correoField, "El correo es requerido.") }
-            else { clearError(correoError, correoField) }
-            valid = false
-        } else if !correo.isValidEmail {
-            if hasAttemptedSubmit { setError(correoError, correoField, "Formato de correo inválido.") }
-            else { clearError(correoError, correoField) }
-            valid = false
-        } else { clearError(correoError, correoField) }
-
-        // Contraseña
-        let pwd = passwordField.text ?? ""
-        if pwd.isEmpty {
-            if hasAttemptedSubmit { setError(passwordError, passwordField, "La contraseña es requerida.") }
-            else { clearError(passwordError, passwordField) }
-            valid = false
-        } else if pwd.count < 6 {
-            if hasAttemptedSubmit { setError(passwordError, passwordField, "Mínimo 6 caracteres.") }
-            else { clearError(passwordError, passwordField) }
-            valid = false
-        } else { clearError(passwordError, passwordField) }
-
-        // Confirmar
-        let confirm = confirmField.text ?? ""
-        if confirm.isEmpty {
-            if hasAttemptedSubmit { setError(confirmError, confirmField, "Confirma tu contraseña.") }
-            else { clearError(confirmError, confirmField) }
-            valid = false
-        } else if confirm != pwd {
-            if hasAttemptedSubmit { setError(confirmError, confirmField, "Las contraseñas no coinciden.") }
-            else { clearError(confirmError, confirmField) }
-            valid = false
-        } else { clearError(confirmError, confirmField) }
-        return valid
-    }
-
-    private func setError(_ label: UILabel, _ field: UITextField, _ msg: String) {
-        label.text = msg; label.isHidden = false
-        AppStyle.markFieldError(field, hasError: true)
-    }
-    private func clearError(_ label: UILabel, _ field: UITextField) {
-        label.isHidden = true
-        AppStyle.markFieldError(field, hasError: false)
     }
 }
 
