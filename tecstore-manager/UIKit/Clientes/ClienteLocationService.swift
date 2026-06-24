@@ -6,7 +6,7 @@ import CoreLocation
 // MARK: - ClienteLocationService
 // ─────────────────────────────────────────────
 
-/// Wraps `CLGeocoder` and `MKMapView` interactions for client address/location handling.
+/// Wraps modern MapKit geocoding APIs for client address/location handling.
 final class ClienteLocationService {
 
     // MARK: Singleton
@@ -16,25 +16,33 @@ final class ClienteLocationService {
 
     // MARK: State
 
-    private let geocoder = CLGeocoder()
-    private var activeSearch: MKLocalSearch?
+    private var activeGeocodeRequest: MKGeocodingRequest?
+    private var activeReverseRequest: MKReverseGeocodingRequest?
 
     // MARK: Public API
 
-    /// Geocodes a human-readable address into coordinates using `MKLocalSearch`.
+    /// Geocodes a human-readable address into coordinates using `MKGeocodingRequest`.
     func geocode(address: String, completion: @escaping (CLLocationCoordinate2D?) -> Void) {
-        activeSearch?.cancel()
+        activeGeocodeRequest?.cancel()
 
-        let request = MKLocalSearch.Request()
-        request.naturalLanguageQuery = address
+        guard let request = MKGeocodingRequest(addressString: address) else {
+            completion(nil)
+            return
+        }
+        activeGeocodeRequest = request
 
-        activeSearch = MKLocalSearch(request: request)
-        activeSearch?.start { response, _ in
-            guard let item = response?.mapItems.first else {
-                completion(nil)
+        Task { [request] in
+            guard let item = try? await request.mapItems.first else {
+                await MainActor.run {
+                    if self.activeGeocodeRequest === request { self.activeGeocodeRequest = nil }
+                    completion(nil)
+                }
                 return
             }
-            completion(item.location.coordinate)
+            await MainActor.run {
+                if self.activeGeocodeRequest === request { self.activeGeocodeRequest = nil }
+                completion(item.location.coordinate)
+            }
         }
     }
 
@@ -43,25 +51,36 @@ final class ClienteLocationService {
                         completion: @escaping (String?) -> Void) {
         let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
 
-        Task { [weak self] in
-            guard let self else {
-                await MainActor.run { completion(nil) }
-                return
-            }
-            guard let request = MKReverseGeocodingRequest(location: location),
-                  let item = try? await request.mapItems.first else {
-                await MainActor.run { completion(nil) }
+        activeReverseRequest?.cancel()
+
+        guard let request = MKReverseGeocodingRequest(location: location) else {
+            completion(nil)
+            return
+        }
+        activeReverseRequest = request
+
+        Task { [request] in
+            guard let item = try? await request.mapItems.first else {
+                await MainActor.run {
+                    if self.activeReverseRequest === request { self.activeReverseRequest = nil }
+                    completion(nil)
+                }
                 return
             }
             let address = item.addressRepresentations?
                 .fullAddress(includingRegion: false, singleLine: true) ?? ""
-            await MainActor.run { completion(address.isEmpty ? nil : address) }
+            await MainActor.run {
+                if self.activeReverseRequest === request { self.activeReverseRequest = nil }
+                completion(address.isEmpty ? nil : address)
+            }
         }
     }
 
     /// Cancels any in-flight geocoding request.
     func cancel() {
-        activeSearch?.cancel()
-        activeSearch = nil
+        activeGeocodeRequest?.cancel()
+        activeGeocodeRequest = nil
+        activeReverseRequest?.cancel()
+        activeReverseRequest = nil
     }
 }

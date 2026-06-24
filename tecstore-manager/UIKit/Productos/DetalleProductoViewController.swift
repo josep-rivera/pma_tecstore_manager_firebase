@@ -8,9 +8,12 @@ final class DetalleProductoViewController: UIViewController {
     // MARK: - IBOutlets
     @IBOutlet weak var photoImageView: UIImageView!
     @IBOutlet weak var nombreLabel:    UILabel!
-    @IBOutlet weak var precioLabel:    UILabel!
-    @IBOutlet weak var stockBadge:     UILabel!
-    @IBOutlet weak var estadoBadge:    UILabel!
+    // These outlets are intentionally optional: the storyboard may not wire
+    // every placeholder label, and force-unwrapping would crash on rotation
+    // or view lifecycle transitions if an outlet is nil.
+    @IBOutlet weak var precioLabel:    UILabel?
+    @IBOutlet weak var stockBadge:     UILabel?
+    @IBOutlet weak var estadoBadge:    UILabel?
 
     // MARK: - IBOutlets (storyboard-placed, styled in code)
     @IBOutlet weak var infoCard: UIView!
@@ -62,9 +65,10 @@ final class DetalleProductoViewController: UIViewController {
 
         // precioLabel, stockBadge, estadoBadge are now unused as IBOutlets for display —
         // they're hidden; InfoRows in the storyboard card handle display.
-        precioLabel.isHidden  = true
-        stockBadge.isHidden   = true
-        estadoBadge.isHidden  = true
+        // Use optional chaining so a disconnected outlet cannot crash on rotation.
+        precioLabel?.isHidden  = true
+        stockBadge?.isHidden   = true
+        estadoBadge?.isHidden  = true
 
         codeLabel.font      = .systemFont(ofSize: 13, weight: .regular)
         codeLabel.textColor = .appTextSecondary

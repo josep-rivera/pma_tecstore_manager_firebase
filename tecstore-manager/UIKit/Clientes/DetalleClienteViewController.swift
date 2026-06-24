@@ -53,58 +53,62 @@ final class DetalleClienteViewController: UIViewController {
     }
 
     /// Apply styling to IBOutlet views without adding or constraining them (storyboard owns layout).
+    /// Every access uses optional chaining so a nil outlet (e.g. after a rotation-induced
+    /// view lifecycle transition) cannot crash the app.
     private func setupIBOutletStyling() {
-        nameLabel.font          = AppFont.title2()
-        nameLabel.textColor     = .appTextPrimary
-        nameLabel.textAlignment = .center
-        nameLabel.numberOfLines = 0
+        nameLabel?.font          = AppFont.title2()
+        nameLabel?.textColor     = .appTextPrimary
+        nameLabel?.textAlignment = .center
+        nameLabel?.numberOfLines = 0
 
-        statusBadge.font               = AppFont.caption1()
-        statusBadge.textColor          = .white
-        statusBadge.textAlignment      = .center
-        statusBadge.layer.cornerRadius = 12
-        statusBadge.clipsToBounds      = true
+        statusBadge?.font               = AppFont.caption1()
+        statusBadge?.textColor          = .white
+        statusBadge?.textAlignment      = .center
+        statusBadge?.layer.cornerRadius = 12
+        statusBadge?.clipsToBounds      = true
 
-        avatarView.backgroundColor    = .brandLight
-        avatarView.layer.cornerRadius = 48
+        avatarView?.backgroundColor    = .brandLight
+        avatarView?.layer.cornerRadius = 48
 
-        avatarLetter.font          = AppFont.title1()
-        avatarLetter.textColor     = .brandPrimary
-        avatarLetter.textAlignment = .center
+        avatarLetter?.font          = AppFont.title1()
+        avatarLetter?.textColor     = .brandPrimary
+        avatarLetter?.textAlignment = .center
 
-        contactCard.backgroundColor    = .appSurface
-        contactCard.layer.cornerRadius = AppLayout.cornerRadius
-        contactCard.layer.cornerCurve  = .continuous
+        contactCard?.backgroundColor    = .appSurface
+        contactCard?.layer.cornerRadius = AppLayout.cornerRadius
+        contactCard?.layer.cornerCurve  = .continuous
 
-        fechaLabel.font      = AppFont.footnote()
-        fechaLabel.textColor = .appTextTertiary
+        fechaLabel?.font      = AppFont.footnote()
+        fechaLabel?.textColor = .appTextTertiary
 
-        for div in ([contactDiv1, contactDiv2, contactDiv3, contactDiv4] as [UIView]) {
-            div.backgroundColor = .appSeparator
+        for div in ([contactDiv1, contactDiv2, contactDiv3, contactDiv4] as [UIView?]) {
+            div?.backgroundColor = .appSeparator
         }
 
-        for lbl in ([dniLabel, telefonoLabel, correoLabel, direccionLabel] as [UILabel]) {
-            lbl.font          = AppFont.body()
-            lbl.textColor     = .appTextSecondary
-            lbl.numberOfLines = 0
+        for lbl in ([dniLabel, telefonoLabel, correoLabel, direccionLabel] as [UILabel?]) {
+            lbl?.font          = AppFont.body()
+            lbl?.textColor     = .appTextSecondary
+            lbl?.numberOfLines = 0
         }
 
-        noLocationLabel.font      = AppFont.footnote()
-        noLocationLabel.textColor = .appTextTertiary
+        noLocationLabel?.font      = AppFont.footnote()
+        noLocationLabel?.textColor = .appTextTertiary
 
-        mapView.layer.cornerRadius       = AppLayout.cornerRadius
-        mapView.layer.cornerCurve        = .continuous
-        mapView.clipsToBounds            = true
-        mapView.isUserInteractionEnabled = false
+        mapView?.layer.cornerRadius       = AppLayout.cornerRadius
+        mapView?.layer.cornerCurve        = .continuous
+        mapView?.clipsToBounds            = true
+        mapView?.isUserInteractionEnabled = false
     }
 
     // MARK: - Populate
 
-    private func iconText(_ label: UILabel, icon: String, text: String) {
-        guard let img = UIImage(systemName: icon)?
+    private func iconText(_ label: UILabel?, icon: String, text: String) {
+        guard let label,
+              let img = UIImage(systemName: icon)?
             .withTintColor(.appTextSecondary, renderingMode: .alwaysOriginal)
             .withConfiguration(UIImage.SymbolConfiguration(pointSize: 15, weight: .regular)) else {
-            label.text = text; return
+            label?.text = text
+            return
         }
         let attach    = NSTextAttachment()
         attach.image  = img
@@ -118,21 +122,21 @@ final class DetalleClienteViewController: UIViewController {
     }
 
     private func resetUI() {
-        avatarLetter.text = "?"
-        nameLabel.text    = ""
+        avatarLetter?.text = "?"
+        nameLabel?.text    = ""
 
-        statusBadge.text            = ""
-        statusBadge.backgroundColor = .appTextSecondary
+        statusBadge?.text            = ""
+        statusBadge?.backgroundColor = .appTextSecondary
 
-        dniLabel.text       = ""
-        telefonoLabel.text  = ""
-        correoLabel.text    = ""
-        direccionLabel.text = ""
-        fechaLabel.text     = ""
+        dniLabel?.text       = ""
+        telefonoLabel?.text  = ""
+        correoLabel?.text    = ""
+        direccionLabel?.text = ""
+        fechaLabel?.text     = ""
 
-        mapView.isHidden         = true
-        noLocationLabel.isHidden = true
-        mapView.removeAnnotations(mapView.annotations)
+        mapView?.isHidden         = true
+        noLocationLabel?.isHidden = true
+        mapView?.removeAnnotations(mapView?.annotations ?? [])
 
         navigationItem.rightBarButtonItem?.isEnabled = false
     }
@@ -143,37 +147,37 @@ final class DetalleClienteViewController: UIViewController {
             return
         }
 
-        mapView.isHidden = false
+        mapView?.isHidden = false
         navigationItem.rightBarButtonItem?.isEnabled = true
 
-        let initial       = c.firstNames.first.map { String($0) } ?? "?"
-        avatarLetter.text = initial.uppercased()
-        nameLabel.text    = c.fullName
+        let initial        = c.firstNames.first.map { String($0) } ?? "?"
+        avatarLetter?.text = initial.uppercased()
+        nameLabel?.text    = c.fullName
 
-        statusBadge.text            = c.statusValue
-        statusBadge.backgroundColor = c.isActive ? .appSuccess : .appTextSecondary
+        statusBadge?.text            = c.statusValue
+        statusBadge?.backgroundColor = c.isActive ? .appSuccess : .appTextSecondary
 
         iconText(dniLabel,       icon: "creditcard",    text: "DNI: \(c.dniValue)")
         iconText(telefonoLabel,  icon: "phone",         text: c.phoneNumber  ?? "Sin teléfono")
         iconText(correoLabel,    icon: "envelope",      text: c.emailValue   ?? "Sin correo")
         iconText(direccionLabel, icon: "mappin.circle", text: c.addressValue ?? "Sin dirección")
-        fechaLabel.text = "Registrado el \(c.registrationDate.displayDate)"
+        fechaLabel?.text = "Registrado el \(c.registrationDate.displayDate)"
 
         if c.hasValidCoordinates {
-            noLocationLabel.isHidden = true
+            noLocationLabel?.isHidden = true
             let coord    = CLLocationCoordinate2D(latitude: c.latitude, longitude: c.longitude)
             let pin      = MKPointAnnotation()
             pin.title    = c.fullName
             pin.subtitle = c.locationReference
             pin.coordinate = coord
-            mapView.removeAnnotations(mapView.annotations)
-            mapView.addAnnotation(pin)
+            mapView?.removeAnnotations(mapView?.annotations ?? [])
+            mapView?.addAnnotation(pin)
             let region = MKCoordinateRegion(center: coord,
                                             latitudinalMeters: 1500, longitudinalMeters: 1500)
-            mapView.setRegion(region, animated: false)
+            mapView?.setRegion(region, animated: false)
         } else {
-            noLocationLabel.isHidden = false
-            mapView.removeAnnotations(mapView.annotations)
+            noLocationLabel?.isHidden = false
+            mapView?.removeAnnotations(mapView?.annotations ?? [])
         }
     }
 
